@@ -1,6 +1,7 @@
 import React from 'react'
 import tw from 'twin.macro'
 import { Button } from './../components'
+import Link from 'next/link'
 
 const styles = {
   // Move long class sets out of jsx to keep it scannable
@@ -13,6 +14,12 @@ const styles = {
 const IndexPage = () => (
   <div css={styles.container({ hasBackground: true })}>
     <div tw="flex flex-col justify-center h-full gap-y-5">
+      <Link href="/login">
+        <a>LOGIN</a>
+      </Link>
+      <Link href="/signup">
+        <a>SIGNUP</a>
+      </Link>
       <Button variant="primary">Submit</Button>
       <Button variant="secondary">Cancel</Button>
       <Button isSmall>Close</Button>
