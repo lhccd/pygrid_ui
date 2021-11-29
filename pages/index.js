@@ -6,7 +6,7 @@ const styles = {
   // Move long class sets out of jsx to keep it scannable
   container: ({ hasBackground }) => [
     tw`flex flex-col items-center justify-center h-screen`,
-    hasBackground && tw`bg-gradient-to-b from-electric to-ribbon`,
+    hasBackground && tw`bg-gradient-to-b from-purple-300 to-indigo-500`,
   ],
 }
 
@@ -17,6 +17,7 @@ const IndexPage = () => (
       <Button variant="secondary">Cancel</Button>
       <Button isSmall>Close</Button>
     </div>
+    <img src="/static/logo.png" alt="logo" tw="h-32 self-center object-cover absolute inset-0" />
   </div>
 )
 
