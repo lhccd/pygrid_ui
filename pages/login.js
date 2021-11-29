@@ -58,7 +58,7 @@ export default function Login() {
                 </div>
                 <div id="content" tw="grid grid-cols-12 flex-grow text-gray-600 text-left text-lg py-4 rounded-lg gap-6 ">
                     <div id="domain-box" tw="col-start-2 col-end-6 my-10 p-10">
-                        <h1 id="domain-name" tw="text-left text-2xl ">Canada Domain</h1>
+                        <h1 id="domain-name" tw="font-rubik text-left text-5xl ">Canada Domain</h1>
                          <ul id="domain-info" tw="text-left text-sm mt-4">
                             {DomainBody.map( e => (
                                 <li tw="py-1" key={'ID#'}>
@@ -75,7 +75,7 @@ export default function Login() {
                             <p>Network(s): ---</p>
                         </div>
                     </div>
-                    <div id="login-form" tw="col-start-7 col-end-12 bg-white bg-opacity-70 p-5 m-3 h-96 shadow-lg text-gray-600 text-center text-lg">
+                    <div id="login-form" tw="col-start-7 col-end-12 bg-white p-5 m-10 mt-40 h-96 shadow-lg text-gray-600 text-center text-lg rounded">
                         <div tw="m-3">
                             <p tw="text-2xl">Welcome Back</p>
                             <p>Domain Online</p>
@@ -88,7 +88,7 @@ export default function Login() {
                             <p tw="col-span-4 text-center text-gray-600 text-sm">Don't have an account yet?
                                 <a href="/#" tw="col-span-4 text-center text-blue-500"> Apply for an account here</a>
                             </p> 
-                            <button tw="col-start-2 col-end-4 bg-blue-500 rounded text-white text-center mx-6 px-3 py-2" type="submit">Login</button>
+                            <button tw="col-start-2 col-end-4 bg-primary-500 rounded text-white text-center mx-6 px-3 py-2" type="submit">Login</button>
                         </form>
                     </div>
                 </div>
