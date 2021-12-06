@@ -1,7 +1,10 @@
 import styled from 'styled-components'
 import { useForm } from "react-hook-form"
 import tw from 'twin.macro'
-
+import Tag from '../components/Tag'
+import { useState } from 'react'
+import axios from 'axios'
+import { useRouter } from 'next/router'
 
 const Background = styled.div`
     background-image: url("../signup_background_image.png");
@@ -10,92 +13,106 @@ const Background = styled.div`
     background-repeat: no-repeat; 
     background-size: auto; 
 `
-// export const getStaticProps: GetStaticProps = async () => {
-//     const DomainBody = [{
-//         'ID#':'ID#449f4f997a96467f90f7af8b396928f1',
-//         'Hosted Datasets': '2', 
-//         'Deployed On': '09.07.2021', 
-//         'Owner': ['Kyoko Eng', '---'],
-//         'Network(s)': '---',
-//         }
-//     ]
-//     return (
-//         {DomainBody}
-//     )
-// }
 const DomainBody = [
-    { ID :'ID#449f4f997a96467f90f7af8b396928f1'},
-    { ID : '2', },
-    { ID : '09.07.2021', },
-    { ID : ['Kyoko Eng', '---'],},
-    { ID: '---'}
-     
-]
+    {
+      ID :'ID#449f4f997a96467f90f7af8b396928f1',
+      HostedDatasets : '2',
+      DeployedOn : '09.07.2021',
+      Owner : ['Kyoko Eng', 'United Nations'],
+      Network : '---',
+      SupportContact : 'support@abc.com'
+    }
+  ]
 
 export default function Login() {
-    const registerUser = async event => {
-        event.preventDefault()
-    
-        const res = await fetch('/api/register', {
-          body: JSON.stringify({
-            name: event.target.name.value
-          }),
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          method: 'POST'
-        })
-    
-        const result = await res.json()
-        // result.user => 'Ada Lovelace'
+    const { register, handleSubmit, errors, reset } = useForm();
+    const router = useRouter()
+
+    async function onSubmitForm(values){
+        const formData = new FormData
+        formData.append("username", values.username)
+        formData.append("password", values.password)
+        let config = {
+            method: 'post', 
+            url: 'http://localhost/api/v1/login/access-token', 
+            data: formData
+        }
+        try{
+            console.log("config data: ", values)
+            const response = await axios(config) 
+            router.push('/users')
+            console.log(response); 
+        }catch (err){
+            console.error(err);
+        }
     }
 
     return(
         <Background>
             <div id="app" tw="flex flex-col h-screen w-screen py-10">
-                <div id="header" tw="grid grid-cols-3 bg-gray-100 bg-opacity-5 rounded-lg gap-6 p-4">
-                    <img tw="col-span-1 object-scale-down h-12 ml-20" src={"/assets/small-logo.png"} alt="py-grid-logo"/>
+                <div id="header" tw="grid grid-cols-12 bg-gray-100 bg-opacity-5 rounded-lg gap-6 py-4">
+                    <img tw="col-start-2 col-span-2 object-scale-down h-14 pl-10" src={"/assets/small-logo.png"} alt="py-grid-logo"/>
                 </div>
-                <div id="content" tw="grid grid-cols-12 flex-grow text-gray-600 text-left text-lg py-4 rounded-lg gap-6 ">
-                    <div id="domain-box" tw="col-start-2 col-end-6 my-10 p-10">
-                        <h1 id="domain-name" tw="font-rubik text-left text-5xl ">Canada Domain</h1>
-                         <ul id="domain-info" tw="text-left text-sm mt-4">
-                            {DomainBody.map( e => (
-                                <li tw="py-1" key={'ID#'}>
-                                        <a>ID#: </a>
-                                        <a>{e.ID}</a>
-                                </li>
-                            ))}
+                <div id="content" tw="grid grid-cols-12 flex-grow text-gray-800 text-left text-lg py-4 rounded-lg gap-6 ">
+                <div id="domain-box" tw="col-start-2 col-end-6 my-10 p-10 text-gray-800">
+                        <div id="tags">
+                        <Tag>Commodities</Tag>
+                        <Tag>Trade</Tag>
+                        <Tag>Canada</Tag>
+                        </div>
+                        <h1 id="domain-name" tw="font-rubik font-bold text-left text-5xl my-4">Canada Domain</h1>
+                        <p tw="text-base my-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in vulputate enim. Morbi scelerisque, ante eu ultrices semper, ipsum nisl malesuada ligula, non faucibus libero purus et ligula.</p>
+                        <div tw="divide-y divide-gray-200 divide-solid">
+                        <ul id="domain-info" tw="text-left text-sm font-semibold mt-4 mb-8">
+                        <li tw="py-3">
+                                <a>ID#: </a>
+                                <a>{DomainBody[0].ID}</a>
+                        </li>
+                        <li tw="py-3">
+                                <a>Hosted Datasets: </a>
+                                <a>{DomainBody[0].HostedDatasets}</a>
+                        </li>
+                        <li tw="py-3">
+                                <a>Deployed On: </a>
+                                <a>{DomainBody[0].DeployedOn}</a>
+                        </li>
+                        <li tw="py-3">
+                                <a>Owner: </a>
+                                <a>{DomainBody[0].Owner}</a>
+                        </li>
+                        <li tw="py-3">
+                                <a>Network: </a>
+                                <a>{DomainBody[0].Network}</a>
+                        </li>
+                        
                         </ul>
-                        <div id="domain-info" tw="text-left text-sm pt-4">
-                            <p>ID#: ID#449f4f997a96467f90f7af8b396928f1	</p>
-                            <p>Hosted Datasets: 2</p>
-                            <p>Deployed On: 09.07.2021</p>
-                            <p>Owner: KYOKO ENG, ---</p>
-                            <p>Network(s): ---</p>
+                        <div id="support_contact" tw="text-left text-sm pt-4">
+                            <p>For further assistance please email:</p>
+                            <p>{DomainBody[0].SupportContact}</p>
                         </div>
                     </div>
-                    <div id="login-form" tw="col-start-7 col-end-12 bg-white p-5 m-10 mt-40 h-96 shadow-lg text-gray-600 text-center text-lg rounded">
+                    </div>
+                    <div id="login-form" tw="col-start-7 col-end-12 bg-white p-5 m-10 mt-40 h-96 shadow-lg text-gray-800 text-center text-lg rounded">
                         <div tw="m-3">
                             <p tw="text-2xl">Welcome Back</p>
                             <p>Domain Online</p>
                         </div>
-                        <form tw="grid grid-cols-4 flex-grow text-gray-600 text-sm text-center p-6 rounded-lg gap-2" onSubmit={registerUser}>
+                        <form tw="grid grid-cols-4 flex-grow text-gray-600 text-sm text-center p-6 rounded-lg gap-2" onSubmit={handleSubmit(onSubmitForm)}>
                             <label tw="col-span-4 text-left" htmlFor="email">Email</label>
-                            <input tw="col-span-4 text-left p-3 border border-gray-300 rounded-lg" id="email" name="email" type="email" placeholder="abc@university.edu" autoComplete="email" required />
+                            <input tw="col-span-4 text-left p-3 border border-gray-300 rounded-lg" name="username" type="email" placeholder="abc@university.edu" autoComplete="on"  {...register("username", { required: true, message: 'You must enter an email'})} />
                             <label tw="col-span-4 text-left" htmlFor="name">Password</label>
-                            <input tw="col-span-4 text-left p-3 border border-gray-300 rounded-lg" id="name" name="name" type="text" placeholder="Text here" autoComplete="name" required />
+                            <input tw="col-span-4 text-left p-3 border border-gray-300 rounded-lg" name="password" type="password" placeholder="Text here" autoComplete="on"  {...register("password", { required: true})} />
                             <p tw="col-span-4 text-center text-gray-600 text-sm">Don't have an account yet?
-                                <a href="/#" tw="col-span-4 text-center text-blue-500"> Apply for an account here</a>
+                                <a href="/signup" tw="col-span-4 text-center text-blue-500"> Apply for an account here</a>
                             </p> 
                             <button tw="col-start-2 col-end-4 bg-primary-500 rounded text-white text-center mx-6 px-3 py-2" type="submit">Login</button>
                         </form>
                     </div>
                 </div>
-                <div id="footer" tw="flex flex-row p-4 rounded-lg gap-6">
-                    <div tw="flex gap-2 ml-20">
-                        <div tw="pt-1 text-gray-600 text-lg text-center">Empowered By</div>
-                        <img tw="object-contain h-8" src={"/assets/small-om-logo.png"} alt="om-logo"/>
+                <div id="footer" tw="grid grid-cols-12 gap-6">
+                    <div tw="col-start-2 col-span-4 pl-10">
+                        <div tw="inline-block py-3 mt-4 text-gray-600 text-lg text-center">Empowered By</div>
+                        <img tw="inline-block object-contain h-8 ml-2" src={"/assets/small-om-logo.png"} alt="om-logo"/>
                     </div>
                 </div>
             </div>
