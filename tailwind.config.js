@@ -1,20 +1,19 @@
 module.exports = {
   theme: {
     extend: {
-      /* colors: {
-        electric: '#db00ff',
-        ribbon: '#0047ff',
-      }, */
+      boxShadow: {
+        active: '0 0 8px #20AFDF',
+      },
       fontFamily: {
-        roboto: ['"Roboto"', 'sans-serif'],
-        rubik: ['"Rubik"', 'sans-serif'],
-        firacode: ['"Fira Code"', 'monospace']
+        roboto: ['Roboto', 'sans-serif'],
+        mono: ['Fira Code', 'monospace'],
+        rubik: ['Rubik', 'sans-serif'],
+        comforter: ['Comforter', 'sans-serif']
       },
       colors: {
         transparent: 'transparent',
         black: '#000',
         white: '#fff',
-        /*  ...colors, */
         gray: {
           50: '#F1F0F4',
           100: '#E3E2E9',
@@ -77,6 +76,14 @@ module.exports = {
         }
       },
     },
+  },
+  variants: {
+    extend: {
+      ringColor: ['active', 'hover'],
+      ringWidth: ['active', 'hover'],
+      backgroundColor: ['active'],
+      textColor: ['active', 'disabled'],
+    }
   },
   plugins: [],
 }
