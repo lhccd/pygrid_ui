@@ -2,13 +2,13 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import tw, { styled } from 'twin.macro'
 import { useForm } from "react-hook-form"
-import React from "react";
+import React, {useState} from "react";
 import Tag from '../components/Tag'
 import Textfield from '../components/Textfield'
 import axios from "axios"
 
 const Background = styled.div`
-    background-image: url("../signup_background_image.png");
+    background-image: url("../public/signup_background_image.png");
     height: 100vh;
     background-position: right top; 
     background-repeat: no-repeat; 
@@ -27,16 +27,11 @@ const DomainBody = [
 ]
 
 export default function Signup() {
+  const router = useRouter();
   const { register, handleSubmit, errors, reset } = useForm();
     const router = useRouter()
 
     async function onSubmitForm(values){
-        // const formData = new FormData
-        // formData.append("email", values.email)
-        // formData.append("password", values.password)
-        // formData.append("full_name", values.full_name)
-        // formData.append("website", values.website)
-        // formData.append("institution", values.institution)
         let config = {
             method: 'post', 
             url: 'http://localhost/api/v1/users/open', 
@@ -54,11 +49,15 @@ export default function Signup() {
   async function onSubmitForm2(values){
     let config = {
       method: 'post', 
-      url: 'http://localhost/api/v1/login/access-token', 
-      headers: {
-        'Content-Type': 'application/json'
+      url: 'http://localhost/api/v1/users/open',
+      //headers: {
+      //  'Content-Type': 'application/json'
+      //},
+      body: {
+          "password": values.password,
+          "email": values.email,
+          "full_name": values.full_name,
       },
-      data: values, 
     }
     try{
       const response = await axios(config);
@@ -67,49 +66,6 @@ export default function Signup() {
       console.error(err);
     }
   }
-
-  // async function onSubmitForm(values){
-  //   console.log(values)
-  //   const registerForm = {
-  //     username: values.username, 
-  //     password: values.password
-  //   }
-  //   const response = await fetch('http://localhost/api/v1/login/access-token',
-  //   {
-  //     method: 'POST',
-  //     body: registerForm
-  //   })
-  //   const data = await response.json()
-  //   console.log(data)
-  // }
-/*     const registerUser = event => {
-        event.preventDefault()
-        console.log(this.state)
-    }
-
-    const [state, setState] = React.useState({
-      email: "",
-      message: "",
-      file: null
-    });
-  
-    function handleChange(e) {
-      if (e.target.files) {
-        setState({ ...state, [e.target.name]: e.target.files[0] });
-      } else {
-        setState({ ...state, [e.target.name]: e.target.value });
-      }
-    }
-  
-    async function handleSubmit(e) {
-      e.preventDefault();
-  
-      let formData = new FormData();
-  
-      for (let [key, value] of Object.entries(state)) {
-        formData.append(key, value);
-      }
-    } */
 
     return(
         <Background>
@@ -156,107 +112,7 @@ export default function Signup() {
                           </div>
                         </div>
                     </div>
-                    {/* <div id="login-form" tw="flex-col h-4/6 col-start-7 col-end-12 bg-white p-5 m-3 shadow-lg text-gray-500 content-center text-lg rounded">
-                        <form onSubmit={handleSubmit(onSubmitForm)} tw="grid grid-cols-4 text-sm text-center font-bold p-6 rounded-lg gap-4 ">
-                            <div tw="col-span-4 my-3 text-left text-gray-800">
-                                <p tw="text-2xl">Apply for an Account</p>
-                            </div>
-                            <div tw="col-span-2 text-left ">
-                              <label tw="block my-2" htmlFor="fullname">Full Name</label>
-                              <input 
-                                tw="block p-3 border border-gray-300 rounded-lg w-full" 
-                                id="fullname" 
-                                name="fullname" 
-                                type="text" 
-                                placeholder="Jane Doe" 
-                                autoComplete="on" 
-                                {...register("fullname", { required: true, message: 'You must enter a name'})}
-                              />
-                            </div>
-                            <div tw="col-span-2 text-left">
-                              <label tw="block my-2"  htmlFor="company">Company/Institution (optional)</label>
-                              <input 
-                                tw="block p-3 border border-gray-300 rounded-lg w-full" 
-                                id="company" 
-                                name="company" 
-                                type="text" 
-                                placeholder="ABC University" 
-                                autoComplete="on" 
-                                {...register(
-                                  "company", 
-                                  { 
-                                    required: true 
-                                  })}
-                              />
-                            </div>
-                            <div tw="col-span-4 text-left">
-                              <label tw="block my-2" htmlFor="email">Email</label>
-                              <input 
-                                tw="block p-3 border border-gray-300 rounded-lg w-full" 
-                                id="email" 
-                                name="email" 
-                                type="email" 
-                                placeholder="abc@university.edu" 
-                                autoComplete="on" 
-                                {...register("email", { required: true })}
-                              />
-                            </div>
-                            <div tw="col-span-2 block text-left">
-                              <label tw="block my-2" htmlFor="pw">Password</label>  
-                              <input 
-                                tw="block p-3 border border-gray-300 rounded-lg w-full"  
-                                id="pw" 
-                                name="pw" 
-                                type="password" 
-                                placeholder="Text here" 
-                                autoComplete="on" 
-                                {...register("pw", { required: true })}
-                              />
-                            </div>
-                            <div tw="col-span-2 block text-left">
-                              <label tw="block my-2" htmlFor="confirmpw">Confirm Password</label>
-                              <input 
-                                tw="block p-3 border border-gray-300 rounded-lg w-full" 
-                                id="confirmpw" 
-                                name="confirmpw" 
-                                type="password" 
-                                placeholder="Text here" 
-                                autoComplete="on"
-                                {...register("confirmpw", { required: true })}
-                              />
-                            </div>
-                            <div tw="col-span-4 block text-left">
-                              <label tw="block my-2" htmlFor="website">Website/Profile</label>
-                              <input 
-                                tw="block p-3 border border-gray-300 rounded-lg w-full" 
-                                id="website" 
-                                name="website" 
-                                type="text" 
-                                placeholder="This can help a domain owner vett your application" 
-                                autoComplete="on"
-                                {...register("website", { required: true })}
-                              />
-                            </div>
-                            <div tw="col-span-4 block text-left">
-                              <label tw="block my-2" htmlFor="website">Website/Profile</label>
-                              <Textfield 
-                                tw="block p-3 border border-gray-300 rounded-lg w-full" 
-                                id="website" 
-                                name="website" 
-                                type="text" 
-                                placeholder="This can help a domain owner vett your application" 
-                                autoComplete="on"
-                                {...register("website", { required: true })}
-                              />
-                            </div>
-                            <button tw="col-start-2 col-end-4 bg-primary-500 rounded text-white text-center mx-6 px-3 py-2 my-5" type="submit">Submit Application</button>
-                            <p tw="col-span-4 text-center text-gray-600 text-sm font-normal">Have an account already?
-                                  <a href="/login" tw="col-span-4 text-center text-blue-500"> Login here</a>
-                            </p> 
-
-                        </form>
-                    </div> */}
-                    <div id="login-form" tw="flex-col h-4/6 col-start-7 col-end-12 bg-white p-5 m-3 shadow-lg text-gray-500 content-center text-lg rounded">
+                    <div id="login-form" tw="flex-col col-start-7 col-end-12 bg-white p-5 m-3 shadow-lg text-gray-500 content-center text-lg rounded">
                         <form onSubmit={handleSubmit(onSubmitForm)} tw="grid grid-cols-4 text-sm text-center font-bold p-6 rounded-lg gap-4 ">
                             <div tw="col-span-4 my-3 text-left text-gray-800">
                                 <p tw="text-2xl">Apply for an Account</p>
@@ -285,7 +141,7 @@ export default function Signup() {
                                 {...register(
                                   "institution", 
                                   { 
-                                    required: true 
+                                    required: false
                                   })}
                               />
                             </div>
@@ -332,11 +188,44 @@ export default function Signup() {
                                 focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
                                 name="website" 
                                 type="text" 
-                                placeholder="This can help a domain owner vett your application" 
+                                placeholder="This can help a domain owner vett your application"
                                 autoComplete="on"
                                 {...register("website", { required: false })}
                               />
                             </div>
+                            {(()=> {if (DAARequired) {
+                                return (
+                                    <div tw="col-span-4 block text-left">
+                                        <label tw="block my-2" htmlFor="daa">Upload Signed</label>
+                                        <p>This domain requires a Data Access Agreement (DAA) to be signed before an
+                                            account can be made. Please download the agreement below and upload a
+                                            signed version when you are ready to apply.</p>
+                                        {DAAUploaded ?
+                                            <div>
+                                                <button
+                                                    tw="col-start-2 col-end-4 text-primary-500 rounded bg-white text-center mx-6 px-3 py-2 my-5">
+                                                    Replace File
+                                                </button>
+                                                <button
+                                                    tw="col-start-2 col-end-4 text-primary-500 rounded bg-white text-center mx-6 px-3 py-2 my-5">
+                                                    Download Agreement
+                                                </button>
+                                            </div>
+                                            :
+                                            <div>
+                                                <button
+                                                    tw="col-start-2 col-end-4 text-primary-500 rounded bg-white text-center mx-6 px-3 py-2 my-5">
+                                                    Upload File
+                                                </button>
+                                                <button
+                                                    tw="col-start-2 col-end-4 text-primary-500 rounded bg-white text-center mx-6 px-3 py-2 my-5">
+                                                    Download agreement
+                                                </button>
+                                            </div>
+                                        }
+                                    </div>
+                                )} else {return ""}
+                            })}
                             <button tw="col-start-2 col-end-4 bg-primary-500 rounded text-white text-center mx-6 px-3 py-2 my-5" type="submit">Submit Application</button>
                             <p tw="col-span-4 text-center text-gray-600 text-sm font-normal">Have an account already?
                                   <a href="/login" tw="col-span-4 text-center text-blue-500"> Login here</a>
