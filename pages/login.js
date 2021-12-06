@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import { useForm } from "react-hook-form"
+import DomainConnectionStatus from '../components/DomainConnectionStatus'
 import tw from 'twin.macro'
 import Tag from '../components/Tag'
 import { useState } from 'react'
@@ -93,15 +94,31 @@ export default function Login() {
                     </div>
                     </div>
                     <div id="login-form" tw="col-start-7 col-end-12 bg-white p-5 m-10 mt-40 h-96 shadow-lg text-gray-800 text-center text-lg rounded">
-                        <div tw="m-3">
+                        <div tw="mx-3">
                             <p tw="text-2xl">Welcome Back</p>
-                            <p>Domain Online</p>
+                            <div tw="inline-block"><DomainConnectionStatus/></div>
                         </div>
                         <form tw="grid grid-cols-4 flex-grow text-gray-600 text-sm text-center p-6 rounded-lg gap-2" onSubmit={handleSubmit(onSubmitForm)}>
-                            <label tw="col-span-4 text-left" htmlFor="email">Email</label>
-                            <input tw="col-span-4 text-left p-3 border border-gray-300 rounded-lg" name="username" type="email" placeholder="abc@university.edu" autoComplete="on"  {...register("username", { required: true, message: 'You must enter an email'})} />
-                            <label tw="col-span-4 text-left" htmlFor="name">Password</label>
-                            <input tw="col-span-4 text-left p-3 border border-gray-300 rounded-lg" name="password" type="password" placeholder="Text here" autoComplete="on"  {...register("password", { required: true})} />
+                            <label tw="col-span-4 text-left" htmlFor="email">Email<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
+                            <input 
+                                tw="col-span-4 text-left p-3 border border-gray-300 rounded-lg  
+                                focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800 " 
+                                name="username" 
+                                type="email" 
+                                placeholder="abc@university.edu" 
+                                autoComplete="on"  
+                                {...register("username", { required: true, message: 'You must enter an email'})} 
+                            />
+                            <label tw="col-span-4 text-left" htmlFor="name">Password<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
+                            <input 
+                                tw="col-span-4 text-left p-3 border border-gray-300 rounded-lg
+                                focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800" 
+                                name="password" 
+                                type="password" 
+                                placeholder="Text here" 
+                                autoComplete="on"  
+                                {...register("password", { required: true})} 
+                            />
                             <p tw="col-span-4 text-center text-gray-600 text-sm">Don't have an account yet?
                                 <a href="/signup" tw="col-span-4 text-center text-blue-500"> Apply for an account here</a>
                             </p> 

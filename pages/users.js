@@ -1,6 +1,7 @@
 import loadCustomRoutes from 'next/dist/lib/load-custom-routes'
 import Layout from '../components/Layout'
 import Avatar from '../components/Avatar'
+import DomainConnectionStatus from '../components/DomainConnectionStatus'
 import tw from 'twin.macro'
 import {faUsers, faCheck, faLemon, faHandsHelping, faChevronDown, faUserCircle, faThLarge} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
@@ -8,13 +9,11 @@ import Link from 'next/link'
 
 
 export const getStaticProps = async () => {
-
     const res = await fetch('https://jsonplaceholder.typicode.com/users');
     const data = await res.json();
     return {
         props: { ninjas: data }
     } 
-
 } 
 
 const navItems = [
@@ -109,7 +108,7 @@ export default function Users({ ninjas }){
                     </ul>
                 </nav>
                 <footer tw="text-lg space-y-10">
-                    <div tw="px-6">Domain Online</div>
+                    <DomainConnectionStatus/>
                     <div tw="flex items-center space-x-3 px-6 hover:bg-gray-500">
                         <div>
                             <FontAwesomeIcon icon={faUserCircle} size="sm"/>
@@ -119,11 +118,23 @@ export default function Users({ ninjas }){
                 </footer>
             </div>
             <div tw="flex-1 p-10 text-2xl font-bold">
-                <div id="grid" tw="grid grid-cols-12 gap-2 px-10">
+                <div id="grid" tw="grid grid-cols-12 grid-rows-6 gap-2 px-10 m-5">
                     {ninjas.map(ninja => (
-                        <div key={ninja.id}>
-                            <div key={ninja.id} tw="bg-primary-200 text-white p-3 rounded-2xl">{ninja.name}</div>
-                            <div key={ninja.phone} tw="bg-primary-200 text-white p-3 rounded-2xl">{ninja.address.city}</div>
+                        <div key={ninja.id} tw="bg-primary-200 col-span-3 text-white p-3 rounded-2xl">
+                            <div key={ninja.id} >{ninja.name}</div>
+                            <div key={ninja.phone} >{ninja.address.city}</div>
+                        </div>
+                    ))}
+                    {ninjas.map(ninja => (
+                        <div key={ninja.id} tw="bg-primary-200 row-span-3 col-span-2 text-white p-3 rounded-2xl">
+                            <div key={ninja.id} >{ninja.name}</div>
+                            <div key={ninja.phone} >{ninja.address.city}</div>
+                        </div>
+                    ))}
+                    {ninjas.map(ninja => (
+                        <div key={ninja.id} tw="bg-primary-200 col-span-6 text-white p-3 rounded-2xl">
+                            <div key={ninja.id} >{ninja.name}</div>
+                            <div key={ninja.phone} >{ninja.address.city}</div>
                         </div>
                     ))}
                 </div>
