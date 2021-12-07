@@ -1,13 +1,13 @@
-import Grid from './Grid'
-import SidebarNav from './SidebarNav'
-import Page from './Page'
+import {Grid} from './Grid'
+import {SidebarNav} from './SidebarNav'
+import {Page} from './Page'
 import tw from 'twin.macro'
 
-export default function Layout({children}){
+export function Layout({children}){
     return(
-        <div tw="min-h-screen flex">
+        <div tw="flex">
             <SidebarNav/>
-            <main>
+            <main tw="relative">
                 <Page>
                     <Grid>{children}</Grid>
                 </Page>

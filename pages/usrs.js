@@ -1,28 +1,9 @@
-import { useState } from 'react'
+import { Layout } from '../components/Layout'
 
-function CommentsPage(){
-    const [comments, setComments] = useState([])
-    const [state, setState] = useState(initialState)
-
-    const submitComment = async () => {
-        const response = await fetch('/api/comments', {
-            method: 'POST',
-            body: JSON.stringify({comment}), 
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-        const data = await response.json()
-        setComments(data)
-    }
+export default function Usrs() {
     return(
-        <>
-            <input 
-                type='text'
-                value={comment}
-                onChange={(e)=>setComment(e.target.value)}
-            />
-            <button onClick={submitComment}>Submit comment</button>
-        </>
+        <Layout>
+            <div>HELLO WORLD!</div>
+        </Layout>
     )
 }
