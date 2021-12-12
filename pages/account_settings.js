@@ -1,7 +1,11 @@
 import { useForm } from "react-hook-form"
 import tw from 'twin.macro'
+import {useCallback, useState} from "react";
 
 export default function AccountSettings() {
+    const [showModal, setShowModal] = useState(false);
+    const [userIsDomainOwner, setUserIsDomainOwner] = useState(false);
+
     return(
         <div>
             <div id="app" tw="flex flex-col h-screen w-screen py-10">
@@ -61,14 +65,86 @@ export default function AccountSettings() {
                                     If you are the domain owner the domain node will be deleted as well and will be closed to all users.
                                     To transfer ownership of a domain node before deleting your account you can follow the instructions here.
                                 </p>
-                                <div id="delete-button" tw="col-start-1 text-center mt-10 inline-flex content-start whitespace-nowrap">
-                                    <button tw="bg-error-500 rounded text-white font-bold py-2 px-4 mr-6" type="submit">Delete Account</button>
+                                <div id="delete-button"
+                                     tw="col-start-1 text-center mt-10 inline-flex content-start whitespace-nowrap"
+                                >
+                                    <button tw="bg-error-500 rounded text-white font-bold py-2 px-4 mr-6" type="submit"
+                                            onClick={() => setShowModal(true)}
+                                    >Delete Account</button>
                                 </div>
+
+
+                                {showModal ? (
+                                    <>
+                                        <div
+                                            tw="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
+                                        >
+                                            <div tw="relative w-auto my-6 mx-auto max-w-3xl">
+                                                {/*content*/}
+                                                <div tw="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                                                    {/*header*/}
+                                                    <div tw="flex items-start justify-between p-5 border-b border-solid border-blue-200 rounded-t">
+                                                        <h3 tw="text-3xl font-semibold">
+                                                            Are you Sure You Want to Delete Your Account?
+                                                        </h3>
+                                                    </div>
+                                                    {/*body*/}
+                                                    <div tw="relative p-6 flex-auto">
+                                                        {userIsDomainOwner ?
+                                                            <p tw="my-4 text-blue-500 text-lg leading-relaxed">
+                                                                Because you are the domain owner, the domain node along with all uploaded datasets, user accounts,
+                                                                and requests will be deleted. All network memberships will also be removed. If you would like to keep
+                                                                this domain node but no longer want to be an owner press “cancel” and follow the instructions here to
+                                                                transfer ownership of your domain node.
+                                                            </p>
+                                                            :
+                                                            <p tw="my-4 text-blue-500 text-lg leading-relaxed">
+                                                                If deleted all uploaded documents will be deleted and all open requests will be closed. Keep in mind
+                                                                any legal agreements pertaining to the use of your data requests will still apply according to the
+                                                                terms of the agreement signed. If you would like to proceed press “Delete Account” if not you can click
+                                                                “Cancel”.
+                                                            </p>
+                                                        }
+                                                    </div>
+                                                    {/*footer*/}
+                                                    <div tw="flex items-center justify-end p-6 border-t border-solid border-blue-200 rounded-b">
+                                                        {userIsDomainOwner ?
+                                                            <button
+                                                                tw="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                                                type="button"
+                                                                onClick={() => setShowModal(false)}
+                                                            >
+                                                                Delete Node
+                                                            </button>
+                                                        :
+                                                            <button
+                                                                tw="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                                                type="button"
+                                                                onClick={() => setShowModal(false)}
+                                                            >
+                                                                Delete Account
+                                                            </button>
+                                                        }
+                                                        <button
+                                                            tw="text-red-500 font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                                            type="button"
+                                                            onClick={() => setShowModal(false)}
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : null}
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     )
 }
