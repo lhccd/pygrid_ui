@@ -55,12 +55,14 @@ const SidebarNav = () => {
             </nav>
             <footer tw="text-lg space-y-10">
                 <DomainConnectionStatus />
-                <div tw="flex items-center space-x-3 px-6 hover:bg-gray-500">
-                    <div>
-                        <FontAwesomeIcon icon={faUserCircle} size="sm" />
+                <Link href="/account_settings">
+                    <div tw="flex items-center space-x-3 px-6 hover:bg-gray-500">
+                        <div>
+                            <FontAwesomeIcon icon={faUserCircle} size="sm" />
+                        </div>
+                        <p tw="">Kyoko Eng</p>
                     </div>
-                    <p tw="">Kyoko Eng</p>
-                </div>
+                </Link>
             </footer>
         </aside>
     )

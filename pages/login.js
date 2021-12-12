@@ -93,7 +93,7 @@ export default function Login() {
                         </div>
                     </div>
                     </div>
-                    <div id="login-form" tw="col-start-7 col-end-12 bg-white p-5 m-10 mt-40 h-96 shadow-lg text-gray-800 text-center text-lg rounded">
+                    <div id="login-form" tw="col-start-7 col-end-12 bg-white p-5 m-10 mt-40 h-auto shadow-lg text-gray-800 text-center text-lg rounded">
                         <div tw="mx-3">
                             <p tw="text-2xl">Welcome Back</p>
                             <div tw="inline-block"><DomainConnectionStatus/></div>
