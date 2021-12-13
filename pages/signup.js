@@ -2,11 +2,12 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import tw, { styled } from 'twin.macro'
 import { useForm } from "react-hook-form"
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import Tag from '../components/Tag'
 import Textfield from '../components/Textfield'
 import axios from "axios"
 import {faFontAwesome} from "@fortawesome/free-brands-svg-icons";
+import fileSaver from "file-saver";
 
 const Background = styled.div`
     background-image: url("../public/signup_background_image.png");
@@ -32,24 +33,53 @@ export default function Signup() {
   const { register, handleSubmit, errors, reset } = useForm();
   const [DAARequired, setDAARequired] = useState(true);
   const [DAAUploaded, setDAAUploaded] = useState(false);
+  const [daa, setDaa] = useState(null);
 
-  async function onSubmitForm(values) {
-    console.log(values);
-    axios.post('http://localhost/api/v1/users/open', {
-      "password": values.password,
-      "email": values.email,
-      "full_name": values.full_name,
-      "institution": values.institution,
-      "website": values.website
-    })
-      .then(function (response) {
-        console.log(response);
-        router.push('/login')
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+
+  useEffect(() => {
+    console.log("useEffect", daa);
+  }, [daa]);
+
+  async function onSubmitForm(values){
+    console.log(values.daa_pdf[0])
+    const formData = new FormData
+    formData.append("email", values.email)
+    formData.append("full_name", values.full_name)
+    formData.append( "institution", values.institution)
+    formData.append("password", values.password)
+    formData.append("website", values.website)
+    formData.append("daa_pdf", values.daa_pdf[0])
+    let config = {
+      method: 'post',
+      url: 'http://localhost/api/v1/users/open-daa',
+      data: formData
+    }
+    try{
+      console.log("config data: ", values)
+      const response = await axios(config)
+      router.push('/login')
+      console.log(response);
+    }catch (err){
+      console.error(err);
+    }
   }
+
+  const onUploadDaa = (e) => {
+    setDAAUploaded(true);
+    let files = e.target.files;
+    setDaa(files[0]);
+  }
+
+  const onXClick = () => {
+    setDAAUploaded(false);
+    setDaa(null);
+  }
+
+  const onDAAClick = () => {
+    fileSaver.saveAs(
+        daa
+    );
+  };
 
   return (
     <Background>
@@ -180,7 +210,7 @@ export default function Signup() {
               {DAARequired
                   ? [
                     <div tw="col-span-4 block text-left">
-                      <label tw="block my-2" htmlFor="daa">Upload Signed</label>
+                      <label tw="block my-2">Upload Signed</label>
                       <p>This domain requires a Data Access Agreement (DAA) to be signed before an
                         account can be made. Please download the agreement below and upload a
                         signed version when you are ready to apply.</p>
@@ -188,32 +218,46 @@ export default function Signup() {
                           ?
                           <div>
                             <div tw="w-2/3 flex justify-between bg-gray-100 text-black my-4 py-1">
-                              <a tw="mx-2 underline">
-                                hi
-                              </a>
-                              <button tw="font-bold mx-2">
+                              <button tw="mx-2 underline" onClick={onDAAClick}>
+                                {daa.name}
+                              </button>
+                              <button tw="font-bold mx-2" onClick={onXClick}>
                                 X
                               </button>
                             </div>
                             <div>
+                              <input tw="col-start-2 col-end-4 text-primary-500 border-primary-500 rounded bg-white text-center font-bold mx-6 px-3 py-2 my-5"
+                                     type="button"
+                                     value="Replace File"
+                                     onClick={() => document.getElementById('daa_pdf_replace').click()}/>
+                              <input tw="hidden"
+                                     id="daa_pdf_replace"
+                                     name="daa_pdf_replace"
+                                     type='file'
+                                     onInput={onUploadDaa}
+                                     {...register("daa_pdf", { required: false })}
+                              />
                               <button
-                                  tw="col-start-2 col-end-4 text-primary-500 rounded bg-white text-center mx-6 px-3 py-2 my-5">
-                                Replace File
-                              </button>
-                              <button
-                                  tw="col-start-2 col-end-4 text-primary-500 rounded bg-white text-center mx-6 px-3 py-2 my-5">
+                                  tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 py-2 my-5">
                                 Download Agreement
                               </button>
                             </div>
                           </div>
                           :
                           <div>
+                            <input tw="col-start-2 col-end-4 text-primary-500 border-primary-500 rounded bg-white text-center font-bold mx-6 px-3 py-2 my-5"
+                                   type="button"
+                                   value="Upload File"
+                                   onClick={() => document.getElementById('daa_pdf').click()}/>
+                            <input tw="hidden"
+                                   id="daa_pdf"
+                                   name="daa_pdf"
+                                   type='file'
+                                   onInput={onUploadDaa}
+                                   {...register("daa_pdf", { required: true })}
+                            />
                             <button
-                                tw="col-start-2 col-end-4 text-primary-500 rounded bg-white text-center font-bold mx-6 px-3 my-5">
-                              Upload File
-                            </button>
-                            <button
-                                tw="col-start-2 col-end-4 text-primary-500 rounded bg-white text-center font-bold mx-6 px-3 my-5">
+                                tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 my-5">
                               Download agreement
                             </button>
                           </div>
