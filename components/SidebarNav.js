@@ -10,9 +10,9 @@ const SidebarNav = () => {
             <DomainInfo tw="p-6" />
             <div tw="my-10"></div>
             <nav tw="text-lg mb-auto">
-                <ul tw="space-y-8">
+                <ul tw="">
                     <Link href="/dashboard">
-                        <div tw="flex items-center space-x-3 px-6 hover:bg-gray-500">
+                        <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
                             <div tw="p-2">
                                 <FontAwesomeIcon size="sm" icon={faThLarge} />
                             </div>
@@ -20,7 +20,7 @@ const SidebarNav = () => {
                         </div>
                     </Link>
                     <Link href="/users">
-                        <div tw="flex items-center space-x-3 px-6 hover:bg-gray-500">
+                        <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
                             <div tw="p-2">
                                 <FontAwesomeIcon size="sm" icon={faUsers} />
                             </div>
@@ -28,7 +28,7 @@ const SidebarNav = () => {
                         </div>
                     </Link>
                     <Link href="/permissions">
-                        <div tw="flex items-center space-x-3 px-6 hover:bg-gray-500">
+                        <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
                             <div tw="p-2">
                                 <FontAwesomeIcon size="sm" icon={faCheck} />
                             </div>
@@ -36,7 +36,7 @@ const SidebarNav = () => {
                         </div>
                     </Link>
                     <Link href="/requests">
-                        <div tw="flex items-center space-x-3 px-6 hover:bg-gray-500">
+                        <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
                             <div tw="p-2">
                                 <FontAwesomeIcon size="sm" icon={faLemon} />
                             </div>
@@ -44,7 +44,7 @@ const SidebarNav = () => {
                         </div>
                     </Link>
                     <Link href="/networks">
-                        <div tw="flex items-center space-x-3 px-6 hover:bg-gray-500">
+                        <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
                             <div tw="p-2">
                                 <FontAwesomeIcon size="sm" icon={faHandsHelping} />
                             </div>
