@@ -10,7 +10,7 @@ import {faFontAwesome} from "@fortawesome/free-brands-svg-icons";
 import fileSaver from "file-saver";
 
 const Background = styled.div`
-    background-image: url("../public/signup_background_image.png");
+    background-image: url("../signup_background_image.png");
     height: 100vh;
     background-position: right top; 
     background-repeat: no-repeat; 
@@ -121,7 +121,7 @@ export default function Signup() {
               </div>
             </div>
           </div>
-          <div id="login-form" tw="flex-col col-start-7 col-end-12 bg-white p-5 m-3 shadow-lg text-gray-500 content-center text-lg rounded">
+          <div id="login-form" tw="flex-col col-start-7 col-end-12 bg-white p-5 m-3 shadow-lg text-gray-500 content-center text-lg rounded h-2/3">
             <form onSubmit={handleSubmit(onSubmitForm)} tw="grid grid-cols-4 text-sm text-center font-bold p-6 rounded-lg gap-4 ">
               <div tw="col-span-4 my-3 text-left text-gray-800">
                 <p tw="text-2xl">Apply for an Account</p>
