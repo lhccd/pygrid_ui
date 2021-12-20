@@ -3,6 +3,7 @@ import tw from 'twin.macro'
 import {useCallback, useEffect, useState} from "react";
 import axios from "axios";
 import {useRouter} from "next/router";
+import {SidebarNav} from "../components/SidebarNav";
 
 export default function AccountSettings() {
     const router = useRouter();
@@ -145,12 +146,10 @@ export default function AccountSettings() {
 
     return(
         <div>
-            <div id="app" tw="flex flex-col h-screen w-screen py-10">
-                <div id="sidebar-here">
+            <div id="app" tw="flex h-screen w-screen">
+                <SidebarNav />
 
-                </div>
-
-                <div id="settings" tw="grid grid-cols-12 flex-grow text-left ml-6 text-lg">
+                <div id="settings" tw="grid grid-cols-12 flex-grow text-left ml-6 py-10 text-lg">
                     <div id="header">
 
                     </div>
