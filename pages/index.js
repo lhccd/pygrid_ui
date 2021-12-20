@@ -21,8 +21,8 @@ const IndexPage = () => (
         <a>SIGNUP</a>
       </Link>
       <Button variant="primary">Submit</Button>
-      <Button variant="secondary">Cancel</Button>
-      <Button isSmall>Close</Button>
+      <Button variant="gray">Cancel</Button>
+      <Button isSmall variant="primary">Close</Button>
     </div>
     <img src="/static/logo.png" alt="logo" tw="h-32 self-center object-cover absolute inset-0" />
   </div>

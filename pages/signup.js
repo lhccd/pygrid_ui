@@ -10,7 +10,7 @@ import {faFontAwesome} from "@fortawesome/free-brands-svg-icons";
 import fileSaver from "file-saver";
 
 const Background = styled.div`
-    background-image: url("../public/signup_background_image.png");
+    background-image: url("../signup_background_image.png");
     height: 100vh;
     background-position: right top; 
     background-repeat: no-repeat; 

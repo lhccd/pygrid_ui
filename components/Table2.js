@@ -2,7 +2,6 @@ import tw from 'twin.macro'
 
 const Table2 = () => (
     <div tw="flex flex-col w-full border-b border-gray-200 shadow py-2 -my-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        <div tw="inline-block min-w-full overflow-hidden align-middle border-b border-gray-200 shadow sm:rounded-lg">
             <table tw="min-w-full">
                 <thead>
                     <tr>
@@ -994,7 +993,6 @@ const Table2 = () => (
                 </tbody>
             </table>
         </div>
-    </div>
 )
 
 export { Table2 }

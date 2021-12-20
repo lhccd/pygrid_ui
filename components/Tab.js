@@ -3,8 +3,9 @@ import tw, {styled} from 'twin.macro';
 import { Table } from './Table';
 import { Table2 } from './Table2';
 import Modal from '../components/Modal';
-import {faPlus, faUserPlus} from '@fortawesome/free-solid-svg-icons'
+import {faPlus, faUserPlus, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import ListBox from './ListBox';
 
 // const styles = {
 //     container: ({ hasBg }) => [
@@ -32,13 +33,12 @@ const Content = styled.div(({ state }) => [
     (state === 3) && tw`bg-gray-800 block`
 
 ])
-
-function Active(){
-    const [showModal, setShowModal] = useState(false);
+function Pending(){
     return (
         <>
-            <div tw="col-span-11 mt-10 mb-10">
-                <p tw="flex justify-between px-3 py-2 bg-primary-100 border-t-4 border-primary-500 text-gray-800 cursor-pointer">Active users are users who you have manually created or users who have had their account applications approved</p>
+            <div tw="col-span-11 mt-10 mb-10 col-span-11 mt-10 mb-10 flex items-center space-x-3 px-3 py-2 bg-primary-100 border-t-4 border-primary-500">
+                <FontAwesomeIcon icon={faInfoCircle} size="2x" tw=""/>
+                <p tw="text-gray-800 cursor-pointer">Pending users are users who have applied to your domain but who are not yet authorized to perform data requests. You can review their uploaded Data Access Agreements(DAA) below and choose to accept or deny their account applications.</p>
             </div>
             <div tw="col-span-full">
                 <div tw="flex justify-between">
@@ -49,12 +49,37 @@ function Active(){
                             type="text"
                             placeholder="Search"
                         />
+                    </div>
+                    <button tw="bg-gray-800 rounded text-primary-200 text-center my-6 px-3 py-2 font-bold" onClick={() => setShowModal(true)}><FontAwesomeIcon icon={faPlus} tw="mr-3"/>Create User</button>
+                </div>
+            </div>
+        </>
+    )
+}
+function Active(){
+    const [showModal, setShowModal] = useState(false);
+    return (
+        <>
+            <div tw="col-span-11 mt-10 mb-10 flex items-center space-x-3 px-3 py-2 bg-primary-100 border-t-4 border-primary-500">
+                <FontAwesomeIcon icon={faInfoCircle} size="2x" tw=""/>
+                <p tw="text-gray-800 cursor-pointer">Active users are users who you have manually created or users who have had their account applications approved</p>
+            </div>
+            <div tw="col-span-full">
+                <div tw="flex justify-between">
+                    <div tw="my-6 space-x-4">
                         <input
                             tw="p-3 border border-gray-300 rounded-lg focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
                             name="search"
                             type="text"
-                            placeholder="Role"
+                            placeholder="Search"
                         />
+                        {/* <input
+                            tw="p-3 border border-gray-300 rounded-lg focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                            name="search"
+                            type="text"
+                            placeholder="Role"
+                        /> */}
+                        <ListBox/>
                     </div>
                     <button tw="bg-gray-800 rounded text-primary-200 text-center my-6 px-3 py-2 font-bold" onClick={() => setShowModal(true)}><FontAwesomeIcon icon={faPlus} tw="mr-3"/>Create User</button>
                 </div>
@@ -217,6 +242,7 @@ export function Tab(){
                     css={[tw`bg-white p-5 w-full h-full hidden`,
                     (toggleState === 2) && tw`bg-white block`,]}
                 >
+                    <Pending/>
                     <h2>Content 2</h2>
                     <hr />
                     <p>
