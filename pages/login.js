@@ -6,6 +6,7 @@ import Tag from '../components/Tag'
 import { useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
+import {login} from '../lib/auth'
 
 const Background = styled.div`
     background-image: url("../signup_background_image.png");
@@ -29,24 +30,33 @@ export default function Login() {
     const { register, handleSubmit, errors, reset } = useForm();
     const router = useRouter()
 
-    async function onSubmitForm(values){
-        const formData = new FormData
-        formData.append("username", values.username)
-        formData.append("password", values.password)
-        let config = {
-            method: 'post', 
-            url: 'http://localhost/api/v1/login/access-token', 
-            data: formData
-        }
-        try{
-            console.log("config data: ", values)
-            const response = await axios(config) 
+    const onSubmitForm = async (values) => {
+        try {
+            console.log("values from loginpage", values)
+            await login(values)
             router.push('/users')
-            console.log(response); 
-        }catch (err){
-            console.error(err);
+        }catch (err) {
+            console.error(err)
         }
     }
+    // async function onSubmitForm(values){
+    //     const formData = new FormData
+    //     formData.append("username", values.username)
+    //     formData.append("password", values.password)
+    //     let config = {
+    //         method: 'post', 
+    //         url: 'http://localhost/api/v1/login/access-token', 
+    //         data: formData
+    //     }
+    //     try{
+    //         console.log("config data: ", values)
+    //         const response = await axios(config) 
+    //         router.push('/users')
+    //         console.log(response); 
+    //     }catch (err){
+    //         console.error(err);
+    //     }
+    // }
 
     return(
         <Background>
@@ -93,7 +103,7 @@ export default function Login() {
                         </div>
                     </div>
                     </div>
-                    <div id="login-form" tw="col-start-7 col-end-12 bg-white p-5 m-10 mt-40 h-auto shadow-lg text-gray-800 text-center text-lg rounded">
+                    <div id="login-form" tw="col-start-7 col-end-12 bg-white p-5 m-10 mt-40 mb-40 h-auto max-h-96 max-w-xl shadow-lg text-gray-800 text-center text-lg rounded">
                         <div tw="mx-3">
                             <p tw="text-2xl">Welcome Back</p>
                             <div tw="inline-block"><DomainConnectionStatus/></div>

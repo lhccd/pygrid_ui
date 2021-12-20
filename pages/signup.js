@@ -121,7 +121,7 @@ export default function Signup() {
               </div>
             </div>
           </div>
-          <div id="login-form" tw="flex-col col-start-7 col-end-12 bg-white p-5 m-3 shadow-lg text-gray-500 content-center text-lg rounded h-2/3">
+          <div id="login-form" tw="flex-col col-start-7 col-end-12 bg-white p-5 m-3 shadow-lg text-gray-500 content-center text-lg rounded h-auto">
             <form onSubmit={handleSubmit(onSubmitForm)} tw="grid grid-cols-4 text-sm text-center font-bold p-6 rounded-lg gap-4 ">
               <div tw="col-span-4 my-3 text-left text-gray-800">
                 <p tw="text-2xl">Apply for an Account</p>
@@ -265,7 +265,6 @@ export default function Signup() {
               <p tw="col-span-4 text-center text-gray-600 text-sm font-normal">Have an account already?
                 <a href="/login" tw="col-span-4 text-center text-blue-500"> Login here</a>
               </p>
-
             </form>
           </div>
         </div>

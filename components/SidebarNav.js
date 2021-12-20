@@ -2,6 +2,7 @@ import tw from 'twin.macro'
 import {faUsers, faCheck, faLemon, faHandsHelping, faChevronDown, faUserCircle, faThLarge} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import Link from 'next/link'
+import {logout} from '../lib/auth'
 import DomainConnectionStatus from '../components/DomainConnectionStatus'
 
 const SidebarNav = () => {
@@ -53,10 +54,12 @@ const SidebarNav = () => {
                     </Link>
                 </ul>
             </nav>
-            <footer tw="text-lg space-y-10">
-                <DomainConnectionStatus />
+            <footer tw="text-lg">
+                <div tw="px-3">
+                    <DomainConnectionStatus/>
+                </div>
                 <Link href="/account_settings">
-                    <div tw="flex items-center space-x-3 px-6 hover:bg-gray-500">
+                    <div tw="flex items-center space-x-3 px-6 py-5 hover:bg-gray-500">
                         <div>
                             <FontAwesomeIcon icon={faUserCircle} size="sm" />
                         </div>
@@ -76,10 +79,10 @@ function DomainInfo(){
                 <div id="content" tw="relative w-auto truncate">
                     <p tw="relative text-xl font-bold truncate">Canada Domain</p>
                     <p tw="relative text-lg truncate">ID: 5724724357124372437</p>
-                    <button tw="text-left">
-                    <p size="sm" underline tw="lowercase bg-transparent hover:text-white">
-                        {('logout')}
-                    </p>
+                    <button tw="text-left" onClick={logout}>
+                        <p size="sm" underline tw="lowercase bg-transparent hover:text-white">
+                            {('logout')}
+                        </p>
                     </button>
                 </div>
                 <div tw="static top-0">

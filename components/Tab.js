@@ -66,9 +66,9 @@ function Active(){
             </div>
             <div tw="col-span-full">
                 <div tw="flex justify-between">
-                    <div tw="my-6 space-x-4">
+                    <div tw="flex my-6 space-x-4">
                         <input
-                            tw="p-3 border border-gray-300 rounded-lg focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                            tw="inline p-3 border border-gray-300 rounded-lg focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
                             name="search"
                             type="text"
                             placeholder="Search"
