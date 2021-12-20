@@ -35,11 +35,6 @@ export default function Signup() {
   const [DAAUploaded, setDAAUploaded] = useState(false);
   const [daa, setDaa] = useState(null);
 
-
-  useEffect(() => {
-    console.log("useEffect", daa);
-  }, [daa]);
-
   async function onSubmitForm(values){
     console.log(values.daa_pdf[0])
     const formData = new FormData
