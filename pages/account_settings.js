@@ -3,7 +3,7 @@ import tw from 'twin.macro'
 import {useCallback, useEffect, useState} from "react";
 import axios from "axios";
 import {useRouter} from "next/router";
-import {SidebarNav} from "../components/SidebarNav";
+import {Layout} from "../components/Layout";
 
 export default function AccountSettings() {
     const router = useRouter();
@@ -145,39 +145,27 @@ export default function AccountSettings() {
     }
 
     return(
-        <div>
-            <div id="app" tw="flex h-screen w-screen">
-                <SidebarNav />
-
-                <div id="settings" tw="grid grid-cols-12 flex-grow text-left ml-6 py-10 text-lg">
-                    <div id="header">
-
-                    </div>
-
-                    <div id="info">
-
-                    </div>
-
-                    <div id="divider" tw="col-start-1 col-end-9 grid grid-cols-9 divide-y">
-                        <div id="profile-form" tw="col-start-1 col-end-9 bg-white text-lg rounded">
-                            <p tw="text-2xl text-left font-bold">Profile</p>
-                            <form tw="grid grid-cols-9 text-gray-600 text-sm py-6 rounded-lg gap-2" onSubmit={onUpdateInfo}>
-                                <label tw="col-start-1 col-end-5 text-left font-bold mt-2" htmlFor="name">Full Name</label>
+        <Layout>
+                        
+                        <p tw="text-2xl text-left font-bold">Profile</p>
+                        <form tw="col-start-1 col-end-6 m-3" onSubmit={onUpdateInfo}>
+                            <div tw="col-span-full text-left">
+                                <label tw="col-span-full text-left font-bold mt-2" htmlFor="name">Full Name</label>
                                 <input tw="col-start-1 col-end-5 text-left p-3 border border-gray-300 rounded-lg" id="name" name="name" value={full_Name} type="name" placeholder="Full Name" required />
-                                <label tw="col-start-1 col-end-5 text-left font-bold mt-2" htmlFor="email">Email</label>
-                                <input tw="col-start-1 col-end-5 text-left p-3 border border-gray-300 rounded-lg" id="email" name="email" value={email} type="email" placeholder="abc@university.edu" autoComplete="email" required />
-                                <label tw="col-start-1 col-end-5 text-left font-bold mt-2" htmlFor="company">Company/Institution</label>
-                                <input tw="col-start-1 col-end-5 text-left p-3 border border-gray-300 rounded-lg" id="company" name="company" value={institution} type="text" placeholder="Company/Institution" required />
-                                <p tw="col-start-1 col-end-5 text-gray-600 text-sm ml-3">Which company, organization, or institution are you affiliated with?</p>
-                                <label tw="col-start-1 col-end-5 text-left font-bold mt-2" htmlFor="website">Website/Profile</label>
-                                <input tw="col-start-1 col-end-5 text-left p-3 border border-gray-300 rounded-lg" id="website" name="website" value={website} type="text" placeholder="Website/Profile" required />
-                                <p tw="col-start-1 col-end-5 text-gray-600 text-sm ml-3 mr-5">Provide a link to your personal or university web page or a social media profile to help others get to know you</p>
-                                <div id="buttons" tw="col-start-1 text-center mt-10 inline-flex content-start whitespace-nowrap">
-                                    <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="submit">Save Changes</button>
-                                    <button tw="text-primary-500 font-bold py-2" type="reset">Cancel</button>
-                                </div>
-                            </form>
-                        </div>
+                            </div>
+                            <label tw="col-start-1 col-end-5 text-left font-bold mt-2" htmlFor="email">Email</label>
+                            <input tw="col-start-1 col-end-5 text-left p-3 border border-gray-300 rounded-lg" id="email" name="email" value={email} type="email" placeholder="abc@university.edu" autoComplete="email" required />
+                            <label tw="col-start-1 col-end-5 text-left font-bold mt-2" htmlFor="company">Company/Institution</label>
+                            <input tw="col-start-1 col-end-5 text-left p-3 border border-gray-300 rounded-lg" id="company" name="company" value={institution} type="text" placeholder="Company/Institution" required />
+                            <p tw="col-start-1 col-end-5 text-gray-600 text-sm ml-3">Which company, organization, or institution are you affiliated with?</p>
+                            <label tw="col-start-1 col-end-5 text-left font-bold mt-2" htmlFor="website">Website/Profile</label>
+                            <input tw="col-start-1 col-end-5 text-left p-3 border border-gray-300 rounded-lg" id="website" name="website" value={website} type="text" placeholder="Website/Profile" required />
+                            <p tw="col-start-1 col-end-5 text-gray-600 text-sm ml-3 mr-5">Provide a link to your personal or university web page or a social media profile to help others get to know you</p>
+                            <div id="buttons" tw="col-start-1 text-center mt-10 inline-flex content-start whitespace-nowrap">
+                                <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="submit">Save Changes</button>
+                                <button tw="text-primary-500 font-bold py-2" type="reset">Cancel</button>
+                            </div>
+                        </form>
 
                         <div id="password-form" tw="col-start-1 col-end-9 bg-white text-lg rounded">
                             <p tw="text-2xl text-left font-bold mt-10">Password</p>
@@ -342,10 +330,6 @@ export default function AccountSettings() {
 
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+        </Layout>
     )
 }
