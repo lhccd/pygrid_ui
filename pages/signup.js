@@ -36,7 +36,6 @@ export default function Signup() {
   const [daa, setDaa] = useState(null);
 
   async function onSubmitForm(values){
-    console.log(values.daa_pdf[0])
     const formData = new FormData
     formData.append("email", values.email)
     formData.append("full_name", values.full_name)
@@ -71,9 +70,7 @@ export default function Signup() {
   }
 
   const onDAAClick = () => {
-    fileSaver.saveAs(
-        daa
-    );
+    fileSaver.saveAs(daa);
   };
 
   return (
@@ -213,10 +210,10 @@ export default function Signup() {
                           ?
                           <div>
                             <div tw="w-2/3 flex justify-between bg-gray-100 text-black my-4 py-1">
-                              <button tw="mx-2 underline" onClick={onDAAClick}>
+                              <button tw="mx-2 underline" type="button" onClick={onDAAClick}>
                                 {daa.name}
                               </button>
-                              <button tw="font-bold mx-2" onClick={onXClick}>
+                              <button tw="font-bold mx-2" type="button" onClick={onXClick}>
                                 X
                               </button>
                             </div>
@@ -229,9 +226,9 @@ export default function Signup() {
                                      id="daa_pdf_replace"
                                      name="daa_pdf_replace"
                                      type='file'
-                                     onInput={onUploadDaa}
-                                     {...register("daa_pdf", { required: false })}
+                                     {...register("daa_pdf", { onChange:onUploadDaa, required: false })}
                               />
+
                               <button
                                   tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 py-2 my-5">
                                 Download Agreement
@@ -248,8 +245,7 @@ export default function Signup() {
                                    id="daa_pdf"
                                    name="daa_pdf"
                                    type='file'
-                                   onInput={onUploadDaa}
-                                   {...register("daa_pdf", { required: true })}
+                                   {...register("daa_pdf", { onChange:onUploadDaa, required: true })}
                             />
                             <button
                                 tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 my-5">
