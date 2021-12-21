@@ -1,6 +1,10 @@
 import tw, {styled} from 'twin.macro'
 
-const Input = tw.input`
+const Input = styled.input(({ variant }) => [
+    tw`block p-3 border border-gray-300 rounded-lg w-full focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800`
+    
+])
+const Input2 = tw.input`
     flex flex-col items-start p-3 border border-gray-300 rounded-lg w-full font-roboto text-gray-300
     focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800 
 `
