@@ -2,11 +2,11 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import tw, { styled } from 'twin.macro'
 import { useForm } from "react-hook-form"
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Tag from '../components/Tag'
 import Textfield from '../components/Textfield'
 import axios from "axios"
-import {faFontAwesome} from "@fortawesome/free-brands-svg-icons";
+import { faFontAwesome } from "@fortawesome/free-brands-svg-icons";
 import fileSaver from "file-saver";
 
 const Background = styled.div`
@@ -35,12 +35,11 @@ export default function Signup() {
   const [DAAUploaded, setDAAUploaded] = useState(false);
   const [daa, setDaa] = useState(null);
 
-  async function onSubmitForm(values){
-    console.log(values.daa_pdf[0])
+  async function onSubmitForm(values) {
     const formData = new FormData
     formData.append("email", values.email)
     formData.append("full_name", values.full_name)
-    formData.append( "institution", values.institution)
+    formData.append("institution", values.institution)
     formData.append("password", values.password)
     formData.append("website", values.website)
     formData.append("daa_pdf", values.daa_pdf[0])
@@ -49,12 +48,12 @@ export default function Signup() {
       url: 'http://localhost/api/v1/users/open-daa',
       data: formData
     }
-    try{
+    try {
       console.log("config data: ", values)
       const response = await axios(config)
       router.push('/login')
       console.log(response);
-    }catch (err){
+    } catch (err) {
       console.error(err);
     }
   }
@@ -71,9 +70,7 @@ export default function Signup() {
   }
 
   const onDAAClick = () => {
-    fileSaver.saveAs(
-        daa
-    );
+    fileSaver.saveAs(daa);
   };
 
   return (
@@ -121,11 +118,8 @@ export default function Signup() {
               </div>
             </div>
           </div>
-          <div id="login-form" tw="flex-col col-start-7 col-end-12 bg-white p-5 m-3 shadow-lg text-gray-500 content-center text-lg rounded h-auto">
+          <div id="login-form" tw="flex-col col-start-7 col-end-12 bg-white p-5 m-3 mb-60 shadow-lg text-gray-500 content-center text-lg rounded h-auto">
             <form onSubmit={handleSubmit(onSubmitForm)} tw="grid grid-cols-4 text-sm text-center font-bold p-6 rounded-lg gap-4 ">
-              <div tw="col-span-4 my-3 text-left text-gray-800">
-                <p tw="text-2xl">Apply for an Account</p>
-              </div>
               <div tw="col-span-2 text-left ">
                 <label tw="block my-2" htmlFor="fullname">Full Name<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
                 <input
@@ -203,63 +197,62 @@ export default function Signup() {
                 />
               </div>
               {DAARequired
-                  ? [
-                    <div tw="col-span-4 block text-left">
-                      <label tw="block my-2">Upload Signed</label>
-                      <p>This domain requires a Data Access Agreement (DAA) to be signed before an
-                        account can be made. Please download the agreement below and upload a
-                        signed version when you are ready to apply.</p>
-                      {DAAUploaded
-                          ?
-                          <div>
-                            <div tw="w-2/3 flex justify-between bg-gray-100 text-black my-4 py-1">
-                              <button tw="mx-2 underline" onClick={onDAAClick}>
-                                {daa.name}
-                              </button>
-                              <button tw="font-bold mx-2" onClick={onXClick}>
-                                X
-                              </button>
-                            </div>
-                            <div>
-                              <input tw="col-start-2 col-end-4 text-primary-500 border-primary-500 rounded bg-white text-center font-bold mx-6 px-3 py-2 my-5"
-                                     type="button"
-                                     value="Replace File"
-                                     onClick={() => document.getElementById('daa_pdf_replace').click()}/>
-                              <input tw="hidden"
-                                     id="daa_pdf_replace"
-                                     name="daa_pdf_replace"
-                                     type='file'
-                                     onInput={onUploadDaa}
-                                     {...register("daa_pdf", { required: false })}
-                              />
-                              <button
-                                  tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 py-2 my-5">
-                                Download Agreement
-                              </button>
-                            </div>
-                          </div>
-                          :
-                          <div>
-                            <input tw="col-start-2 col-end-4 text-primary-500 border-primary-500 rounded bg-white text-center font-bold mx-6 px-3 py-2 my-5"
-                                   type="button"
-                                   value="Upload File"
-                                   onClick={() => document.getElementById('daa_pdf').click()}/>
-                            <input tw="hidden"
-                                   id="daa_pdf"
-                                   name="daa_pdf"
-                                   type='file'
-                                   onInput={onUploadDaa}
-                                   {...register("daa_pdf", { required: true })}
-                            />
-                            <button
-                                tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 my-5">
-                              Download agreement
-                            </button>
-                          </div>
-                      }
-                    </div>
-                  ]
-                  : ""
+                ? [
+                  <div tw="col-span-4 block text-left">
+                    <label tw="block my-2">Upload Signed</label>
+                    <p>This domain requires a Data Access Agreement (DAA) to be signed before an
+                      account can be made. Please download the agreement below and upload a
+                      signed version when you are ready to apply.</p>
+                    {DAAUploaded
+                      ?
+                      <div>
+                        <div tw="w-2/3 flex justify-between bg-gray-100 text-black my-4 py-1">
+                          <button tw="mx-2 underline" type="button" onClick={onDAAClick}>
+                            {daa.name}
+                          </button>
+                          <button tw="font-bold mx-2" type="button" onClick={onXClick}>
+                            X
+                          </button>
+                        </div>
+                        <div>
+                          <input tw="col-start-2 col-end-4 text-primary-500 border-primary-500 rounded bg-white text-center font-bold mx-6 px-3 py-2 my-5"
+                            type="button"
+                            value="Replace File"
+                            onClick={() => document.getElementById('daa_pdf_replace').click()} />
+                          <input tw="hidden"
+                            id="daa_pdf_replace"
+                            name="daa_pdf_replace"
+                            type='file'
+                            {...register("daa_pdf", { onChange: onUploadDaa, required: false })}
+                          />
+
+                          <button
+                            tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 py-2 my-5">
+                            Download Agreement
+                          </button>
+                        </div>
+                      </div>
+                      :
+                      <div>
+                        <input tw="col-start-2 col-end-4 text-primary-500 border-primary-500 rounded bg-white text-center font-bold mx-6 px-3 py-2 my-5"
+                          type="button"
+                          value="Upload File"
+                          onClick={() => document.getElementById('daa_pdf').click()} />
+                        <input tw="hidden"
+                          id="daa_pdf"
+                          name="daa_pdf"
+                          type='file'
+                          {...register("daa_pdf", { onChange: onUploadDaa, required: true })}
+                        />
+                        <button
+                          tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 my-5">
+                          Download agreement
+                        </button>
+                      </div>
+                    }
+                  </div>
+                ]
+                : ""
               }
               <button tw="col-start-2 col-end-4 bg-primary-500 rounded text-white text-center mx-6 px-3 py-2 my-5" type="submit">Submit Application</button>
               <p tw="col-span-4 text-center text-gray-600 text-sm font-normal">Have an account already?

@@ -15,6 +15,7 @@ const Background = styled.div`
     background-repeat: no-repeat; 
     background-size: auto; 
 `
+
 const DomainBody = [
     {
       ID :'ID#449f4f997a96467f90f7af8b396928f1',
