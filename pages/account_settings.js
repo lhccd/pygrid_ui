@@ -7,8 +7,11 @@ import { Layout } from "../components/Layout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import Modal from "../components/Modal"
+import {getToken} from "../lib/auth";
+
 
 export default function AccountSettings() {
+    const TOKEN = getToken();
     const router = useRouter();
     const { register, handleSubmit, errors, reset } = useForm();
 
@@ -36,24 +39,33 @@ export default function AccountSettings() {
          */
     }, [full_Name, email, institution, website]);
     async function getUser() {
-
+        console.log(TOKEN);
         /*
         let config = {
             method: 'get',
-            url: 'http://localhost/api/v1/users/me',
+            url: 'http://localhost/api/v1/users/user-profile',
+            headers: {
+                'Authorization': 'Bearer ' + {TOKEN}
+            }
         }
+         */
         try{
-            const response = await axios(config)
+            const response = await axios.get('http://localhost/api/v1/users/user-profile', {
+                headers: {
+                    authorization: `Bearer ${TOKEN}`
+                }
+            });
+
+            //const response = await axios(config)
             console.log(response);
-            setFull_Name(response.config.full_name);
-            setEmail(response.config.email);
-            setInstitution(response.config.institution);
-            setWebsite(response.config.website);
+            setFull_Name(response.data.full_name);
+            setEmail(response.data.email);
+            setInstitution(response.data.institution);
+            setWebsite(response.data.website);
 
         }catch (err){
             console.error(err);
         }
-         */
     }
 
     async function onUpdateInfo(values) {
