@@ -58,44 +58,21 @@ export default function AccountSettings() {
         }
     }
 
-    async function onUpdateInfo(values) {
-        /*
+    async function onUpdateInfo() {
         try {
-            const response = await axios.put('http://localhost/api/v1/users', {
+            const response = await axios.put('http://localhost/api/v1/users',
+                {
+                    "full_name": full_Name,
+                    "email": email,
+                    "institution": institution,
+                    "website": website
+                }, {
                 headers: {
                     authorization: `Bearer ${TOKEN}`
-                },
-                body: {
-                    "full_name": values.full_name,
-                    "email": values.email,
-                    "institution": values.institution,
-                    "website": values.website
                 }
-
             });
             console.log(response);
-        } catch (err){
-            console.error(err);
-        }
-
-         */
-        let config = {
-            method: 'put',
-            url: 'http://localhost/api/v1/users',
-            headers: {
-                authorization: `Bearer ${TOKEN}`
-            },
-            body: {
-                "full_name": values.full_name,
-                "email": values.email,
-                "institution": values.institution,
-                "website": values.website
-            },
-        }
-        try{
-            const response = await axios(config)
-            console.log(response);
-            //router.push('/account_settings')
+            // router.push('/account_settings')
         } catch (err){
             console.error(err);
         }
@@ -216,7 +193,7 @@ export default function AccountSettings() {
                             <p tw="text-sm ml-3 mr-5">Provide a link to your personal or university web page or a social media profile to help others get to know you</p>
                         </div>
                         <div id="buttons" tw="text-center mt-10 inline-flex content-start whitespace-nowrap">
-                            <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="submit">Save Changes</button>
+                            <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="button" onClick={onUpdateInfo}>Save Changes</button>
                             <button tw="text-primary-500 font-bold" type="reset">Cancel</button>
                         </div>
                     </form>
