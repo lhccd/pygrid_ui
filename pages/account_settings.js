@@ -18,28 +18,18 @@ export default function AccountSettings() {
     const [showModal, setShowModal] = useState(false);
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
-    const [full_Name, setFull_Name] = useState(null);
-    const [email, setEmail] = useState(null);
-    const [institution, setInstitution] = useState(null);
-    const [website, setWebsite] = useState(null);
+    const [full_Name, setFull_Name] = useState("");
+    const [email, setEmail] = useState("");
+    const [institution, setInstitution] = useState("");
+    const [website, setWebsite] = useState("");
 
     const [isDomainOwner, setIsDomainOwner] = useState(false);
 
     useEffect(() => {
-        /*
-        axios.get('http://localhost/api/v1/users/me')
-            .then(function (response) {
-                console.log(response);
-                setFull_Name(response.config.full_name);
-                setEmail(response.config.email);
-                setInstitution(response.config.institution);
-                setWebsite(response.config.website);
-            })
+        getUser();
+    }, []);
 
-         */
-    }, [full_Name, email, institution, website]);
     async function getUser() {
-        console.log(TOKEN);
         /*
         let config = {
             method: 'get',
@@ -70,25 +60,45 @@ export default function AccountSettings() {
 
     async function onUpdateInfo(values) {
         /*
+        try {
+            const response = await axios.put('http://localhost/api/v1/users', {
+                headers: {
+                    authorization: `Bearer ${TOKEN}`
+                },
+                body: {
+                    "full_name": values.full_name,
+                    "email": values.email,
+                    "institution": values.institution,
+                    "website": values.website
+                }
+
+            });
+            console.log(response);
+        } catch (err){
+            console.error(err);
+        }
+
+         */
         let config = {
             method: 'put',
-            url: 'http://localhost/api/v1/users/me',
+            url: 'http://localhost/api/v1/users',
+            headers: {
+                authorization: `Bearer ${TOKEN}`
+            },
             body: {
                 "full_name": values.full_name,
                 "email": values.email,
                 "institution": values.institution,
                 "website": values.website
-            }
+            },
         }
         try{
             const response = await axios(config)
             console.log(response);
-            await router.push('/account_settings')
-        }catch (err){
+            //router.push('/account_settings')
+        } catch (err){
             console.error(err);
         }
-
-         */
     }
 
     async function onUpdatePassword(values) {
@@ -175,19 +185,22 @@ export default function AccountSettings() {
                             <label tw="font-bold text-sm" htmlFor="name">Full Name</label><p tw="pl-1 inline relative bottom-1 text-primary-500 font-bold">*</p>
                         </div>
                         <div tw="mt-2">
-                            <input tw="p-2 border border-gray-300 rounded text-black" id="name" name="name" value={full_Name} type="name" placeholder="Full Name" required />
+                            <input tw="p-2 border border-gray-300 rounded text-black" id="full_name" name="full_name" value={full_Name} type="name" placeholder="Full Name"
+                                   {...register("full_name", { required: true, onChange: e => setFull_Name(e.target.value) })} required />
                         </div>
                         <div tw="mt-4">
                             <label tw="font-bold text-sm" htmlFor="email">Email</label><p tw="pl-1 inline relative bottom-1 text-primary-500 font-bold">*</p>
                         </div>
                         <div tw="mt-2">
-                            <input tw="p-2 border border-gray-300 rounded text-black" id="email" name="email" value={email} type="email" placeholder="abc@university.edu" autoComplete="email" required />
+                            <input tw="p-2 border border-gray-300 rounded text-black" id="email" name="email" value={email} type="email" placeholder="abc@university.edu"
+                                   {...register("email", { required: true, onChange: e => setEmail(e.target.value) })} required />
                         </div>
                         <div tw="mt-4">
                             <label tw="font-bold text-sm" htmlFor="company">Company/Institution</label><p tw="pl-1 inline relative text-primary-500 text-xs italic">(optional)</p>
                         </div>
                         <div tw="mt-2">
-                            <input tw="p-2 border border-gray-300 rounded text-black" id="company" name="company" value={institution} type="text" placeholder="Company/Institution" required />
+                            <input tw="p-2 border border-gray-300 rounded text-black" id="institution" name="institution" value={institution} type="text" placeholder="Company/Institution"
+                                   {...register("institution", { required: false, onChange: e => setInstitution(e.target.value) })} />
                         </div>
                         <div tw="mt-2">
                             <p tw="text-sm ml-3">Which company, organization, or institution are you affiliated with?</p>
@@ -196,7 +209,8 @@ export default function AccountSettings() {
                             <label tw="font-bold text-sm" htmlFor="website">Website/Profile</label><p tw="pl-1 inline relative text-primary-500 text-xs italic">(optional)</p>
                         </div>
                         <div tw="mt-2">
-                            <input tw="p-2 border border-gray-300 rounded text-black" id="website" name="website" value={website} type="text" placeholder="Website/Profile" required />
+                            <input tw="p-2 border border-gray-300 rounded text-black" id="website" name="website" value={website} type="text" placeholder="Website/Profile"
+                                   {...register("website", { required: false, onChange: e => setWebsite(e.target.value) })} />
                         </div>
                         <div tw="text-left mt-2">
                             <p tw="text-sm ml-3 mr-5">Provide a link to your personal or university web page or a social media profile to help others get to know you</p>
