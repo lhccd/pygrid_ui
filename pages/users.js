@@ -6,7 +6,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import Modal from '../components/Modal'
 import {useState, useEffect} from 'react';
 import axios from 'axios';
-import {getToken, decodeToken} from '../lib/auth'
+import {getToken, decodeToken} from '../services/UserService'
 import {useRouter} from 'next/router'
 
 // export const getStaticProps = async () => {

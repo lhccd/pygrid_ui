@@ -8,6 +8,7 @@ import Textfield from '../components/Textfield'
 import axios from "axios"
 import { faFontAwesome } from "@fortawesome/free-brands-svg-icons";
 import fileSaver from "file-saver";
+import {login, signup} from "../services/UserService";
 
 const Background = styled.div`
     background-image: url("../signup_background_image.png");
@@ -35,26 +36,12 @@ export default function Signup() {
   const [DAAUploaded, setDAAUploaded] = useState(false);
   const [daa, setDaa] = useState(null);
 
-  async function onSubmitForm(values) {
-    const formData = new FormData
-    formData.append("email", values.email)
-    formData.append("full_name", values.full_name)
-    formData.append("institution", values.institution)
-    formData.append("password", values.password)
-    formData.append("website", values.website)
-    formData.append("daa_pdf", values.daa_pdf[0])
-    let config = {
-      method: 'post',
-      url: 'http://localhost/api/v1/users/open-daa',
-      data: formData
-    }
+  const onSubmitForm = async (values) => {
     try {
-      console.log("config data: ", values)
-      const response = await axios(config)
+      await signup(values)
       router.push('/login')
-      console.log(response);
-    } catch (err) {
-      console.error(err);
+    }catch (err) {
+      console.error(err)
     }
   }
 

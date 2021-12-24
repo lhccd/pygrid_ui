@@ -6,7 +6,7 @@ import Tag from '../components/Tag'
 import { useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import {login} from '../lib/auth'
+import {login} from '../services/UserService'
 
 const Background = styled.div`
     background-image: url("../signup_background_image.png");

@@ -2,7 +2,7 @@ import React from 'react'
 import tw from 'twin.macro'
 import { Button } from './../components'
 import Link from 'next/link'
-import {getToken} from '../lib/auth'
+import {getToken} from '../services/UserService'
 import {useRouter} from 'next/router'
 
 const styles = {

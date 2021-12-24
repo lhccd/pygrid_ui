@@ -2,7 +2,7 @@ import tw from 'twin.macro'
 import {faUsers, faCheck, faLemon, faHandsHelping, faChevronDown, faUserCircle, faThLarge} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import Link from 'next/link'
-import {logout} from '../lib/auth'
+import {logout} from '../services/UserService'
 import DomainConnectionStatus from '../components/DomainConnectionStatus'
 
 const SidebarNav = () => {

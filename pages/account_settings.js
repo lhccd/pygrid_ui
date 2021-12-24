@@ -7,7 +7,8 @@ import { Layout } from "../components/Layout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import Modal from "../components/Modal"
-import {getToken} from "../lib/auth";
+import {getToken} from "../services/UserService";
+import {getUser} from "../services/UserService";
 
 
 export default function AccountSettings() {
@@ -26,33 +27,17 @@ export default function AccountSettings() {
     const [isDomainOwner, setIsDomainOwner] = useState(false);
 
     useEffect(() => {
-        getUser();
+        getUserInfo();
     }, []);
 
-    async function getUser() {
-        /*
-        let config = {
-            method: 'get',
-            url: 'http://localhost/api/v1/users/user-profile',
-            headers: {
-                'Authorization': 'Bearer ' + {TOKEN}
-            }
-        }
-         */
+    async function getUserInfo() {
         try{
-            const response = await axios.get('http://localhost/api/v1/users/user-profile', {
-                headers: {
-                    authorization: `Bearer ${TOKEN}`
-                }
-            });
-
-            //const response = await axios(config)
+            let response = getUser();
             console.log(response);
             setFull_Name(response.data.full_name);
             setEmail(response.data.email);
             setInstitution(response.data.institution);
             setWebsite(response.data.website);
-
         }catch (err){
             console.error(err);
         }
@@ -163,21 +148,21 @@ export default function AccountSettings() {
                         </div>
                         <div tw="mt-2">
                             <input tw="p-2 border border-gray-300 rounded text-black" id="full_name" name="full_name" value={full_Name} type="name" placeholder="Full Name"
-                                   {...register("full_name", { required: true, onChange: e => setFull_Name(e.target.value) })} required />
+                                   onChange={e => setFull_Name(e.target.value)} required />
                         </div>
                         <div tw="mt-4">
                             <label tw="font-bold text-sm" htmlFor="email">Email</label><p tw="pl-1 inline relative bottom-1 text-primary-500 font-bold">*</p>
                         </div>
                         <div tw="mt-2">
                             <input tw="p-2 border border-gray-300 rounded text-black" id="email" name="email" value={email} type="email" placeholder="abc@university.edu"
-                                   {...register("email", { required: true, onChange: e => setEmail(e.target.value) })} required />
+                                   onChange={e => setEmail(e.target.value)}  required />
                         </div>
                         <div tw="mt-4">
                             <label tw="font-bold text-sm" htmlFor="company">Company/Institution</label><p tw="pl-1 inline relative text-primary-500 text-xs italic">(optional)</p>
                         </div>
                         <div tw="mt-2">
                             <input tw="p-2 border border-gray-300 rounded text-black" id="institution" name="institution" value={institution} type="text" placeholder="Company/Institution"
-                                   {...register("institution", { required: false, onChange: e => setInstitution(e.target.value) })} />
+                                   onChange={e => setInstitution(e.target.value)}  />
                         </div>
                         <div tw="mt-2">
                             <p tw="text-sm ml-3">Which company, organization, or institution are you affiliated with?</p>
@@ -187,7 +172,7 @@ export default function AccountSettings() {
                         </div>
                         <div tw="mt-2">
                             <input tw="p-2 border border-gray-300 rounded text-black" id="website" name="website" value={website} type="text" placeholder="Website/Profile"
-                                   {...register("website", { required: false, onChange: e => setWebsite(e.target.value) })} />
+                                   onChange={e => setWebsite(e.target.value)}  />
                         </div>
                         <div tw="text-left mt-2">
                             <p tw="text-sm ml-3 mr-5">Provide a link to your personal or university web page or a social media profile to help others get to know you</p>
