@@ -3,37 +3,26 @@ import tw, {styled} from 'twin.macro';
 import { Table } from './Table';
 import { Table2 } from './Table2';
 import Modal from '../components/Modal';
+import Button from '../components/Button';
 import {faPlus, faUserPlus, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import ListBox from './ListBox';
+import HttpService from '../services/HttpService'
+import axios from 'axios'
+import {getToken} from "../services/UserService";
 
-// const styles = {
-//     container: ({ hasBg }) => [
-//       tw`flex w-full`, // Add base styles first
-//       hasBg && tw`bg-black`, // Then add conditional styles
-//     ],
-//     button: ({ toggleState }) => [
-//         tw`p-4 text-center w-1/2 bg-white border`,
-//         (toggleState === 1) && tw`bg-primary-300`,
-//         (toggleState === 2) && tw`bg-primary-500`,
-//         (toggleState === 3) && tw`bg-primary-800`
-//     ]
-// }
-const Button = styled.button(({ state }) => [
-    tw`p-4 bg-gray-50 text-center w-1/2 bg-white border-primary-500 border-t-2 border-r-2 border-l-2`,
-    (state === 1) && tw`bg-gray-50`,
-    (state === 2) && tw`bg-gray-100`,
-    (state === 3) && tw`bg-gray-50`
-])
 
-const Content = styled.div(({ state }) => [
-    tw`bg-gray-300 p-5 w-full h-full hidden`,
-    (state === 1) && tw`bg-gray-300 block`,
-    (state === 2) && tw`bg-gray-500 block`,
-    (state === 3) && tw`bg-gray-800 block`
-
-])
 function Pending(){
+    const [userList, setUserList] = useState([]);
+
+    function getUserlist(e){
+        e.preventDefault()
+        const Token = getToken()
+        axios.get('http://localhost:80/api/v1/users/active_users',{ headers: {'Authorization': `Bearer ${Token}`}})
+            .then(res => setUserList(res.data))
+            .catch(err => console.log(err))
+    }
+    
     return (
         <>
             <div tw="col-span-11 mt-10 mb-10 col-span-11 mt-10 mb-10 flex items-center space-x-3 px-3 py-2 bg-primary-100 border-t-4 border-primary-500">
@@ -53,11 +42,99 @@ function Pending(){
                     <button tw="bg-gray-800 rounded text-primary-200 text-center my-6 px-3 py-2 font-bold" onClick={() => setShowModal(true)}><FontAwesomeIcon icon={faPlus} tw="mr-3"/>Create User</button>
                 </div>
             </div>
+            <Button variant={'primary'} onClick={getUserlist}>Get All Users</Button>
+            <table tw="min-w-full my-3">
+                <thead>
+                    <tr>
+                        <th
+                            tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                            Name</th>
+                        <th
+                            tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                            Balance</th>
+                        <th
+                            tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                            Allocated Budget</th>
+                        <th
+                            tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                            Date Added</th>
+                        <th
+                            tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                            Added By</th>
+                        <th
+                            tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                            Email</th>
+                    </tr>
+                </thead>
+
+                <tbody tw="bg-white">
+                {
+                    userList.map(user => (
+                    <tr key={user.email}>
+                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                            <div tw="flex items-center">
+                                <div tw="flex-shrink-0 w-10 h-10">
+                                    <img tw="w-10 h-10 rounded-full" src="https://source.unsplash.com/user/erondu"
+                                        alt="admin dashboard ui"/>
+                                </div>
+
+                                <div tw="ml-4">
+                                    <div tw="text-sm font-medium leading-5 text-gray-900">
+                                        {user.full_name}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                            <div tw="ml-4">
+                                <div tw="text-sm font-medium leading-5 text-gray-900">
+                                    {user.budget}
+                                </div>
+                            </div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                            <div tw="ml-4">
+                                <div tw="text-sm font-medium leading-5 text-gray-900">
+                                    {user.created_at}
+                                </div>
+                            </div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                            <div tw="ml-4">
+                                <div tw="text-sm font-medium leading-5 text-gray-900">
+                                    {user.added_by}
+                                </div>
+                            </div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                            <div tw="text-sm leading-5 text-gray-500">{user.email}</div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                            <div tw="text-sm leading-5 text-gray-500">{user.email}</div>
+                        </td>
+                    </tr>))
+                }
+                </tbody>
+            </table>
         </>
     )
 }
 function Active(){
     const [showModal, setShowModal] = useState(false);
+    const [userList, setUserList] = useState([]);
+
+    function getUserlist(e){
+        e.preventDefault()
+        const Token = getToken()
+        axios.get('http://localhost:80/api/v1/users/active_users',{ headers: {'Authorization': `Bearer ${Token}`}})
+            .then(res => setUserList(res.data))
+            .catch(err => console.log(err))
+    }
     return (
         <>
             <div tw="col-span-11 mt-10 mb-10 flex items-center space-x-3 px-3 py-2 bg-primary-100 border-t-4 border-primary-500">
@@ -169,7 +246,85 @@ function Active(){
                             </div>
                         </form>
                     </Modal>
-                    <Table2></Table2>
+                    <Button variant={'primary'} onClick={getUserlist}>Get All Users</Button>
+            <table tw="min-w-full my-3">
+                <thead>
+                    <tr>
+                        <th
+                            tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                            Name</th>
+                        <th
+                            tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                            Balance</th>
+                        <th
+                            tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                            Allocated Budget</th>
+                        <th
+                            tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                            Date Added</th>
+                        <th
+                            tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                            Added By</th>
+                        <th
+                            tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
+                            Email</th>
+                    </tr>
+                </thead>
+
+                <tbody tw="bg-white">
+                {
+                    userList.map(user => (
+                    <tr key={user.email}>
+                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                            <div tw="flex items-center">
+                                <div tw="flex-shrink-0 w-10 h-10">
+                                    <img tw="w-10 h-10 rounded-full" src="https://source.unsplash.com/user/erondu"
+                                        alt="admin dashboard ui"/>
+                                </div>
+
+                                <div tw="ml-4">
+                                    <div tw="text-sm font-medium leading-5 text-gray-900">
+                                        {user.full_name}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                            <div tw="ml-4">
+                                <div tw="text-sm font-medium leading-5 text-gray-900">
+                                    {user.budget}
+                                </div>
+                            </div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                            <div tw="ml-4">
+                                <div tw="text-sm font-medium leading-5 text-gray-900">
+                                    {user.created_at}
+                                </div>
+                            </div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                            <div tw="ml-4">
+                                <div tw="text-sm font-medium leading-5 text-gray-900">
+                                    {user.added_by}
+                                </div>
+                            </div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                            <div tw="text-sm leading-5 text-gray-500">{user.email}</div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                            <div tw="text-sm leading-5 text-gray-500">{user.email}</div>
+                        </td>
+                    </tr>))
+                }
+                </tbody>
+            </table>
             </div>
         </>
     )
@@ -228,14 +383,6 @@ export function Tab(){
                     (toggleState === 1) && tw`bg-white block`,]}
                 >   
                     <Active></Active>
-                    <h2>Content 1</h2>
-                    <hr />
-                    <p>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati
-                        praesentium incidunt quia aspernatur quasi quidem facilis quo nihil
-                        vel voluptatum?
-                    </p>
-                    {/* <Table2/> */}
                 </div>
 
                 <div
@@ -243,30 +390,12 @@ export function Tab(){
                     (toggleState === 2) && tw`bg-white block`,]}
                 >
                     <Pending/>
-                    <h2>Content 2</h2>
-                    <hr />
-                    <p>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente
-                        voluptatum qui adipisci.
-                    </p>
-                    {/* <Table/> */}
                 </div>
 
                 <div
                     css={[tw`bg-white p-5 w-full h-full hidden`,
                     (toggleState === 3) && tw`bg-white block`,]}
                 >
-                    <h2>Content 3</h2>
-                    <hr />
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos sed
-                        nostrum rerum laudantium totam unde adipisci incidunt modi alias!
-                        Accusamus in quia odit aspernatur provident et ad vel distinctio
-                        recusandae totam quidem repudiandae omnis veritatis nostrum
-                        laboriosam architecto optio rem, dignissimos voluptatum beatae
-                        aperiam voluptatem atque. Beatae rerum dolores sunt.
-                    </p>
-                    {/* <Table2/> */}
                 </div>
 
             </div>

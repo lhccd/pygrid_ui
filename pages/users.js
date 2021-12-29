@@ -8,6 +8,7 @@ import {useState, useEffect} from 'react';
 import axios from 'axios';
 import {getToken, decodeToken} from '../lib/auth'
 import {useRouter} from 'next/router'
+import HttpService from '../services/HttpService'
 
 // export const getStaticProps = async () => {
 //     const res = await fetch('http://localhost:80/api/v1/users/active_users');
