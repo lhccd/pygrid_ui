@@ -7,6 +7,9 @@ import { useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import {login} from '../lib/auth'
+import Alert from '../components/Alert';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faExclamationCircle, faExclamationTriangle, faExpandAlt, faTimes} from '@fortawesome/free-solid-svg-icons'
 
 const Background = styled.div`
     background-image: url("../signup_background_image.png");
@@ -29,6 +32,7 @@ const DomainBody = [
 
 export default function Login() {
     const { register, handleSubmit, errors, reset } = useForm();
+    const [showAlert, setShowAlert] = useState(false);
     const router = useRouter()
 
     const onSubmitForm = async (values) => {
@@ -38,6 +42,7 @@ export default function Login() {
             router.push('/users')
         }catch (err) {
             console.error(err)
+            setShowAlert(true);
         }
     }
     // async function onSubmitForm(values){
@@ -128,13 +133,19 @@ export default function Login() {
                                 type="password" 
                                 placeholder="Text here" 
                                 autoComplete="on"  
-                                {...register("password", { required: true})} 
+                                {...register("password", { required: "Password required!"})} 
                             />
                             <p tw="col-span-4 text-center text-gray-600 text-sm">Don't have an account yet?
                                 <a href="/signup" tw="col-span-4 text-center text-blue-500"> Apply for an account here</a>
                             </p> 
                             <button tw="col-start-2 col-end-4 bg-primary-500 rounded text-white text-center mx-6 px-3 py-2" type="submit">Login</button>
                         </form>
+                    </div>
+                    <div tw="col-start-9 col-span-4">
+                        <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={'error'}>
+                            <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                            <p>Your credentials are incorrect!</p>
+                        </Alert>
                     </div>
                 </div>
                 <div id="footer" tw="grid grid-cols-12 gap-6">

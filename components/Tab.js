@@ -1,18 +1,108 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import tw, {styled} from 'twin.macro';
 import { Table } from './Table';
 import { Table2 } from './Table2';
 import Modal from '../components/Modal';
+import Alert from '../components/Alert';
 import Button from '../components/Button';
-import {faPlus, faUserPlus, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
+import {faCalendar, faEnvelope, faPlus, faUser, faUserPlus, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import ListBox from './ListBox';
 import HttpService from '../services/HttpService'
 import axios from 'axios'
 import {getToken} from "../services/UserService";
 
+const CreateUserModal = ({show, onClose}) => (
+    <Modal show={show} onClose={onClose}>
+        <form onSubmit={""} tw="grid grid-cols-12 text-sm text-center font-bold p-6 rounded-lg gap-4 ">
+            <div tw="col-span-12 my-3 text-left text-gray-800">
+                <FontAwesomeIcon icon={faUserPlus} size="2x" tw="my-4"/>  
+                <p tw="text-2xl">
+                    Create a User
+                </p>
+                <p tw="mt-3 text-sm font-normal">
+                    PyGrid utilizes users and roles to appropriately permission data at a higher level. All users with the permission CAN CREATE USERS are allowd to create users in the domain. Create a user by filling out the fields below. 
+                </p>
+            </div>
+            <div tw="col-span-6 text-left ">
+                <label tw="block my-2" htmlFor="fullname">Full Name<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
+                <input
+                tw="block p-3 border border-gray-300 rounded-lg w-full
+                            focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                name="full_name"
+                type="text"
+                placeholder="Jane Doe"
+                autoComplete="on"
+                />
+            </div>
+            <div tw="col-span-6 text-left">
+                <label tw="block my-2" htmlFor="email">Email<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
+                <input
+                tw="block p-3 border border-gray-300 rounded-lg w-full
+                            focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                name="email"
+                type="email"
+                placeholder="abc@university.edu"
+                autoComplete="on"
+                />
+            </div>
+            <div tw="col-span-6 block text-left">
+                <label tw="block my-2" htmlFor="pw">Password<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
+                <input
+                tw="block p-3 border border-gray-300 rounded-lg w-full
+                            focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                name="password"
+                type="password"
+                placeholder="Text here"
+                autoComplete="on"
+                />
+            </div>
+            <div tw="col-span-6 inline-block text-left">
+                <label tw="block my-2" htmlFor="confirmpw">Confirm Password<p tw="pl-1 inline relative bottom-1 text-primary-500">*</p></label>
+                <input
+                tw="block p-3 border border-gray-300 rounded-lg w-full
+                            focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                name="confirmpw"
+                type="password"
+                placeholder="Text here"
+                autoComplete="on"
+                />
+            </div>
+            <div tw="col-span-12 block text-left">
+                <label tw="block my-2" htmlFor="website">Role<p tw="pl-1 inline relative bottom-1 text-primary-500">*</p></label>
+                <input
+                    tw="block p-3 border border-gray-300 rounded-lg w-full
+                                focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                    name="website"
+                    type="text"
+                    placeholder="This can help a domain owner vett your application"
+                    autoComplete="on"
+                />
+            </div>
+            <div tw="col-span-5">
+                <label tw="col-span-full block my-2 text-left" htmlFor="website">Set Privacy Budget (PB)<p tw="pl-1 inline text-xs italic font-normal text-primary-500 ">(optional)</p></label>
+                <input
+                    tw="col-span-3 block p-3 border border-gray-300 rounded-lg w-full
+                                focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                    name="website"
+                    type="text"
+                    placeholder="This can help a domain owner vett your application"
+                    autoComplete="on"
+                />
+            </div>
+            <div tw="col-span-7 text-justify font-normal font-mono my-2">
+                <p>Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy budget as credits you give to a user to perform computations from. These credits of Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. You can learn more about privacy budgets and how to allocate them at Course.OpenMined.org</p>
+            </div>
+            <div tw="col-span-full flex justify-between font-bold text-xl">
+                <button tw="bg-white rounded text-primary-500 text-center my-6 px-3 py-2 my-5 border-2 border-primary-500 " type="submit" onClick={() => setShowModal(false)}>Cancel</button>
+                <button tw="bg-primary-500 rounded text-white text-center my-6 px-3 py-2 my-5" type="submit"><FontAwesomeIcon icon={faPlus} tw="mr-3"/>Create</button>
+            </div>
+        </form>
+    </Modal>
+)
 
 function Pending(){
+    const [showAlert, setShowAlert] = useState(true);
     const [userList, setUserList] = useState([]);
 
     function getUserlist(e){
@@ -22,13 +112,17 @@ function Pending(){
             .then(res => setUserList(res.data))
             .catch(err => console.log(err))
     }
+
+    useEffect(()=>{
+        getUserlist
+    })
     
     return (
-        <>
-            <div tw="col-span-11 mt-10 mb-10 col-span-11 mt-10 mb-10 flex items-center space-x-3 px-3 py-2 bg-primary-100 border-t-4 border-primary-500">
+        <>  
+            <Alert show={showAlert} onClose={() => setShowAlert(false)}>
                 <FontAwesomeIcon icon={faInfoCircle} size="2x" tw=""/>
-                <p tw="text-gray-800 cursor-pointer">Pending users are users who have applied to your domain but who are not yet authorized to perform data requests. You can review their uploaded Data Access Agreements(DAA) below and choose to accept or deny their account applications.</p>
-            </div>
+                <p>Pending users are users who have applied to your domain but who are not yet authorized to perform data requests. You can review their uploaded Data Access Agreements(DAA) below and choose to accept or deny their account applications.</p>
+            </Alert>
             <div tw="col-span-full">
                 <div tw="flex justify-between">
                     <div tw="my-6 space-x-4">
@@ -51,19 +145,19 @@ function Pending(){
                             Name</th>
                         <th
                             tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Balance</th>
+                            Σ Balance</th>
                         <th
                             tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Allocated Budget</th>
+                            Σ Allocated Budget</th>
                         <th
                             tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Date Added</th>
+                            <FontAwesomeIcon icon={faCalendar} size="sm" tw="mr-1"/>Date Added</th>
                         <th
                             tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Added By</th>
+                            <FontAwesomeIcon icon={faUser} size="sm" tw="mr-1"/>Added By</th>
                         <th
                             tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Email</th>
+                            <FontAwesomeIcon icon={faEnvelope} size="sm" tw="mr-1"/>Email</th>
                     </tr>
                 </thead>
 
@@ -125,6 +219,7 @@ function Pending(){
     )
 }
 function Active(){
+    const [showAlert, setShowAlert] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [userList, setUserList] = useState([]);
 
@@ -137,10 +232,10 @@ function Active(){
     }
     return (
         <>
-            <div tw="col-span-11 mt-10 mb-10 flex items-center space-x-3 px-3 py-2 bg-primary-100 border-t-4 border-primary-500">
+            <Alert show={showAlert} onClose={() => setShowAlert(false)}>
                 <FontAwesomeIcon icon={faInfoCircle} size="2x" tw=""/>
-                <p tw="text-gray-800 cursor-pointer">Active users are users who you have manually created or users who have had their account applications approved</p>
-            </div>
+                <p>Active users are users who you have manually created or users who have had their account applications approved</p>
+            </Alert>
             <div tw="col-span-full">
                 <div tw="flex justify-between">
                     <div tw="flex my-6 space-x-4">
@@ -160,92 +255,7 @@ function Active(){
                     </div>
                     <button tw="bg-gray-800 rounded text-primary-200 text-center my-6 px-3 py-2 font-bold" onClick={() => setShowModal(true)}><FontAwesomeIcon icon={faPlus} tw="mr-3"/>Create User</button>
                 </div>
-                    <Modal show={showModal} onClose={() => setShowModal(false)}>
-                        <form onSubmit={""} tw="grid grid-cols-12 text-sm text-center font-bold p-6 rounded-lg gap-4 ">
-                            <div tw="col-span-12 my-3 text-left text-gray-800">
-                                <FontAwesomeIcon icon={faUserPlus} size="2x" tw="my-4"/>  
-                                <p tw="text-2xl">
-                                    Create a User
-                                </p>
-                                <p tw="mt-3 text-sm font-normal">
-                                    PyGrid utilizes users and roles to appropriately permission data at a higher level. All users with the permission CAN CREATE USERS are allowd to create users in the domain. Create a user by filling out the fields below. 
-                                </p>
-                            </div>
-                            <div tw="col-span-6 text-left ">
-                                <label tw="block my-2" htmlFor="fullname">Full Name<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
-                                <input
-                                tw="block p-3 border border-gray-300 rounded-lg w-full
-                                            focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                                name="full_name"
-                                type="text"
-                                placeholder="Jane Doe"
-                                autoComplete="on"
-                                />
-                            </div>
-                            <div tw="col-span-6 text-left">
-                                <label tw="block my-2" htmlFor="email">Email<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
-                                <input
-                                tw="block p-3 border border-gray-300 rounded-lg w-full
-                                            focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                                name="email"
-                                type="email"
-                                placeholder="abc@university.edu"
-                                autoComplete="on"
-                                />
-                            </div>
-                            <div tw="col-span-6 block text-left">
-                                <label tw="block my-2" htmlFor="pw">Password<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
-                                <input
-                                tw="block p-3 border border-gray-300 rounded-lg w-full
-                                            focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                                name="password"
-                                type="password"
-                                placeholder="Text here"
-                                autoComplete="on"
-                                />
-                            </div>
-                            <div tw="col-span-6 inline-block text-left">
-                                <label tw="block my-2" htmlFor="confirmpw">Confirm Password<p tw="pl-1 inline relative bottom-1 text-primary-500">*</p></label>
-                                <input
-                                tw="block p-3 border border-gray-300 rounded-lg w-full
-                                            focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                                name="confirmpw"
-                                type="password"
-                                placeholder="Text here"
-                                autoComplete="on"
-                                />
-                            </div>
-                            <div tw="col-span-12 block text-left">
-                                <label tw="block my-2" htmlFor="website">Role<p tw="pl-1 inline relative bottom-1 text-primary-500">*</p></label>
-                                <input
-                                    tw="block p-3 border border-gray-300 rounded-lg w-full
-                                                focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                                    name="website"
-                                    type="text"
-                                    placeholder="This can help a domain owner vett your application"
-                                    autoComplete="on"
-                                />
-                            </div>
-                            <div tw="col-span-5">
-                                <label tw="col-span-full block my-2 text-left" htmlFor="website">Set Privacy Budget (PB)<p tw="pl-1 inline text-xs italic font-normal text-primary-500 ">(optional)</p></label>
-                                <input
-                                    tw="col-span-3 block p-3 border border-gray-300 rounded-lg w-full
-                                                focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                                    name="website"
-                                    type="text"
-                                    placeholder="This can help a domain owner vett your application"
-                                    autoComplete="on"
-                                />
-                            </div>
-                            <div tw="col-span-7 text-justify font-normal font-mono my-2">
-                                <p>Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy budget as credits you give to a user to perform computations from. These credits of Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. You can learn more about privacy budgets and how to allocate them at Course.OpenMined.org</p>
-                            </div>
-                            <div tw="col-span-full flex justify-between font-bold text-xl">
-                                <button tw="bg-white rounded text-primary-500 text-center my-6 px-3 py-2 my-5 border-2 border-primary-500 " type="submit" onClick={() => setShowModal(false)}>Cancel</button>
-                                <button tw="bg-primary-500 rounded text-white text-center my-6 px-3 py-2 my-5" type="submit"><FontAwesomeIcon icon={faPlus} tw="mr-3"/>Create</button>
-                            </div>
-                        </form>
-                    </Modal>
+                    <CreateUserModal show={showModal} onClose={()=>setShowModal(false)}/>
                     <Button variant={'primary'} onClick={getUserlist}>Get All Users</Button>
             <table tw="min-w-full my-3">
                 <thead>
@@ -255,19 +265,19 @@ function Active(){
                             Name</th>
                         <th
                             tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Balance</th>
+                            Σ Balance</th>
                         <th
                             tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Allocated Budget</th>
+                            Σ Allocated Budget</th> 
                         <th
                             tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Date Added</th>
+                            <FontAwesomeIcon icon={faCalendar} size="sm" tw="mr-1"/>Date Added</th>
                         <th
                             tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Added By</th>
+                            <FontAwesomeIcon icon={faUser} size="sm" tw="mr-1"/>Added By</th>
                         <th
                             tw="px-6 py-3 text-xs font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Email</th>
+                            <FontAwesomeIcon icon={faEnvelope} size="sm" tw="mr-1"/>Email</th>
                     </tr>
                 </thead>
 

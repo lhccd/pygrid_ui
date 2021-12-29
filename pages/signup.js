@@ -4,9 +4,11 @@ import tw, { styled } from 'twin.macro'
 import { useForm } from "react-hook-form"
 import React, { useEffect, useState } from "react";
 import Tag from '../components/Tag'
+import Alert from '../components'
 import Textfield from '../components/Textfield'
 import axios from "axios"
 import { faFontAwesome } from "@fortawesome/free-brands-svg-icons";
+import {faPlus, faUserPlus, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import fileSaver from "file-saver";
 
 const Background = styled.div`
@@ -34,6 +36,7 @@ export default function Signup() {
   const [DAARequired, setDAARequired] = useState(true);
   const [DAAUploaded, setDAAUploaded] = useState(false);
   const [daa, setDaa] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
 
   async function onSubmitForm(values) {
     const formData = new FormData
@@ -196,6 +199,10 @@ export default function Signup() {
                   {...register("website", { required: false })}
                 />
               </div>
+              <Alert>
+                <FontAwesomeIcon icon={faInfoCircle} size="2x" tw=""/>
+                <p tw="font-bold">Your credentials are invalid!</p>
+              </Alert>
               {DAARequired
                 ? [
                   <div tw="col-span-4 block text-left">
