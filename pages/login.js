@@ -7,7 +7,6 @@ import { useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import {login} from '../lib/auth'
-import {JSONParser} from "formidable/src/parsers";
 
 const Background = styled.div`
     background-image: url("../signup_background_image.png");
