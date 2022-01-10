@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useForm } from "react-hook-form"
 import tw, {styled} from 'twin.macro';
 import { Table } from './Table';
 import { Table2 } from './Table2';
+import { Link } from 'next/link'
+import Tag from '../components/Tag'
 import Modal from '../components/Modal';
 import Alert from '../components/Alert';
 import Button from '../components/Button';
@@ -12,94 +15,167 @@ import HttpService from '../services/HttpService'
 import axios from 'axios'
 import {getToken} from "../services/UserService";
 
-const CreateUserModal = ({show, onClose}) => (
+const UserModal = ({show, onClose}) => (
     <Modal show={show} onClose={onClose}>
-        <form onSubmit={""} tw="grid grid-cols-12 text-sm text-center font-bold p-6 rounded-lg gap-4 ">
-            <div tw="col-span-12 my-3 text-left text-gray-800">
-                <FontAwesomeIcon icon={faUserPlus} size="2x" tw="my-4"/>  
-                <p tw="text-2xl">
-                    Create a User
-                </p>
-                <p tw="mt-3 text-sm font-normal">
-                    PyGrid utilizes users and roles to appropriately permission data at a higher level. All users with the permission CAN CREATE USERS are allowd to create users in the domain. Create a user by filling out the fields below. 
-                </p>
+        <div tw="grid grid-cols-12 text-left p-6 rounded-lg gap-4">
+            <div tw="col-span-full flex items-center justify-between">
+                <div tw="flex space-x-3 items-center">
+                    <h2 tw="font-bold text-4xl text-gray-800">Jane Doe</h2>
+                    <Tag>Data Scientist</Tag>
+                </div>
+                <Button tw="float-right">Delete User</Button>
             </div>
-            <div tw="col-span-6 text-left ">
-                <label tw="block my-2" htmlFor="fullname">Full Name<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
-                <input
-                tw="block p-3 border border-gray-300 rounded-lg w-full
-                            focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                name="full_name"
-                type="text"
-                placeholder="Jane Doe"
-                autoComplete="on"
-                />
+            <p tw="col-span-full">Change Role</p> 
+
+            <h3 tw="col-span-full font-bold mt-3">Privacy Budget</h3>
+            <div tw="col-span-full flex bg-gray-50 items-center justify-between border border-gray-100 rounded p-4 space-x-3">
+                <div>
+                    <p tw="text-error-400 font-bold">10.00 ɛ</p>
+                    <p>Current Balance</p>
+                </div>
+                <div>
+                    <p tw="text-gray-800 font-bold">10.00 ɛ</p>
+                    <p>Allocated Budget</p>
+                </div>
+                <Button variant={"primary"} isSmall isHollow>Adjust Budget</Button>
             </div>
-            <div tw="col-span-6 text-left">
-                <label tw="block my-2" htmlFor="email">Email<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
-                <input
-                tw="block p-3 border border-gray-300 rounded-lg w-full
-                            focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                name="email"
-                type="email"
-                placeholder="abc@university.edu"
-                autoComplete="on"
-                />
+            <h3 tw="col-span-full font-bold mt-3">Background</h3>
+            <div tw="col-span-full flex-col border border-gray-100 rounded p-4 space-y-3">
+                <p>Email:</p>
+                <p>Company/Institution:</p>
+                <p>Website/profile:</p>
             </div>
-            <div tw="col-span-6 block text-left">
-                <label tw="block my-2" htmlFor="pw">Password<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
-                <input
-                tw="block p-3 border border-gray-300 rounded-lg w-full
-                            focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                name="password"
-                type="password"
-                placeholder="Text here"
-                autoComplete="on"
-                />
+            <h3 tw="col-span-full font-bold mt-3">System</h3>
+            <div tw="col-span-full flex-col border border-gray-100 rounded p-4 space-y-3">
+                <p>Date Added:</p>
+                <p>Data Access Agreement:</p>
+                <p>Uploaded On:</p>
             </div>
-            <div tw="col-span-6 inline-block text-left">
-                <label tw="block my-2" htmlFor="confirmpw">Confirm Password<p tw="pl-1 inline relative bottom-1 text-primary-500">*</p></label>
-                <input
-                tw="block p-3 border border-gray-300 rounded-lg w-full
-                            focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                name="confirmpw"
-                type="password"
-                placeholder="Text here"
-                autoComplete="on"
-                />
-            </div>
-            <div tw="col-span-12 block text-left">
-                <label tw="block my-2" htmlFor="website">Role<p tw="pl-1 inline relative bottom-1 text-primary-500">*</p></label>
-                <input
-                    tw="block p-3 border border-gray-300 rounded-lg w-full
-                                focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                    name="website"
-                    type="text"
-                    placeholder="This can help a domain owner vett your application"
-                    autoComplete="on"
-                />
-            </div>
-            <div tw="col-span-5">
-                <label tw="col-span-full block my-2 text-left" htmlFor="website">Set Privacy Budget (PB)<p tw="pl-1 inline text-xs italic font-normal text-primary-500 ">(optional)</p></label>
-                <input
-                    tw="col-span-3 block p-3 border border-gray-300 rounded-lg w-full
-                                focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                    name="website"
-                    type="text"
-                    placeholder="This can help a domain owner vett your application"
-                    autoComplete="on"
-                />
-            </div>
-            <div tw="col-span-7 text-justify font-normal font-mono my-2">
-                <p>Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy budget as credits you give to a user to perform computations from. These credits of Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. You can learn more about privacy budgets and how to allocate them at Course.OpenMined.org</p>
-            </div>
-            <div tw="col-span-full flex justify-between font-bold text-xl">
-                <button tw="bg-white rounded text-primary-500 text-center my-6 px-3 py-2 my-5 border-2 border-primary-500 " type="submit" onClick={() => setShowModal(false)}>Cancel</button>
-                <button tw="bg-primary-500 rounded text-white text-center my-6 px-3 py-2 my-5" type="submit"><FontAwesomeIcon icon={faPlus} tw="mr-3"/>Create</button>
-            </div>
-        </form>
+        </div>
     </Modal>
 )
+
+function CreateUserModal({show, onClose}){
+    const { register, handleSubmit, errors, reset } = useForm();
+    const [showModal, setShowModal] = useState(true);
+
+    async function onSubmitForm(values) {
+        const formData = new FormData
+        formData.append("email", values.email)
+        formData.append("full_name", values.full_name)
+        formData.append("institution", values.institution)
+        formData.append("password", values.password)
+        formData.append("website", values.website)
+        let config = {
+          method: 'post',
+          url: 'http://localhost/api/v1/users/open',
+          data: formData
+        }
+        try {
+          console.log("config data: ", values)
+          const response = await axios(config)
+          router.push('/login')
+          console.log(response);
+          setShowModal(false);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+    return(
+        <Modal show={show} onClose={onClose}>
+            <form onSubmit={handleSubmit(onSubmitForm)} tw="grid grid-cols-12 text-sm text-center font-bold p-6 rounded-lg gap-4 ">
+                <div tw="col-span-12 my-3 text-left text-gray-800">
+                    <FontAwesomeIcon icon={faUserPlus} size="2x" tw="my-4"/>  
+                    <p tw="text-2xl">
+                        Create a User
+                    </p>
+                    <p tw="mt-3 text-sm font-normal">
+                        PyGrid utilizes users and roles to appropriately permission data at a higher level. All users with the permission CAN CREATE USERS are allowd to create users in the domain. Create a user by filling out the fields below. 
+                    </p>
+                </div>
+                <div tw="col-span-6 text-left ">
+                    <label tw="block my-2" htmlFor="fullname">Full Name<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
+                    <input
+                    tw="block p-3 border border-gray-300 rounded-lg w-full
+                                focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                    name="full_name"
+                    type="text"
+                    placeholder="Jane Doe"
+                    autoComplete="on"
+                    {...register("full_name", { required: true, message: 'You must enter a name' })}
+                    />
+                </div>
+                <div tw="col-span-6 text-left">
+                    <label tw="block my-2" htmlFor="email">Email<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
+                    <input
+                    tw="block p-3 border border-gray-300 rounded-lg w-full
+                                focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                    name="email"
+                    type="email"
+                    placeholder="abc@university.edu"
+                    autoComplete="on"
+                    {...register("email",{required: true})}
+                    />
+                </div>
+                <div tw="col-span-6 block text-left">
+                    <label tw="block my-2" htmlFor="pw">Password<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
+                    <input
+                    tw="block p-3 border border-gray-300 rounded-lg w-full
+                                focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                    name="password"
+                    type="password"
+                    placeholder="Text here"
+                    autoComplete="on"
+                    {...register("password", { required: true })}
+                    />
+                </div>
+                <div tw="col-span-6 inline-block text-left">
+                    <label tw="block my-2" htmlFor="confirmpw">Confirm Password<p tw="pl-1 inline relative bottom-1 text-primary-500">*</p></label>
+                    <input
+                    tw="block p-3 border border-gray-300 rounded-lg w-full
+                                focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                    name="confirmpw"
+                    type="password"
+                    placeholder="Text here"
+                    autoComplete="on"
+                    {...register("confirmpw", { required: true })}
+                    />
+                </div>
+                <div tw="col-span-12 block text-left">
+                    <label tw="block my-2" htmlFor="website">Role<p tw="pl-1 inline relative bottom-1 text-primary-500">*</p></label>
+                    <input
+                        tw="block p-3 border border-gray-300 rounded-lg w-full
+                                    focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                        name="website"
+                        type="text"
+                        placeholder="This can help a domain owner vett your application"
+                        autoComplete="on"
+                        {...register("website", { required: false })}
+                    />
+                </div>
+                <div tw="col-span-5">
+                    <label tw="col-span-full block my-2 text-left" htmlFor="website">Set Privacy Budget (PB)<p tw="pl-1 inline text-xs italic font-normal text-primary-500 ">(optional)</p></label>
+                    <input
+                        tw="col-span-3 block p-3 border border-gray-300 rounded-lg w-full
+                                    focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                        name="website"
+                        type="text"
+                        placeholder="This can help a domain owner vett your application"
+                        autoComplete="on"
+                    />
+                </div>
+                <div tw="col-span-7 text-justify font-normal font-mono my-2">
+                    <p>Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy budget as credits you give to a user to perform computations from. These credits of Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. You can learn more about privacy budgets and how to allocate them at Course.OpenMined.org</p>
+                </div>
+                <div tw="col-span-full flex justify-between font-bold text-xl">
+                    <button tw="bg-white rounded text-primary-500 text-center my-6 px-3 py-2 my-5 border-2 border-primary-500 " onClick={onClose}>Cancel</button>
+                    <button tw="bg-primary-500 rounded text-white text-center my-6 px-3 py-2 my-5" type="submit"><FontAwesomeIcon icon={faPlus} tw="mr-3"/>Create</button>
+                </div>
+            </form>
+        </Modal>
+    )
+}
 
 function Pending(){
     const [showAlert, setShowAlert] = useState(true);
@@ -108,7 +184,8 @@ function Pending(){
     function getUserlist(e){
         e.preventDefault()
         const Token = getToken()
-        axios.get('http://localhost:80/api/v1/users/active_users',{ headers: {'Authorization': `Bearer ${Token}`}})
+        console.log("The token is:", Token)
+        axios.get('http://localhost:80/api/v1/users/active-users',{ headers: {'Authorization': `Bearer ${Token}`}})
             .then(res => setUserList(res.data))
             .catch(err => console.log(err))
     }
@@ -221,14 +298,18 @@ function Pending(){
 function Active(){
     const [showAlert, setShowAlert] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const [showUserModal, setShowUserModal] = useState(false);
     const [userList, setUserList] = useState([]);
 
     function getUserlist(e){
         e.preventDefault()
-        const Token = getToken()
-        axios.get('http://localhost:80/api/v1/users/active_users',{ headers: {'Authorization': `Bearer ${Token}`}})
+        const Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDE4Mjc5MDQsInN1YiI6IjgzNWY2MjYwLTUxYjYtNGNlNS1hYjFmLTA0ZjA4MDk5YWY2MyJ9.wqHVG4GzA7-Eolp4ABw_Px6eZDCGThF4FhiSN3BcuMg"
+        // const Token = getToken()
+        console.log("The token is:", Token)
+        axios.get('http://localhost:80/api/v1/users/active-users',{ headers: {'Authorization': `Bearer ${Token}`}})
             .then(res => setUserList(res.data))
             .catch(err => console.log(err))
+        
     }
     return (
         <>
@@ -294,8 +375,12 @@ function Active(){
 
                                 <div tw="ml-4">
                                     <div tw="text-sm font-medium leading-5 text-gray-900">
+                                    <button onClick={() => setShowUserModal(true)}>
                                         {user.full_name}
+                                    </button>
                                     </div>
+        
+                                
                                 </div>
                             </div>
                         </td>
@@ -335,6 +420,7 @@ function Active(){
                 }
                 </tbody>
             </table>
+            <UserModal show={showUserModal} onClose={()=>setShowUserModal(false)}/>
             </div>
         </>
     )
