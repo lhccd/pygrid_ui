@@ -39,7 +39,7 @@ export default function AccountSettings() {
          */
     }, [full_Name, email, institution, website]);
     async function getUser() {
-        console.log(TOKEN);
+        console.log("################################################################################");
         /*
         let config = {
             method: 'get',
@@ -48,7 +48,6 @@ export default function AccountSettings() {
                 'Authorization': 'Bearer ' + {TOKEN}
             }
         }
-         */
         try{
             const response = await axios.get('http://localhost/api/v1/users/user-profile', {
                 headers: {
@@ -65,6 +64,34 @@ export default function AccountSettings() {
 
         }catch (err){
             console.error(err);
+        }
+         */
+
+        try{
+            const apiRes = await fetch(
+                "api/user-profile",
+                {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
+
+            if(apiRes.status == 200){
+                const user = await apiRes.json();
+                setFull_Name(user.full_name);
+                setEmail(user.email);
+                setInstitution(user.institution);
+                setWebsite(user.website);
+            }
+            else{
+                alert("Couldn't fetch the user profile!");
+            }
+        }
+        catch (error){
+            console.log(error);
         }
     }
 
@@ -165,6 +192,9 @@ export default function AccountSettings() {
                 <div tw="col-span-9 mt-10 mb-10 flex items-center space-x-3 px-3 py-2 p-3 bg-primary-100 border-t-4 border-primary-500">
                     <FontAwesomeIcon icon={faInfoCircle} tw="" />
                     <p tw="text-gray-800 cursor-pointer">Your profile information is public-facing information that other users and node owners can see.</p>
+                </div>
+                <div>
+                    <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="button" onClick={getUser}>GET USER TEST BUTTON</button>
                 </div>
 
 

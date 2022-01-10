@@ -7,6 +7,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import {login} from '../lib/auth'
+import {JSONParser} from "formidable/src/parsers";
 
 const Background = styled.div`
     background-image: url("../signup_background_image.png");
@@ -33,31 +34,33 @@ export default function Login() {
 
     const onSubmitForm = async (values) => {
         try {
-            console.log("values from loginpage", values)
-            await login(values)
-            router.push('/users')
+            const username =  values.username;
+            const password =  values.password;
+            const body =JSON.stringify({
+                username,
+                password
+            })
+            console.log("values from login page", body)
+            const apiRes = await fetch("api/login",
+                {
+                    method: "POST",
+                    headers:{
+                        'Accept': "application/json",
+                        'Content-Type': "application/json"
+                    },
+                    body: body
+                });
+            if(apiRes.status == 200){
+                router.push('/users')
+            }
+            else{
+                alert("Ooops! Bad credentials :/")
+            }
+
         }catch (err) {
             console.error(err)
         }
     }
-    // async function onSubmitForm(values){
-    //     const formData = new FormData
-    //     formData.append("username", values.username)
-    //     formData.append("password", values.password)
-    //     let config = {
-    //         method: 'post', 
-    //         url: 'http://localhost/api/v1/login/access-token', 
-    //         data: formData
-    //     }
-    //     try{
-    //         console.log("config data: ", values)
-    //         const response = await axios(config) 
-    //         router.push('/users')
-    //         console.log(response); 
-    //     }catch (err){
-    //         console.error(err);
-    //     }
-    // }
 
     return(
         <Background>
