@@ -18,54 +18,19 @@ export default function AccountSettings() {
     const [showModal, setShowModal] = useState(false);
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
-    const [full_Name, setFull_Name] = useState(null);
-    const [email, setEmail] = useState(null);
-    const [institution, setInstitution] = useState(null);
-    const [website, setWebsite] = useState(null);
+    const [full_Name, setFull_Name] = useState("");
+    const [email, setEmail] = useState("");
+    const [institution, setInstitution] = useState("");
+    const [website, setWebsite] = useState("");
 
     const [isDomainOwner, setIsDomainOwner] = useState(false);
 
     useEffect(() => {
-        /*
-        axios.get('http://localhost/api/v1/users/me')
-            .then(function (response) {
-                console.log(response);
-                setFull_Name(response.config.full_name);
-                setEmail(response.config.email);
-                setInstitution(response.config.institution);
-                setWebsite(response.config.website);
-            })
+        getUser();
+    }, []);
 
-         */
-    }, [full_Name, email, institution, website]);
     async function getUser() {
         console.log("################################################################################");
-        /*
-        let config = {
-            method: 'get',
-            url: 'http://localhost/api/v1/users/user-profile',
-            headers: {
-                'Authorization': 'Bearer ' + {TOKEN}
-            }
-        }
-        try{
-            const response = await axios.get('http://localhost/api/v1/users/user-profile', {
-                headers: {
-                    authorization: `Bearer ${TOKEN}`
-                }
-            });
-
-            //const response = await axios(config)
-            console.log(response);
-            setFull_Name(response.data.full_name);
-            setEmail(response.data.email);
-            setInstitution(response.data.institution);
-            setWebsite(response.data.website);
-
-        }catch (err){
-            console.error(err);
-        }
-         */
 
         try{
             const apiRes = await fetch(
@@ -95,7 +60,37 @@ export default function AccountSettings() {
         }
     }
 
-    async function onUpdateInfo(values) {
+    async function onUpdateInfo() {
+        try{
+            const apiRes = await fetch(
+                "api/user-profile",
+                {
+                    method: "PUT",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: {
+                        "full_name": full_Name,
+                        "email": email,
+                        "institution": institution,
+                        "website": website
+                    }
+                }
+            );
+
+            if(apiRes.status == 200){
+                const user = await apiRes.json();
+                console.log(user);
+                //await router.push('/account_settings/')
+            }
+            else{
+                alert("Couldn't update the user profile!");
+            }
+        }
+        catch (error){
+            console.log(error);
+        }
         /*
         let config = {
             method: 'put',
@@ -189,35 +184,34 @@ export default function AccountSettings() {
     return (
         <div tw="font-rubik">
             <Layout >
-                <div tw="col-span-9 mt-10 mb-10 flex items-center space-x-3 px-3 py-2 p-3 bg-primary-100 border-t-4 border-primary-500">
+                <div tw="col-span-9 my-10 mx-3 flex items-center space-x-3 p-3 bg-primary-100 border-t-4 border-primary-500">
                     <FontAwesomeIcon icon={faInfoCircle} tw="" />
                     <p tw="text-gray-800 cursor-pointer">Your profile information is public-facing information that other users and node owners can see.</p>
                 </div>
-                <div>
-                    <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="button" onClick={getUser}>GET USER TEST BUTTON</button>
-                </div>
 
-
-                <div tw="col-span-5">
+                <div tw="col-span-5 mx-3">
                     <p tw="text-2xl text-left font-bold">Profile</p>
-                    <form tw="text-gray-500 my-5" onSubmit={onUpdateInfo}>
+                    <form tw="text-gray-500 my-5">
                         <div tw="mt-2">
                             <label tw="font-bold text-sm" htmlFor="name">Full Name</label><p tw="pl-1 inline relative bottom-1 text-primary-500 font-bold">*</p>
                         </div>
                         <div tw="mt-2">
-                            <input tw="p-2 border border-gray-300 rounded text-black" id="name" name="name" value={full_Name} type="name" placeholder="Full Name" required />
+                            <input tw="p-2 border border-gray-300 rounded text-black w-full" id="name" name="name"
+                                   value={full_Name} onChange={e => setFull_Name(e.target.value)} type="name" placeholder="Full Name" required/>
                         </div>
                         <div tw="mt-4">
                             <label tw="font-bold text-sm" htmlFor="email">Email</label><p tw="pl-1 inline relative bottom-1 text-primary-500 font-bold">*</p>
                         </div>
                         <div tw="mt-2">
-                            <input tw="p-2 border border-gray-300 rounded text-black" id="email" name="email" value={email} type="email" placeholder="abc@university.edu" autoComplete="email" required />
+                            <input tw="p-2 border border-gray-300 rounded text-black w-full" id="email" name="email"
+                                   value={email} onChange={e => setEmail(e.target.value)} type="email" placeholder="abc@university.edu" autoComplete="email" required />
                         </div>
                         <div tw="mt-4">
                             <label tw="font-bold text-sm" htmlFor="company">Company/Institution</label><p tw="pl-1 inline relative text-primary-500 text-xs italic">(optional)</p>
                         </div>
                         <div tw="mt-2">
-                            <input tw="p-2 border border-gray-300 rounded text-black" id="company" name="company" value={institution} type="text" placeholder="Company/Institution" required />
+                            <input tw="p-2 border border-gray-300 rounded text-black w-full" id="company" name="company"
+                                   value={institution} onChange={e => setInstitution(e.target.value)} type="text" placeholder="Company/Institution" />
                         </div>
                         <div tw="mt-2">
                             <p tw="text-sm ml-3">Which company, organization, or institution are you affiliated with?</p>
@@ -226,31 +220,32 @@ export default function AccountSettings() {
                             <label tw="font-bold text-sm" htmlFor="website">Website/Profile</label><p tw="pl-1 inline relative text-primary-500 text-xs italic">(optional)</p>
                         </div>
                         <div tw="mt-2">
-                            <input tw="p-2 border border-gray-300 rounded text-black" id="website" name="website" value={website} type="text" placeholder="Website/Profile" required />
+                            <input tw="p-2 border border-gray-300 rounded text-black w-full" id="website" name="website"
+                                   value={website} onChange={e => setWebsite(e.target.value)} type="text" placeholder="Website/Profile" />
                         </div>
                         <div tw="text-left mt-2">
                             <p tw="text-sm ml-3 mr-5">Provide a link to your personal or university web page or a social media profile to help others get to know you</p>
                         </div>
                         <div id="buttons" tw="text-center mt-10 inline-flex content-start whitespace-nowrap">
-                            <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="submit">Save Changes</button>
+                            <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="button" onClick={onUpdateInfo}>Save Changes</button>
                             <button tw="text-primary-500 font-bold" type="reset">Cancel</button>
                         </div>
                     </form>
                 </div>
 
-                <div tw="col-start-1 col-span-5">
+                <div tw="col-start-1 col-span-5 mx-3">
                     <p tw="text-2xl text-left font-bold mt-10">Password</p>
                     <form tw="text-gray-500 my-5" onSubmit={onUpdatePassword}>
                         <div tw="mt-2">
                             <label tw="text-sm font-bold" htmlFor="password-old">Current Password</label><p tw="pl-1 inline relative bottom-1 text-primary-500 font-bold">*</p>
                         </div>
                         <div tw="mt-2">
-                            <input tw="p-2 border border-gray-300 rounded text-black" id="password-old" name="password-old" type="password" placeholder="********" required />                        </div>
+                            <input tw="p-2 border border-gray-300 rounded text-black w-full" id="password-old" name="password-old" type="password" placeholder="********" required />                        </div>
                         <div tw="mt-4">
                             <label tw="text-sm font-bold" htmlFor="password-new">New Password</label><p tw="pl-1 inline relative bottom-1 text-primary-500 font-bold">*</p>
                         </div>
                         <div tw="mt-2">
-                            <input tw="p-2 border border-gray-300 rounded text-black" id="password-new" name="password-new" type="password" placeholder="********" required />
+                            <input tw="p-2 border border-gray-300 rounded text-black w-full" id="password-new" name="password-new" type="password" placeholder="********" required />
                         </div>
 
                         <div id="buttons" tw="col-start-1 text-center mt-10 inline-flex content-start whitespace-nowrap">
@@ -260,7 +255,7 @@ export default function AccountSettings() {
                     </form>
                 </div>
 
-                <div id="delete-account" tw="col-span-9">
+                <div id="delete-account" tw="col-span-9 mx-3">
                     <p tw="text-2xl text-left font-bold mt-10">Delete Account</p>
                     <div tw="text-gray-500 text-sm py-6 rounded-lg gap-2">
                         <p tw="text-sm mr-5">

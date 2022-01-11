@@ -75,7 +75,7 @@ export default function Signup() {
 
   return (
     <Background>
-      <div id="app" tw="flex flex-col h-screen w-screen py-10">
+      <div id="app" tw="flex flex-col h-screen w-screen py-10 font-rubik">
         <div id="header" tw="grid grid-cols-12 bg-gray-100 bg-opacity-5 rounded-lg gap-6 py-4">
           <img tw="col-start-2 col-span-2 object-scale-down h-14 pl-10" src={"/assets/small-logo.png"} alt="py-grid-logo" />
         </div>
@@ -119,8 +119,8 @@ export default function Signup() {
             </div>
           </div>
           <div id="login-form" tw="flex-col col-start-7 col-end-12 bg-white p-5 m-3 mb-60 shadow-lg text-gray-500 content-center text-lg rounded h-auto">
-            <form onSubmit={handleSubmit(onSubmitForm)} tw="grid grid-cols-4 text-sm text-center font-bold p-6 rounded-lg gap-4 ">
-              <div tw="col-span-2 text-left ">
+            <form onSubmit={handleSubmit(onSubmitForm)} tw="grid grid-cols-4 text-sm text-center p-6 rounded-lg gap-4 ">
+              <div tw="col-span-2 text-left font-bold ">
                 <label tw="block my-2" htmlFor="fullname">Full Name<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
                 <input
                   tw="block p-3 border border-gray-300 rounded-lg w-full
@@ -132,7 +132,7 @@ export default function Signup() {
                   {...register("full_name", { required: true, message: 'You must enter a name' })}
                 />
               </div>
-              <div tw="col-span-2 text-left">
+              <div tw="col-span-2 text-left font-bold ">
                 <label tw="block my-2" htmlFor="company">Company/Institution<p tw="pl-1 inline text-xs italic font-normal text-primary-500 ">(optional)</p></label>
                 <input
                   tw="block p-3 border border-gray-300 rounded-lg w-full
@@ -148,7 +148,7 @@ export default function Signup() {
                     })}
                 />
               </div>
-              <div tw="col-span-4 text-left">
+              <div tw="col-span-4 text-left font-bold ">
                 <label tw="block my-2" htmlFor="email">Email<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
                 <input
                   tw="block p-3 border border-gray-300 rounded-lg w-full
@@ -160,7 +160,7 @@ export default function Signup() {
                   {...register("email", { required: true })}
                 />
               </div>
-              <div tw="col-span-2 block text-left">
+              <div tw="col-span-2 block text-left font-bold">
                 <label tw="block my-2" htmlFor="pw">Password<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
                 <input
                   tw="block p-3 border border-gray-300 rounded-lg w-full
@@ -172,7 +172,7 @@ export default function Signup() {
                   {...register("password", { required: true })}
                 />
               </div>
-              <div tw="col-span-2 inline-block text-left">
+              <div tw="col-span-2 inline-block text-left font-bold">
                 <label tw="block my-2" htmlFor="confirmpw">Confirm Password<p tw="pl-1 inline relative bottom-1 text-primary-500">*</p></label>
                 <input
                   tw="block p-3 border border-gray-300 rounded-lg w-full
@@ -184,7 +184,7 @@ export default function Signup() {
                   {...register("confirmpw", { required: true })}
                 />
               </div>
-              <div tw="col-span-4 block text-left">
+              <div tw="col-span-4 block text-left font-bold">
                 <label tw="block my-2" htmlFor="website">Website/Profile<p tw="pl-1 inline text-xs italic font-normal text-primary-500 ">(optional)</p></label>
                 <input
                   tw="block p-3 border border-gray-300 rounded-lg w-full
@@ -199,7 +199,7 @@ export default function Signup() {
               {DAARequired
                 ? [
                   <div tw="col-span-4 block text-left">
-                    <label tw="block my-2">Upload Signed</label>
+                    <label tw="block my-2 font-bold ">Upload Signed</label>
                     <p>This domain requires a Data Access Agreement (DAA) to be signed before an
                       account can be made. Please download the agreement below and upload a
                       signed version when you are ready to apply.</p>
@@ -207,7 +207,7 @@ export default function Signup() {
                       ?
                       <div>
                         <div tw="w-2/3 flex justify-between bg-gray-100 text-black my-4 py-1">
-                          <button tw="mx-2 underline" type="button" onClick={onDAAClick}>
+                          <button tw="mx-2 underline font-bold " type="button" onClick={onDAAClick}>
                             {daa.name}
                           </button>
                           <button tw="font-bold mx-2" type="button" onClick={onXClick}>

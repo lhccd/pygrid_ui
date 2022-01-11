@@ -12,7 +12,7 @@ export default async (req, res) => {
             username,
             password
         }
-        const apiRes = await axios.post(`${API_URL}/login/access-token`, data);
+        const apiRes = await axios.post(`${API_URL}/login/get-token`, data);
         if (apiRes.status === 200) {
             res.setHeader('Set-Cookie', [
                     serialize(
