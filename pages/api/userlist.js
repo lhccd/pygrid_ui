@@ -26,9 +26,7 @@ export default async (req, res) => {
             const data = apiRes.data;
 
             if (apiRes.status === 200){
-                return res.status(200).json({
-                    data
-                });
+                return res.status(200).json(data);
             }
             else{
                 return res.status(apiRes.status).json({

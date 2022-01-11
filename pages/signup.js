@@ -4,9 +4,11 @@ import tw, { styled } from 'twin.macro'
 import { useForm } from "react-hook-form"
 import React, { useEffect, useState } from "react";
 import Tag from '../components/Tag'
+import Alert from '../components'
 import Textfield from '../components/Textfield'
 import axios from "axios"
 import { faFontAwesome } from "@fortawesome/free-brands-svg-icons";
+import {faPlus, faUserPlus, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import fileSaver from "file-saver";
 
 const Background = styled.div`
@@ -34,6 +36,7 @@ export default function Signup() {
   const [DAARequired, setDAARequired] = useState(true);
   const [DAAUploaded, setDAAUploaded] = useState(false);
   const [daa, setDaa] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
 
   async function onSubmitForm(values) {
     const formData = new FormData
@@ -78,6 +81,12 @@ export default function Signup() {
       <div id="app" tw="flex flex-col h-screen w-screen py-10">
         <div id="header" tw="grid grid-cols-12 bg-gray-100 bg-opacity-5 rounded-lg gap-6 py-4">
           <img tw="col-start-2 col-span-2 object-scale-down h-14 pl-10" src={"/assets/small-logo.png"} alt="py-grid-logo" />
+          <div tw="col-start-9 col-span-4">
+            {/* <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={variant}>
+                <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                {variant==='error' ? <p>Your credentials are incorrect!</p> : <p>Your credentials are correct!</p>}
+            </Alert> */}
+          </div>
         </div>
         <div id="content" tw="grid grid-cols-12 flex-grow text-gray-600 text-left text-lg rounded-lg gap-6 ">
           <div id="domain-box" tw="col-start-2 col-end-6 my-10 p-10 text-gray-800">
@@ -196,6 +205,7 @@ export default function Signup() {
                   {...register("website", { required: false })}
                 />
               </div>
+              
               {DAARequired
                 ? [
                   <div tw="col-span-4 block text-left">

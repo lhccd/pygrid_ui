@@ -7,6 +7,10 @@ import { useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import {login} from '../lib/auth'
+import Alert from '../components/Alert';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faExclamationCircle, faExclamationTriangle, faExpandAlt, faTimes} from '@fortawesome/free-solid-svg-icons'
+import {getToken} from '../lib/auth'
 
 const Background = styled.div`
     background-image: url("../signup_background_image.png");
@@ -29,6 +33,8 @@ const DomainBody = [
 
 export default function Login() {
     const { register, handleSubmit, errors, reset } = useForm();
+    const [showAlert, setShowAlert] = useState(false);
+    const [variant, setVariant] = useState('primary')
     const router = useRouter()
 
     const onSubmitForm = async (values) => {
@@ -51,6 +57,8 @@ export default function Login() {
                 });
             if(apiRes.status == 200){
                 router.push('/users')
+                setVariant('success');
+                setShowAlert(true);
             }
             else{
                 alert("Ooops! Bad credentials :/")
@@ -58,6 +66,8 @@ export default function Login() {
 
         }catch (err) {
             console.error(err)
+            setVariant('error');
+            setShowAlert(true);
         }
     }
 
@@ -66,6 +76,12 @@ export default function Login() {
             <div id="app" tw="flex flex-col h-screen w-screen py-10">
                 <div id="header" tw="grid grid-cols-12 bg-gray-100 bg-opacity-5 rounded-lg gap-6 py-4">
                     <img tw="col-start-2 col-span-2 object-scale-down h-14 pl-10" src={"/assets/small-logo.png"} alt="py-grid-logo"/>
+                    <div tw="col-start-9 col-span-4">
+                        <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={variant}>
+                            <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                            {variant==='error' ? <p>Your credentials are incorrect!</p> : <p>Your credentials are correct!</p>}
+                        </Alert>
+                    </div>
                 </div>
                 <div id="content" tw="grid grid-cols-12 flex-grow text-gray-800 text-left text-lg py-4 rounded-lg gap-6 ">
                 <div id="domain-box" tw="col-start-2 col-end-6 my-10 p-10 text-gray-800">
@@ -130,7 +146,7 @@ export default function Login() {
                                 type="password" 
                                 placeholder="Text here" 
                                 autoComplete="on"  
-                                {...register("password", { required: true})} 
+                                {...register("password", { required: "Password required!"})} 
                             />
                             <p tw="col-span-4 text-center text-gray-600 text-sm">Don't have an account yet?
                                 <a href="/signup" tw="col-span-4 text-center text-blue-500"> Apply for an account here</a>
