@@ -16,7 +16,6 @@ import axios from 'axios'
 import {getToken} from "../services/UserService";
 import useSWR from 'swr'
 
-
 function getUserlist(){
     const fetcher = (...args) => fetch(...args).then(res => res.json())
     const { data, error } = useSWR('/api/userlist', fetcher)
