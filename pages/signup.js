@@ -8,6 +8,8 @@ import Textfield from '../components/Textfield'
 import axios from "axios"
 import { faFontAwesome } from "@fortawesome/free-brands-svg-icons";
 import fileSaver from "file-saver";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faDownload, faPlus, faTimes} from "@fortawesome/free-solid-svg-icons";
 
 const Background = styled.div`
     background-image: url("../signup_background_image.png");
@@ -211,14 +213,16 @@ export default function Signup() {
                             {daa.name}
                           </button>
                           <button tw="font-bold mx-2" type="button" onClick={onXClick}>
-                            X
+                            <FontAwesomeIcon icon={faTimes} size="sm" tw=""/>
                           </button>
                         </div>
                         <div>
-                          <input tw="col-start-2 col-end-4 text-primary-500 border-primary-500 rounded bg-white text-center font-bold mx-6 px-3 py-2 my-5"
-                            type="button"
-                            value="Replace File"
-                            onClick={() => document.getElementById('daa_pdf_replace').click()} />
+                          <button tw="col-start-2 col-end-4 text-primary-500 border border-primary-500 rounded bg-white text-center font-bold mx-6 px-3 py-2 my-5"
+                                  type="button"
+                                  onClick={() => document.getElementById('daa_pdf_replace').click()}>
+                            <FontAwesomeIcon icon={faPlus} tw="mr-2" />
+                            Replace File
+                          </button>
                           <input tw="hidden"
                             id="daa_pdf_replace"
                             name="daa_pdf_replace"
@@ -228,16 +232,19 @@ export default function Signup() {
 
                           <button
                             tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 py-2 my-5">
+                            <FontAwesomeIcon icon={faDownload} tw="mr-2" />
                             Download Agreement
                           </button>
                         </div>
                       </div>
                       :
                       <div>
-                        <input tw="col-start-2 col-end-4 text-primary-500 border-primary-500 rounded bg-white text-center font-bold mx-6 px-3 py-2 my-5"
+                        <button tw="col-start-2 col-end-4 text-primary-500 border border-primary-500 rounded bg-white text-center font-bold mx-6 px-3 py-2 my-5"
                           type="button"
-                          value="Upload File"
-                          onClick={() => document.getElementById('daa_pdf').click()} />
+                          onClick={() => document.getElementById('daa_pdf').click()}>
+                          <FontAwesomeIcon icon={faPlus} tw="mr-2" />
+                          Upload File
+                        </button>
                         <input tw="hidden"
                           id="daa_pdf"
                           name="daa_pdf"
@@ -246,6 +253,7 @@ export default function Signup() {
                         />
                         <button
                           tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 my-5">
+                          <FontAwesomeIcon icon={faDownload} tw="mr-2" />
                           Download agreement
                         </button>
                       </div>

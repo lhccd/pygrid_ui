@@ -1,14 +1,23 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import tw, {styled} from 'twin.macro';
 import { Table } from './Table';
 import { Table2 } from './Table2';
 import Modal from '../components/Modal';
-import {faPlus, faInfoCircle, faCheck, faTimes} from '@fortawesome/free-solid-svg-icons'
+import {
+    faPlus,
+    faInfoCircle,
+    faCheck,
+    faTimes,
+    faExclamationTriangle,
+    faDownload
+} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import ListBox from './ListBox';
 import Tag from "./Tag";
 import {useForm} from "react-hook-form";
 import ToggleSwitch from "./ToggleSwitch";
+import {faCheckCircle} from "@fortawesome/free-solid-svg-icons/faCheckCircle";
+import * as fileSaver from "file-saver";
 
 // const styles = {
 //     container: ({ hasBg }) => [
@@ -52,46 +61,100 @@ const DomainBody = [
 ]
 
 function Profile(){
+    const [description, setDescription] = useState("");
+    const [email, setEmail] = useState("");
+    const [newTag, setNewTag] = useState("");
+    const [tags, setTags] = useState([]);
+
     const [showModal, setShowModal] = useState(false);
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
     const { register, handleSubmit, errors, reset } = useForm();
 
-    function onSubmitProfile(values){
+    const onAddTag = () => {
+        if (newTag!=""){
+            setTags((tags) => ([...tags, newTag]));
+        }
+    }
 
+    const tagItems = tags.map((tag) =>
+        <Tag>{tag} <button
+            onClick={() => setTags(tags.filter(item => item !== tag))}
+            type="button"><FontAwesomeIcon icon={faTimes} size="sm" tw=""/></button></Tag>
+    );
+
+    async function onSubmitProfile(){
+        /*
+        const body =JSON.stringify({
+            description,
+            email,
+            tags
+        })
+        try{
+            const apiRes = await fetch(
+                "api/domain-profile",
+                {
+                    method: "PUT",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: body
+                }
+            );
+
+            if(apiRes.status == 200){
+                const domain = await apiRes.json();
+                console.log(domain);
+            }
+            else{
+                alert("Couldn't update the domain profile!");
+            }
+        }
+        catch (error){
+            console.log(error);
+        }
+         */
     }
 
     async function onPurgeNode() {
         setShowModal(false);
         setShowFeedbackModal(true);
-    }
-
-    async function onSubmitFeedbackForm(values) {
         /*
-        const formData = new FormData
-        formData.append("frustrations", values.frustrations)
-        formData.append("suggestions", values.suggestions)
-        let config = {
-            method: 'post',
-            url: 'http://localhost/api/v1/???',
-            data: formData
-        }
         try{
-            console.log("config data: ", values)
-            const response = await axios(config)
-            console.log(response);
-            router.push('/login')
-        }catch (err){
-            console.error(err);
+            const apiRes = await fetch(
+                "api/domain-profile",
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                }
+            );
+
+            if(apiRes.status == 200){
+                const response = await apiRes.json();
+                console.log(response);
+            }
+            else{
+                alert("Couldn't delete the domain profile!");
+            }
+        }
+        catch (error){
+            console.log(error);
         }
 
          */
+    }
+
+    async function onSubmitFeedbackForm(values) {
         setShowFeedbackModal(false)
+        router.push('/login');
     }
 
     const onClickSkipFeedback = () => {
         setShowFeedbackModal(false);
-        reset();
-        //router.push('/login');
+        router.push('/login');
     }
 
     return (
@@ -99,26 +162,26 @@ function Profile(){
             <div id="domain-box" tw="col-start-3 col-end-11 text-gray-800">
                 <div tw="divide-y">
                     <div id="general">
-                        <h1 tw="font-bold text-left text-xl my-4 mt-10">General</h1>
+                        <h1 tw="font-bold text-left text-xl font-rubik my-4 mt-10">General</h1>
                         <div tw="divide-y divide-gray-200 divide-solid">
                             <ul id="domain-info" tw="text-left text-sm mt-4 mb-8">
-                                <li tw="py-2">
+                                <li tw="py-2" key="name">
                                     <a tw="font-bold text-gray-700">Domain Name: </a>
                                     <a tw="font-mono">{DomainBody[0].Name}</a>
                                 </li>
-                                <li tw="py-2">
+                                <li tw="py-2" key="id">
                                     <a tw="font-bold text-gray-700">ID#: </a>
                                     <a>{DomainBody[0].ID}</a>
                                 </li>
-                                <li tw="py-2">
+                                <li tw="py-2" key="datasets">
                                     <a tw="font-bold text-gray-700">Hosted Datasets: </a>
                                     <a tw="font-mono">{DomainBody[0].HostedDatasets}</a>
                                 </li>
-                                <li tw="py-2">
+                                <li tw="py-2" key="deployedOn">
                                     <a tw="font-bold text-gray-700">Deployed On: </a>
                                     <a tw="font-mono">{DomainBody[0].DeployedOn}</a>
                                 </li>
-                                <li tw="py-2">
+                                <li tw="py-2" key="owner">
                                     <a tw="font-bold text-gray-700">Owner: </a>
                                     <a tw="font-mono">{DomainBody[0].Owner}</a>
                                 </li>
@@ -128,33 +191,35 @@ function Profile(){
                     <div id="profile-options">
                         <form tw="col-span-8 my-5" onSubmit={onSubmitProfile}>
                             <div tw="mt-8">
-                                <label tw="text-xl font-bold mt-8" htmlFor="description">Domain Description</label><p tw="pl-2 inline relative text-primary-500 italic">Optional</p>
+                                <label tw="text-xl font-bold font-rubik mt-8" htmlFor="description">Domain Description</label><p tw="pl-2 inline relative text-primary-500 italic">Optional</p>
                             </div>
                             <div tw="mt-2">
-                                <input tw="p-2 border border-gray-300 rounded text-black w-full py-8" id="description" name="description" type="text" placeholder="Describe your domain to potential users here..."/>
+                                <input tw="p-2 border border-gray-300 rounded text-black w-full" id="description" name="description" type="text" placeholder="Describe your domain to potential users here..."
+                                       value={description} onChange={e => setDescription(e.target.value)}/>
                             </div>
                             <div tw="mt-8">
-                                <label tw="text-xl font-bold mt-8" htmlFor="email">Support Email</label><p tw="pl-2 inline relative text-primary-500 italic">Optional</p>
+                                <label tw="text-xl font-bold font-rubik mt-8" htmlFor="email">Support Email</label><p tw="pl-2 inline relative text-primary-500 italic">Optional</p>
                             </div>
                             <div tw="mt-2">
                                 <p tw="text-sm text-gray-600">An email available for users to use when they have specific questions about your domain node</p>
                             </div>
                             <div tw="mt-2">
-                                <input tw="p-2 border border-gray-300 rounded text-black w-full" id="email" name="email" type="email" placeholder="support@company.org"/>
+                                <input tw="p-2 border border-gray-300 rounded text-black w-full" id="email" name="email" type="email" placeholder="support@company.org"
+                                       value={email} onChange={e => setEmail(e.target.value)}/>
                             </div>
                             <div tw="mt-8">
-                                <label tw="text-xl font-bold mt-8" htmlFor="tags">Tags</label><p tw="pl-2 inline relative text-primary-500 italic">Optional</p>
+                                <label tw="text-xl font-bold font-rubik mt-8" htmlFor="tags">Tags</label><p tw="pl-2 inline relative text-primary-500 italic">Optional</p>
                             </div>
                             <div tw="mt-2 inline-flex w-full">
-                                <input tw="p-2 border border-gray-300 rounded-l text-black w-full" id="tags" name="tags" type="text" placeholder="Create new tag here..."/>
-                                <button tw="border border-gray-300 bg-gray-100 rounded-r text-gray-800 p-2 whitespace-nowrap" type="button">Add</button>
+                                <input tw="p-2 border border-gray-300 rounded-l text-black w-full" id="tags" name="tags" type="text" placeholder="Create new tag here..."
+                                       value={newTag} onChange={e => setNewTag(e.target.value)}/>
+                                <button tw="border border-gray-300 bg-gray-100 rounded-r text-gray-800 p-2 whitespace-nowrap" type="button"
+                                        onClick={onAddTag}>Add</button>
                             </div>
-                            <div id="tags" tw="mt-2">
-                                <Tag>Commodities <FontAwesomeIcon icon={faTimes} size="sm" tw=""/></Tag>
-                                <Tag>Trade <FontAwesomeIcon icon={faTimes} size="sm" tw=""/></Tag>
-                                <Tag>Canada <FontAwesomeIcon icon={faTimes} size="sm" tw=""/></Tag>
+                            <div id="tags" tw="my-2">
+                                {tagItems}
                             </div>
-                            <div id="buttons" tw="text-center mt-10 inline-flex content-start whitespace-nowrap">
+                            <div id="buttons" tw="text-center my-8 inline-flex content-start whitespace-nowrap">
                                 <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="submit">Save Changes</button>
                             </div>
                         </form>
@@ -162,32 +227,30 @@ function Profile(){
 
 
                     <div id="purge-node" tw="">
-                        <p tw="text-xl text-left font-bold mt-10">Reset/Purge Domain Node</p>
-                        <div tw="text-gray-500 text-sm py-6 rounded-lg gap-2">
+                        <p tw="text-xl text-left font-bold font-rubik mt-10">Reset/Purge Domain Node</p>
+                        <div tw="text-gray-500 py-6 rounded-lg gap-2">
                             <p tw="text-sm mr-5">
                                 Description here of what this option means. Also might want to provide a link out that explains how to delete a node via command line.
                             </p>
-                            <div id="delete-button"
-                                 tw="text-center mt-10 inline-flex content-start whitespace-nowrap"
-                            >
-                                <button tw="bg-error-500 rounded text-white font-bold py-2 px-4 mr-6" type="submit"
-                                        onClick={() => setShowModal(true)}
-                                >Reset/Purge Node</button>
-                            </div>
+                            <button tw="bg-error-500 rounded text-white font-bold py-2 px-4 mr-6 mt-10" type="submit"
+                                    onClick={() => setShowModal(true)}
+                            >Reset/Purge Node</button>
+
                             <Modal show={showModal} onClose={() => setShowModal(false)}>
-                                <div>
-                                    <div tw="flex justify-center p-3">
-                                        <h1 tw="text-2xl font-bold mt-3">
+                                <div tw="text-center ">
+                                    <div tw="flex flex-col p-3 mt-3">
+                                        <FontAwesomeIcon icon={faExclamationTriangle} size="2x" tw="text-warning-500 self-center m-6"/>
+                                        <h1 tw="text-3xl font-bold font-rubik text-gray-800">
                                             Are you Sure You Want to Reset/Purge this Domain Node?
                                         </h1>
                                     </div>
-                                    <div tw="p-6">
+                                    <div tw="p-6 font-roboto text-gray-600">
                                         <p>
                                             Description here of what this option means. Also might want to provide a link out
                                             that explains how to delete a node via command line.
                                         </p>
                                     </div>
-                                    <div tw="flex justify-center p-6">
+                                    <div tw="flex justify-center p-6 font-bold font-roboto">
                                         <button
                                             tw="bg-error-500 rounded text-white font-bold py-2 px-4 mr-6"
                                             type="button"
@@ -196,7 +259,7 @@ function Profile(){
                                             Reset/Purge Node
                                         </button>
                                         <button
-                                            tw="text-error-500 font-bold py-2 px-4 mr-6"
+                                            tw="text-error-500 font-bold py-2 px-4 mr-6 rounded"
                                             type="button"
                                             onClick={() => setShowModal(false)}
                                         >
@@ -206,28 +269,29 @@ function Profile(){
                                 </div>
                             </Modal>
                             <Modal show={showFeedbackModal} onClose={() => setShowFeedbackModal(false)}>
-                                <div>
-                                    <div tw="flex justify-center p-3">
-                                        <h1 tw="text-2xl font-bold mt-3">
+                                <div tw="text-center">
+                                    <div tw="flex flex-col p-3 mt-3">
+                                        <FontAwesomeIcon icon={faCheckCircle} size="2x" tw="text-success-500 self-center m-6"/>
+                                        <h1 tw="text-3xl font-bold font-rubik text-gray-800">
                                             Your Domain Node Has Been Reset/Purged
                                         </h1>
                                     </div>
-                                    <div tw="p-6">
+                                    <div tw="p-6 text-gray-600 font-roboto">
                                         <p>
-                                            To help us improve future experiences could you share with us any frustrations or
-                                            suggestions you have with or for the PyGridUI Platform?
+                                            To help us improve future experiences could you share with us any frustrations
+                                            or suggestions you have with or for the PyGridUI Platform?
                                         </p>
                                     </div>
-                                    <form tw="flex flex-col justify-start mx-4" onSubmit={handleSubmit(onSubmitFeedbackForm)}>
-                                        <label tw="text-left my-2 inline-flex" htmlFor="frustrations"> <p tw="font-bold">Frustrations </p><p tw="pl-1 inline relative text-sm text-primary-500 ">(optional)</p></label>
+                                    <form tw="flex flex-col justify-start font-roboto mx-4" onSubmit={handleSubmit(onSubmitFeedbackForm)}>
+                                        <label tw="text-left my-2 inline-flex" htmlFor="frustrations"> <p tw="font-bold text-gray-500">Frustrations </p><p tw="pl-1 inline relative text-sm italic text-primary-600 ">(optional)</p></label>
                                         <input
-                                            tw="text-left p-3 border border-gray-300 rounded-lg break-words focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                                            tw="text-left p-3 border border-gray-300 rounded-lg break-words resize-y focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
                                             name="frustrations"
                                             type="text"
                                             placeholder="What felt vague or cumbersome?"
                                             {...register("frustrations", { required: false })}
                                         />
-                                        <label tw="text-left my-2 mt-4 inline-flex" htmlFor="suggestions"> <p tw="font-bold">Suggestions</p><p tw="pl-1 inline relative text-sm text-primary-500 ">(optional)</p></label>
+                                        <label tw="text-left my-2 mt-4 inline-flex" htmlFor="suggestions"> <p tw="font-bold text-gray-500">Suggestions</p><p tw="pl-1 inline relative text-sm italic text-primary-600 ">(optional)</p></label>
                                         <input
                                             tw="text-left p-3 border border-gray-300 rounded-lg focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
                                             name="suggestions"
@@ -243,7 +307,7 @@ function Profile(){
                                                 Submit Response
                                             </button>
                                             <button
-                                                tw="text-primary-500 font-bold py-2 px-4 mr-6 border rounded-lg border-primary-500"
+                                                tw="text-primary-500 font-bold py-2 px-4 mr-6 rounded-lg"
                                                 type="button"
                                                 onClick={onClickSkipFeedback}
                                             >
@@ -262,23 +326,33 @@ function Profile(){
 }
 
 function Config(){
-    const [DAARequired, setDAARequired] = useState(true);
+    const [DAARequired, setDAARequired] = useState(false);
+    const [DAAUploaded, setDAAUploaded] = useState(false);
     const { register, handleSubmit, errors, reset } = useForm();
     const [daa, setDaa] = useState(null);
+
+    useEffect( () => {
+
+        }
+    ,[DAARequired])
+
 
     const onUploadDaa = (e) => {
         setDAAUploaded(true);
         let files = e.target.files;
         setDaa(files[0]);
     }
+    const onDAAClick = () => {
+        fileSaver.saveAs(daa);
+    };
 
     return (
         <>
             <div tw="col-start-3 col-end-11 divide-y text-gray-800">
                 <div id="daa-toggle" tw="">
                     <div tw="flex justify-between mt-10">
-                        <p tw="text-xl text-left font-bold">Require Data Access Agreement</p>
-                        <ToggleSwitch />
+                        <p tw="text-xl text-left font-bold font-rubik">Require Data Access Agreement</p>
+                        <ToggleSwitch onToggle={() => setDAARequired(!DAARequired)}/>
                     </div>
                     <div tw="text-gray-500 text-sm py-6 rounded-lg gap-2">
                         <p tw="text-sm mr-5">
@@ -291,31 +365,51 @@ function Config(){
                     {DAARequired
                         ? [
                             <div tw="">
-                                <p tw="text-xl text-left font-bold mt-10">Data Access Agreement</p>
+                                <p tw="text-xl text-left font-bold font-rubik mt-10">Data Access Agreement<p tw="pl-2 inline relative bottom-1 text-primary-500 font-bold">*</p></p>
                                 <div tw="text-gray-500 text-sm py-6 rounded-lg gap-2">
                                     <p tw="text-sm mr-5">
                                         A Data Access Agreement (DAA) is a... Please upload the legal agreement you would like to require for your domain users.
                                     </p>
                                 </div>
-                                <div>
-                                    <button
-                                        tw="text-primary-500 font-bold py-2 px-4 mr-6 border rounded-lg border-primary-500"
-                                        type="button"
-                                        onClick={() => document.getElementById('daa_pdf').click()}
-                                    >
-                                        <FontAwesomeIcon icon={faPlus} size="sm" tw="mr-2" />
-                                        Upload File
-                                    </button>
-                                    <input tw="hidden"
-                                           id="daa_pdf"
-                                           name="daa_pdf"
-                                           type='file'
-                                           {...register("daa_pdf", { onChange: onUploadDaa, required: true })}
-                                    />
-                                </div>
-                                <div id="buttons" tw="text-center mt-10 inline-flex content-start whitespace-nowrap">
-                                    <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="submit">Save Changes</button>
-                                </div>
+                                {DAAUploaded
+                                    ?
+                                    <div>
+                                        <div tw="w-2/3 flex justify-between bg-gray-100 text-black my-4 py-1">
+                                            <button tw="mx-2 underline font-bold " type="button" onClick={onDAAClick}>
+                                                {daa.name}
+                                            </button>
+                                        </div>
+                                        <div tw="my-10 flex items-center space-x-3 p-3 bg-primary-100">
+                                            <FontAwesomeIcon icon={faInfoCircle} tw="" />
+                                            <p tw="text-gray-800 cursor-pointer break-normal">
+                                                If you need to change your data access agreement, please contact OpenMined at support@openmined.org and we will
+                                                help walk you through the process.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    :
+                                    <div>
+                                        <div>
+                                            <button
+                                                tw="text-primary-500 font-bold py-2 px-4 mr-6 border rounded-lg border-primary-500"
+                                                type="button"
+                                                onClick={() => document.getElementById('daa_pdf').click()}
+                                            >
+                                                <FontAwesomeIcon icon={faPlus} size="sm" tw="mr-2" />
+                                                Upload File
+                                            </button>
+                                            <input tw="hidden"
+                                                   id="daa_pdf"
+                                                   name="daa_pdf"
+                                                   type='file'
+                                                   {...register("daa_pdf", { onChange: onUploadDaa, required: true })}
+                                            />
+                                        </div>
+                                        <div id="buttons" tw="text-center mt-10 inline-flex content-start whitespace-nowrap">
+                                            <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="submit">Save Changes</button>
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         ]
                         : ""
@@ -328,10 +422,42 @@ function Config(){
 
 
 function Updates(){
+    const [repo, setRepo] = useState("");
+    const [branch, setBranch] = useState("");
+    const [hash, setHash] = useState("");
     const { register, handleSubmit, errors, reset } = useForm();
 
-    function onUpdate(values){
+    async function onUpdate() {
+        /*
+        const body = JSON.stringify({
+            repo,
+            branch,
+            hash
+        })
+        try {
+            const apiRes = await fetch(
+                "api/domain-profile",
+                {
+                    method: "PUT",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: body
+                }
+            );
 
+            if (apiRes.status == 200) {
+                const domain = await apiRes.json();
+                console.log(domain);
+            } else {
+                alert("Couldn't update the domain profile!");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
+         */
     }
 
     return (
@@ -339,14 +465,14 @@ function Updates(){
             <div id="domain-box" tw="col-start-3 col-end-11 text-gray-800">
                 <div tw="divide-y">
                     <div id="version">
-                        <h1 tw="font-bold text-left text-xl my-4 mt-10">Current Version</h1>
+                        <h1 tw="font-bold text-left text-xl my-4 mt-10 font-rubik">Current Version</h1>
                         <div tw="divide-y divide-gray-200 divide-solid">
                             <ul id="domain-info" tw="text-left text-sm mt-4 mb-8">
-                                <li tw="py-2">
+                                <li tw="py-2" key="lastUpdated">
                                     <a tw="font-bold text-gray-700">Last Updated: </a>
                                     <a tw="font-mono">{DomainBody[0].LastUpdated}</a>
                                 </li>
-                                <li tw="py-2">
+                                <li tw="py-2" key="version">
                                     <a tw="font-bold text-gray-700">Version: </a>
                                     <a tw="font-mono">{DomainBody[0].Version}</a>
                                 </li>
@@ -355,7 +481,7 @@ function Updates(){
                     </div>
 
                     <div id="update">
-                        <h1 tw="font-bold text-left text-xl mt-8">Update Version</h1>
+                        <h1 tw="font-bold text-left text-xl mt-8 font-rubik">Update Version</h1>
                         <form tw="col-span-8 my-5" onSubmit={onUpdate}>
                             <div tw="mt-2">
                                 <p tw="text-sm text-gray-600">Please enter the [PLACEHOLDER] repository and branch in the fields below then press
@@ -374,13 +500,16 @@ function Updates(){
                             </div>
                             <div tw="inline-flex w-full mt-2">
                                 <div tw="w-1/2 mr-4">
-                                    <input tw="p-2 border border-gray-300 rounded text-black w-full" id="repo" name="repo" type="text" placeholder="Repository" />
+                                    <input tw="p-2 border border-gray-300 rounded text-black w-full" id="repo" name="repo" type="text" placeholder="Repository"
+                                           value={repo} onChange={e => setRepo(e.target.value)}/>
                                 </div>
                                 <div tw="w-1/4 mr-4">
-                                    <input tw="p-2 border border-gray-300 rounded text-black w-full" id="branch" name="branch" type="text" placeholder="Branch" />
+                                    <input tw="p-2 border border-gray-300 rounded text-black w-full" id="branch" name="branch" type="text" placeholder="Branch"
+                                           value={branch} onChange={e => setBranch(e.target.value)}/>
                                 </div>
                                 <div tw="w-1/4">
-                                    <input tw="p-2 border border-gray-300 rounded text-black w-full" id="commit-hash" name="commit-hash" type="text" placeholder="Commit Hash" />
+                                    <input tw="p-2 border border-gray-300 rounded text-black w-full" id="commit-hash" name="commit-hash" type="text" placeholder="Commit Hash"
+                                           value={hash} onChange={e => setHash(e.target.value)}/>
                                 </div>
                             </div >
                             <div id="buttons" tw="text-center mt-10 inline-flex content-start whitespace-nowrap">

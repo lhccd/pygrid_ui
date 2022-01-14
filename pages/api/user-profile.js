@@ -45,24 +45,17 @@ export default async (req, res) => {
                 error: "Oops! Server Error!"
             });
         }
-    }
-    else{
-        res.setHeader('Allow', ['GET']);
-        return res.status(405).json({error: `Method ${req.method} not allowed`});
-    }
-
-    //PUT
-    if(req.method == "PUT"){
-        const cookies =  cookie.parse(req.headers.cookie ?? '');
+    } else if(req.method == "PUT") {
+        const cookies = cookie.parse(req.headers.cookie ?? '');
         const access = cookies.access ?? false;
 
-        if ( access === false){
+        if (access === false) {
             return res.status(401).json({
                 error: 'User is not authorized!'
             })
         }
 
-        try{
+        try {
             const body = {
                 "full_name": req.body.full_name,
                 "email": req.body.email,
@@ -70,9 +63,7 @@ export default async (req, res) => {
                 "website": req.body.website
             }
 
-            console.log(req.body);
-
-            const apiRes = await axios.put(`${API_URL}/users/`,
+            const apiRes = await axios.put(`${API_URL}/users`,
                 body,
                 {
                     method: 'PUT',
@@ -83,27 +74,58 @@ export default async (req, res) => {
                 });
             const data = apiRes.data;
 
-            if (apiRes.status === 200){
+            if (apiRes.status === 200) {
                 return res.status(200).json({
                     full_name: data.full_name,
                     email: data.email,
                     institution: data.institution,
                     website: data.website
                 });
-            }
-            else{
+            } else {
                 return res.status(apiRes.status).json({
                     error: data.error
                 });
             }
-        }
-        catch (error){
+        } catch (error) {
             return res.status(500).json({
                 error: "Oops! Server Error!"
             });
         }
-    } else{
-        res.setHeader('Allow', ['PUT']);
+    } else if(req.method == "DELETE") {
+        const cookies = cookie.parse(req.headers.cookie ?? '');
+        const access = cookies.access ?? false;
+
+        if (access === false) {
+            return res.status(401).json({
+                error: 'User is not authorized!'
+            })
+        }
+
+        try {
+            const apiRes = await axios.delete(`${API_URL}/users`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        "Accept": "application/json",
+                        "Authorization": `Bearer ${access}`
+                    },
+                });
+            const data = apiRes.data;
+
+            if (apiRes.status === 200) {
+                return res.status(200)
+            } else {
+                return res.status(apiRes.status).json({
+                    error: data.error
+                });
+            }
+        } catch (error) {
+            return res.status(500).json({
+                error: "Oops! Server Error!"
+            });
+        }
+    } else {
+        //res.setHeader('Allow', ['GET']);
         return res.status(405).json({error: `Method ${req.method} not allowed`});
     }
 

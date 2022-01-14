@@ -5,9 +5,10 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { Layout } from "../components/Layout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import {faExclamationTriangle, faInfoCircle} from "@fortawesome/free-solid-svg-icons";
 import Modal from "../components/Modal"
 import {getToken} from "../lib/auth";
+import {faCheckCircle} from "@fortawesome/free-solid-svg-icons/faCheckCircle";
 
 
 export default function AccountSettings() {
@@ -18,7 +19,7 @@ export default function AccountSettings() {
     const [showModal, setShowModal] = useState(false);
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
-    const [full_Name, setFull_Name] = useState("");
+    const [full_name, setFull_name] = useState("");
     const [email, setEmail] = useState("");
     const [institution, setInstitution] = useState("");
     const [website, setWebsite] = useState("");
@@ -46,7 +47,7 @@ export default function AccountSettings() {
 
             if(apiRes.status == 200){
                 const user = await apiRes.json();
-                setFull_Name(user.full_name);
+                setFull_name(user.full_name);
                 setEmail(user.email);
                 setInstitution(user.institution);
                 setWebsite(user.website);
@@ -61,6 +62,12 @@ export default function AccountSettings() {
     }
 
     async function onUpdateInfo() {
+        const body =JSON.stringify({
+            full_name: full_name,
+            email,
+            institution,
+            website
+        })
         try{
             const apiRes = await fetch(
                 "api/user-profile",
@@ -70,19 +77,13 @@ export default function AccountSettings() {
                         "Accept": "application/json",
                         "Content-Type": "application/json"
                     },
-                    body: {
-                        "full_name": full_Name,
-                        "email": email,
-                        "institution": institution,
-                        "website": website
-                    }
+                    body: body
                 }
             );
 
             if(apiRes.status == 200){
                 const user = await apiRes.json();
                 console.log(user);
-                //await router.push('/account_settings/')
             }
             else{
                 alert("Couldn't update the user profile!");
@@ -91,26 +92,6 @@ export default function AccountSettings() {
         catch (error){
             console.log(error);
         }
-        /*
-        let config = {
-            method: 'put',
-            url: 'http://localhost/api/v1/users/me',
-            body: {
-                "full_name": values.full_name,
-                "email": values.email,
-                "institution": values.institution,
-                "website": values.website
-            }
-        }
-        try{
-            const response = await axios(config)
-            console.log(response);
-            await router.push('/account_settings')
-        }catch (err){
-            console.error(err);
-        }
-
-         */
     }
 
     async function onUpdatePassword(values) {
@@ -137,52 +118,43 @@ export default function AccountSettings() {
     async function onDeleteAccount() {
         setShowModal(false);
         setShowFeedbackModal(true);
-        /*
-        let config = {
-            method: 'delete',
-            url: 'http://localhost/api/v1/users',
-        }
         try{
-            const response = await axios(config)
-            console.log(response);
-        }catch (err){
-            console.error(err);
-        }
+            const apiRes = await fetch(
+                "api/user-profile",
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                }
+            );
 
-         */
+            if(apiRes.status == 200){
+                const response = await apiRes.json();
+                console.log(response);
+            }
+            else{
+                alert("Couldn't delete the user profile!");
+            }
+        }
+        catch (error){
+            console.log(error);
+        }
     }
 
     async function onSubmitFeedbackForm(values) {
-        /*
-        const formData = new FormData
-        formData.append("frustrations", values.frustrations)
-        formData.append("suggestions", values.suggestions)
-        let config = {
-            method: 'post',
-            url: 'http://localhost/api/v1/???',
-            data: formData
-        }
-        try{
-            console.log("config data: ", values)
-            const response = await axios(config)
-            console.log(response);
-            router.push('/login')
-        }catch (err){
-            console.error(err);
-        }
-
-         */
-        setShowFeedbackModal(false)
+        setShowFeedbackModal(false);
+        router.push('/login');
     }
 
     const onClickSkipFeedback = () => {
         setShowFeedbackModal(false);
-        reset();
-        //router.push('/login');
+        router.push('/login');
     }
 
     return (
-        <div tw="font-rubik">
+        <div tw="font-roboto">
             <Layout >
                 <div tw="col-span-9 my-10 mx-3 flex items-center space-x-3 p-3 bg-primary-100 border-t-4 border-primary-500">
                     <FontAwesomeIcon icon={faInfoCircle} tw="" />
@@ -190,14 +162,14 @@ export default function AccountSettings() {
                 </div>
 
                 <div tw="col-span-5 mx-3">
-                    <p tw="text-2xl text-left font-bold">Profile</p>
+                    <p tw="text-2xl text-left font-bold font-rubik">Profile</p>
                     <form tw="text-gray-500 my-5">
                         <div tw="mt-2">
                             <label tw="font-bold text-sm" htmlFor="name">Full Name</label><p tw="pl-1 inline relative bottom-1 text-primary-500 font-bold">*</p>
                         </div>
                         <div tw="mt-2">
                             <input tw="p-2 border border-gray-300 rounded text-black w-full" id="name" name="name"
-                                   value={full_Name} onChange={e => setFull_Name(e.target.value)} type="name" placeholder="Full Name" required/>
+                                   value={full_name} onChange={e => setFull_name(e.target.value)} type="name" placeholder="Full Name" required/>
                         </div>
                         <div tw="mt-4">
                             <label tw="font-bold text-sm" htmlFor="email">Email</label><p tw="pl-1 inline relative bottom-1 text-primary-500 font-bold">*</p>
@@ -234,7 +206,7 @@ export default function AccountSettings() {
                 </div>
 
                 <div tw="col-start-1 col-span-5 mx-3">
-                    <p tw="text-2xl text-left font-bold mt-10">Password</p>
+                    <p tw="text-2xl text-left font-bold font-rubik mt-10">Password</p>
                     <form tw="text-gray-500 my-5" onSubmit={onUpdatePassword}>
                         <div tw="mt-2">
                             <label tw="text-sm font-bold" htmlFor="password-old">Current Password</label><p tw="pl-1 inline relative bottom-1 text-primary-500 font-bold">*</p>
@@ -256,28 +228,25 @@ export default function AccountSettings() {
                 </div>
 
                 <div id="delete-account" tw="col-span-9 mx-3">
-                    <p tw="text-2xl text-left font-bold mt-10">Delete Account</p>
-                    <div tw="text-gray-500 text-sm py-6 rounded-lg gap-2">
-                        <p tw="text-sm mr-5">
+                    <p tw="text-2xl text-left font-bold font-rubik mt-10">Delete Account</p>
+                    <div tw="py-6 rounded-lg gap-2">
+                        <p tw="text-sm text-gray-600 mr-5">
                             When you delete your user account all information relating to you will be deleted as well as any permissions and requests.
                             If you are the domain owner the domain node will be deleted as well and will be closed to all users.
                             To transfer ownership of a domain node before deleting your account you can follow the instructions <a tw="text-primary-500 underline">here</a>.
                         </p>
-                        <div id="delete-button"
-                            tw="text-center mt-10 inline-flex content-start whitespace-nowrap"
-                        >
-                            <button tw="bg-error-500 rounded text-white font-bold py-2 px-4 mr-6" type="submit"
-                                onClick={() => setShowModal(true)}
-                            >Delete Account</button>
-                        </div>
+                        <button tw="bg-error-500 rounded text-white font-bold py-2 px-4 mr-6 mt-10" type="submit"
+                            onClick={() => setShowModal(true)}
+                        >Delete Account</button>
                         <Modal show={showModal} onClose={() => setShowModal(false)}>
-                            <div>
-                                <div tw="flex justify-center p-3">
-                                    <h1 tw="text-2xl font-bold mt-3">
+                            <div tw="text-center ">
+                                <div tw="flex flex-col p-3 mt-3">
+                                    <FontAwesomeIcon icon={faExclamationTriangle} size="2x" tw="text-warning-500 self-center m-6"/>
+                                    <h1 tw="text-3xl font-bold font-rubik text-gray-800">
                                         Are you Sure You Want to Delete Your Account?
                                     </h1>
                                 </div>
-                                <div tw="p-6">
+                                <div tw="p-6 font-roboto text-gray-600">
                                     {isDomainOwner ?
                                         <p>
                                             Because you are the domain owner, the domain node along with all uploaded datasets, user accounts,
@@ -294,7 +263,7 @@ export default function AccountSettings() {
                                         </p>
                                     }
                                 </div>
-                                <div tw="flex justify-center p-6">
+                                <div tw="flex justify-center p-6 font-bold font-roboto">
                                     {isDomainOwner ?
                                         <button
                                             tw="bg-error-500 rounded text-white font-bold py-2 px-4 mr-6"
@@ -309,11 +278,11 @@ export default function AccountSettings() {
                                             type="button"
                                             onClick={onDeleteAccount}
                                         >
-                                            Delete Node
+                                            Delete Account
                                         </button>
                                     }
                                     <button
-                                        tw="text-error-500 font-bold py-2 px-4 mr-6 border border-error-500 rounded"
+                                        tw="text-error-500 font-bold py-2 px-4 mr-6 rounded"
                                         type="button"
                                         onClick={() => setShowModal(false)}
                                     >
@@ -322,159 +291,31 @@ export default function AccountSettings() {
                                 </div>
                             </div>
                         </Modal>
-                        {/* {showModal ? (
-                            <>
-                                <div
-                                    tw="justify-center items-center flex fixed inset-0 text-center backdrop-blur-sm"
-                                >
-                                    <div tw="max-w-lg">
-                                        <div tw="rounded-sm shadow bg-white p-3">
-                                            <div tw="flex justify-end p-2 pr-5">
-                                                <button
-                                                    onClick={() => setShowModal(false)}>
-                                                    X
-                                                </button>
-                                            </div>
-                                            <div tw="flex justify-center p-3">
-                                                <h1 tw="text-2xl font-bold mt-3">
-                                                    Are you Sure You Want to Delete Your Account?
-                                                </h1>
-                                            </div>
-                                            <div tw="p-6">
-                                                {isDomainOwner ?
-                                                    <p>
-                                                        Because you are the domain owner, the domain node along with all uploaded datasets, user accounts,
-                                                        and requests will be deleted. All network memberships will also be removed. If you would like to keep
-                                                        this domain node but no longer want to be an owner press “cancel” and follow the instructions <a>here</a> to
-                                                        transfer ownership of your domain node.
-                                                    </p>
-                                                    :
-                                                    <p>
-                                                        If deleted all uploaded documents will be deleted and all open requests will be closed. Keep in mind
-                                                        any legal agreements pertaining to the use of your data requests will still apply according to the
-                                                        terms of the agreement signed. If you would like to proceed press “Delete Account” if not you can click
-                                                        “Cancel”.
-                                                    </p>
-                                                }
-                                            </div>
-                                            <div tw="flex justify-center p-6">
-                                                {isDomainOwner ?
-                                                    <button
-                                                        tw="bg-error-500 rounded text-white font-bold py-2 px-4 mr-6"
-                                                        type="button"
-                                                        onClick={onDeleteAccount}
-                                                    >
-                                                        Delete Node
-                                                    </button>
-                                                    :
-                                                    <button
-                                                        tw="bg-error-500 rounded text-white font-bold py-2 px-4 mr-6"
-                                                        type="button"
-                                                        onClick={onDeleteAccount}
-                                                    >
-                                                        Delete Account
-                                                    </button>
-                                                }
-                                                <button
-                                                    tw="text-error-500 font-bold py-2 px-4 mr-6"
-                                                    type="button"
-                                                    onClick={() => setShowModal(false)}
-                                                >
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                        ) : null} */}
 
-
-                        {/* {showFeedbackModal ? (
-                            <>
-                                <div
-                                    tw="justify-center items-center flex fixed inset-0 text-center backdrop-blur-sm"
-                                >
-                                    <div tw="max-w-lg">
-                                        <div tw="rounded-sm shadow bg-white p-3">
-                                            <div tw="flex justify-end p-2 pr-5">
-                                                <button
-                                                    onClick={onClickSkipFeedback}>
-                                                    X
-                                                </button>
-                                            </div>
-                                            <div tw="flex justify-center p-3">
-                                                <h1 tw="text-2xl font-bold mt-3">
-                                                    Your Account Has Been Deleted
-                                                </h1>
-                                            </div>
-                                            <div tw="p-6">
-                                                <p>
-                                                    To help us improve future experiences could you share with us any frustrations
-                                                    or suggestions you have with or for the PyGridUI Platform?
-                                                </p>
-                                            </div>
-                                            <form tw="flex flex-col justify-start mx-4" onSubmit={handleSubmit(onSubmitFeedbackForm)}>
-                                                <label tw="text-left my-2 inline-flex" htmlFor="frustrations"> <p tw="font-bold">Frustrations </p><p tw="pl-1 inline relative text-sm text-primary-500 ">(optional)</p></label>
-                                                <input
-                                                    tw="text-left p-3 border border-gray-300 rounded-lg break-words focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                                                    name="frustrations"
-                                                    type="text"
-                                                    placeholder="What felt vague or cumbersome?"
-                                                    {...register("frustrations", { required: false })}
-                                                />
-                                                <label tw="text-left my-2 mt-4 inline-flex" htmlFor="suggestions"> <p tw="font-bold">Suggestions</p><p tw="pl-1 inline relative text-sm text-primary-500 ">(optional)</p></label>
-                                                <input
-                                                    tw="text-left p-3 border border-gray-300 rounded-lg focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                                                    name="suggestions"
-                                                    type="text"
-                                                    placeholder="Did you have moments of thinking “I wish I could...”"
-                                                    {...register("suggestions", { required: false })}
-                                                />
-                                                <div tw="flex justify-center p-6 mt-10">
-                                                    <button
-                                                        tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6"
-                                                        type="submit"
-                                                    >
-                                                        Submit Response
-                                                    </button>
-                                                    <button
-                                                        tw="text-primary-500 font-bold py-2 px-4 mr-6"
-                                                        type="button"
-                                                        onClick={onClickSkipFeedback}
-                                                    >
-                                                        Skip
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                        ) : null} */}
                         <Modal show={showFeedbackModal} onClose={() => setShowFeedbackModal(false)}>
-                            <div>
-                                <div tw="flex justify-center p-3">
-                                    <h1 tw="text-2xl font-bold mt-3">
+                            <div tw="text-center">
+                                <div tw="flex flex-col p-3 mt-3">
+                                    <FontAwesomeIcon icon={faCheckCircle} size="2x" tw="text-success-500 self-center m-6"/>
+                                    <h1 tw="text-3xl font-bold font-rubik text-gray-800">
                                         Your Account Has Been Deleted
                                     </h1>
                                 </div>
-                                <div tw="p-6">
+                                <div tw="p-6 text-gray-600 font-roboto">
                                     <p>
                                         To help us improve future experiences could you share with us any frustrations
                                         or suggestions you have with or for the PyGridUI Platform?
                                     </p>
                                 </div>
-                                <form tw="flex flex-col justify-start mx-4" onSubmit={handleSubmit(onSubmitFeedbackForm)}>
-                                    <label tw="text-left my-2 inline-flex" htmlFor="frustrations"> <p tw="font-bold">Frustrations </p><p tw="pl-1 inline relative text-sm text-primary-500 ">(optional)</p></label>
+                                <form tw="flex flex-col justify-start font-roboto mx-4" onSubmit={handleSubmit(onSubmitFeedbackForm)}>
+                                    <label tw="text-left my-2 inline-flex" htmlFor="frustrations"> <p tw="font-bold text-gray-500">Frustrations </p><p tw="pl-1 inline relative text-sm italic text-primary-600 ">(optional)</p></label>
                                     <input
-                                        tw="text-left p-3 border border-gray-300 rounded-lg break-words focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                                        tw="text-left p-3 border border-gray-300 rounded-lg break-words resize-y focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
                                         name="frustrations"
                                         type="text"
                                         placeholder="What felt vague or cumbersome?"
                                         {...register("frustrations", { required: false })}
                                     />
-                                    <label tw="text-left my-2 mt-4 inline-flex" htmlFor="suggestions"> <p tw="font-bold">Suggestions</p><p tw="pl-1 inline relative text-sm text-primary-500 ">(optional)</p></label>
+                                    <label tw="text-left my-2 mt-4 inline-flex" htmlFor="suggestions"> <p tw="font-bold text-gray-500">Suggestions</p><p tw="pl-1 inline relative text-sm italic text-primary-600 ">(optional)</p></label>
                                     <input
                                         tw="text-left p-3 border border-gray-300 rounded-lg focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
                                         name="suggestions"
@@ -490,7 +331,7 @@ export default function AccountSettings() {
                                             Submit Response
                                         </button>
                                         <button
-                                            tw="text-primary-500 font-bold py-2 px-4 mr-6 border rounded-lg border-primary-500"
+                                            tw="text-primary-500 font-bold py-2 px-4 mr-6 rounded-lg"
                                             type="button"
                                             onClick={onClickSkipFeedback}
                                         >

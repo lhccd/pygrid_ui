@@ -12,12 +12,12 @@ import {useRouter} from 'next/router'
 
 export default function DomainSettings() {
     return(
-        <div tw="font-rubik">
+        <div tw="font-roboto">
             <Layout>
                 <div tw="col-span-12">
                     <div tw="col-span-12 flex items-center">
-                        <div tw="flex p-2 mb-2">
-                            <h1 tw="text-5xl font-rubik font-medium">Domain Settings</h1>
+                        <div tw="flex mb-4">
+                            <h1 tw="text-4xl font-rubik">Domain Settings</h1>
                         </div>
                     </div>
                     <p tw="mb-4">Provide contextual information for the Canada Domain node and set structural configurations.</p>
