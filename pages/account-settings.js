@@ -144,8 +144,32 @@ export default function AccountSettings() {
     }
 
     async function onSubmitFeedbackForm(values) {
-        setShowFeedbackModal(false);
-        router.push('/login');
+        try {
+            const frustrations =  values.frustrations;
+            const suggestions =  values.suggestions;
+            const body =JSON.stringify({
+                frustrations,
+                suggestions
+            })
+            const apiRes = await fetch("api/utils/feedback",
+                {
+                    method: "POST",
+                    headers:{
+                        'Accept': "application/json",
+                        'Content-Type': "application/json"
+                    },
+                    body: body
+                });
+            if(apiRes.status == 200){
+                setShowFeedbackModal(false);
+                router.push('/signup');
+            }
+            else{
+                alert(apiRes.status + " Something went wrong! Please try again!")
+            }
+        }catch (err) {
+            console.error(err)
+        }
     }
 
     const onClickSkipFeedback = () => {
