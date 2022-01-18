@@ -166,6 +166,9 @@ function UserModal({show, onClose, userID}){
 
 function CreateUserModal({show, onClose}){
     const { register, handleSubmit, errors, reset } = useForm();
+    const [DAARequired, setDAARequired] = useState(true);
+    const [DAAUploaded, setDAAUploaded] = useState(false);
+    const [daa, setDaa] = useState(null);
     const [showModal, setShowModal] = useState(true);
 
     async function onSubmitForm(values) {
@@ -175,21 +178,36 @@ function CreateUserModal({show, onClose}){
         formData.append("institution", values.institution)
         formData.append("password", values.password)
         formData.append("website", values.website)
+        // formData.append("daa_pdf", values.daa_pdf[0])
         let config = {
           method: 'post',
-          url: 'http://localhost/api/v1/users/open',
+          url: 'http://localhost/api/v1/users/create',
           data: formData
         }
         try {
           console.log("config data: ", values)
           const response = await axios(config)
-          router.push('/login')
           console.log(response);
-          setShowModal(false);
+          onClose;
         } catch (err) {
           console.error(err);
         }
     }
+
+    const onUploadDaa = (e) => {
+    setDAAUploaded(true);
+    let files = e.target.files;
+    setDaa(files[0]);
+    }
+
+    const onXClick = () => {
+    setDAAUploaded(false);
+    setDaa(null);
+    }
+
+    const onDAAClick = () => {
+    fileSaver.saveAs(daa);
+    };
 
     return(
         <Modal show={show} onClose={onClose}>
@@ -281,6 +299,63 @@ function CreateUserModal({show, onClose}){
                     <button tw="bg-white rounded text-primary-500 text-center my-6 px-3 py-2 my-5 border-2 border-primary-500 " onClick={onClose}>Cancel</button>
                     <button tw="bg-primary-500 rounded text-white text-center my-6 px-3 py-2 my-5" type="submit"><FontAwesomeIcon icon={faPlus} tw="mr-3"/>Create</button>
                 </div>
+                {/* {DAARequired ? [
+                  <div tw="col-span-4 block text-left">
+                    <label tw="block my-2">Upload Signed</label>
+                    <p>This domain requires a Data Access Agreement (DAA) to be signed before an
+                      account can be made. Please download the agreement below and upload a
+                      signed version when you are ready to apply.</p>
+                    {DAAUploaded
+                      ?
+                      <div>
+                        <div tw="w-2/3 flex justify-between bg-gray-100 text-black my-4 py-1">
+                          <button tw="mx-2 underline" type="button" onClick={onDAAClick}>
+                            {daa.name}
+                          </button>
+                          <button tw="font-bold mx-2" type="button" onClick={onXClick}>
+                            X
+                          </button>
+                        </div>
+                        <div>
+                          <input tw="col-start-2 col-end-4 text-primary-500 border-primary-500 rounded bg-white text-center font-bold mx-6 px-3 py-2 my-5"
+                            type="button"
+                            value="Replace File"
+                            onClick={() => document.getElementById('daa_pdf_replace').click()} />
+                          <input tw="hidden"
+                            id="daa_pdf_replace"
+                            name="daa_pdf_replace"
+                            type='file'
+                            {...register("daa_pdf", { onChange: onUploadDaa, required: false })}
+                          />
+
+                          <button
+                            tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 py-2 my-5">
+                            Download Agreement
+                          </button>
+                        </div>
+                      </div>
+                      :
+                      <div>
+                        <input tw="col-start-2 col-end-4 text-primary-500 border-primary-500 rounded bg-white text-center font-bold mx-6 px-3 py-2 my-5"
+                          type="button"
+                          value="Upload File"
+                          onClick={() => document.getElementById('daa_pdf').click()} />
+                        <input tw="hidden"
+                          id="daa_pdf"
+                          name="daa_pdf"
+                          type='file'
+                          {...register("daa_pdf", { onChange: onUploadDaa, required: true })}
+                        />
+                        <button
+                          tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 my-5">
+                          Download agreement
+                        </button>
+                      </div>
+                    }
+                  </div>
+                ]
+                : ""
+              } */}
             </form>
         </Modal>
     )
@@ -638,15 +713,12 @@ function Denied(){
                                     <img tw="w-10 h-10 rounded-full" src="https://source.unsplash.com/user/erondu"
                                         alt="admin dashboard ui"/>
                                 </div>
-
                                 <div tw="ml-4">
                                     <div tw="text-sm font-medium leading-5 text-gray-900">
                                     <button onClick={() => setShowUserModal(true)}>
                                         {user.full_name}
                                     </button>
                                     </div>
-        
-                                
                                 </div>
                             </div>
                         </td>
