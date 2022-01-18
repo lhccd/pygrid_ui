@@ -3,8 +3,6 @@ import axios from "axios";
 
 const API_URL = "http://localhost/api/v1"
 
-
-
 export default async (req, res) => {
     if ( req.method === 'POST') {
         const {username, password} = req.body;

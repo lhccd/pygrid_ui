@@ -15,57 +15,154 @@ import HttpService from '../services/HttpService'
 import axios from 'axios'
 import {getToken} from "../services/UserService";
 import useSWR from 'swr'
+import { unstable_renderSubtreeIntoContainer } from 'react-dom';
 
-function getUserlist(){
+var acceptedUserlistLength = 0
+var pendingUserlistLength = 0 
+var deniedUserlistLength = 0 
+
+function getAcceptedUserlist(){
     const fetcher = (...args) => fetch(...args).then(res => res.json())
-    const { data, error } = useSWR('/api/userlist', fetcher)
-    console.log("useSWR in outside function", data)
+    const { data, error } = useSWR('/api/accepted_userlist', fetcher)
+    return {
+        userlist: data,
+        isLoading: !error && !data,
+        isError: error,
+    }
+}
+function getPendingUserlist(){
+    const fetcher = (...args) => fetch(...args).then(res => res.json())
+    const { data, error } = useSWR('/api/pending_userlist', fetcher)
     return {
         userlist: data,
         isLoading: !error && !data,
         isError: error
     }
 }
+function getDeniedUserlist(){
+    const fetcher = (...args) => fetch(...args).then(res => res.json())
+    const { data, error } = useSWR('/api/denied_userlist', fetcher)
+    return {
+        userlist: data,
+        isLoading: !error && !data,
+        isError: error
+    }
+}
+async function getUserByID(values){
+    // const fetcher = (...args) => fetch(...args).then(res => res.json())
+    // const { data, error } = useSWR('/api/get_user_by_id', fetcher)
+    // return {
+    //     userlist: data,
+    //     isLoading: !error && !data,
+    //     isError: error,
+    // }
+    try {
+        console.log("values from parameters", values)
+        const email =  values;
+        // const email = "admin@backend.com"
+        const body =JSON.stringify({
+            email
+        })
+        console.log("values from login page", body)
+        const apiRes = await fetch('/api/get_user_by_id',
+            {
+                method: "POST",
+                headers:{
+                    'Accept': "application/json",
+                    'Content-Type': "application/json"
+                },
+                body: body
+            });
+        if(apiRes.status == 200){
+            const data = await apiRes.json()
+            console.log("GET USER BY ID outside returns", data)
+            return data
+        }
+        else{         
+            alert("Ooops! NO DATA", apiRes.status)
+        }
 
-const UserModal = ({show, onClose}) => (
-    <Modal show={show} onClose={onClose}>
-        <div tw="grid grid-cols-12 text-left p-6 rounded-lg gap-4">
-            <div tw="col-span-full flex items-center justify-between">
-                <div tw="flex space-x-3 items-center">
-                    <h2 tw="font-bold text-4xl text-gray-800">Jane Doe</h2>
-                    <Tag>Data Scientist</Tag>
-                </div>
-                <Button tw="float-right">Delete User</Button>
-            </div>
-            <p tw="col-span-full">Change Role</p> 
+    }catch (err) {
+        console.error(err)
+    }
+}
+// function getUserByID(email){
+//     const fetcher = (email, ...args) => fetch(email, ...args).then(res => res.json())
+//     const { data, error } = useSWR('/api/get_user_by_id', fetcher)
+//     console.log("userdetail useSWR in outside function", data)
+//     return {
+//         userlist: data,
+//         isLoading: !error && !data,
+//         isError: error,
+//     }
+// }
 
-            <h3 tw="col-span-full font-bold mt-3">Privacy Budget</h3>
-            <div tw="col-span-full flex bg-gray-50 items-center justify-between border border-gray-100 rounded p-4 space-x-3">
-                <div>
-                    <p tw="text-error-400 font-bold">10.00 ɛ</p>
-                    <p>Current Balance</p>
+function UserModal({show, onClose, userID}){
+    const [data, setData] = useState([])
+    useEffect(async () => {
+        const response = await getUserByID(userID)
+        setData(response)
+    },[])
+    // setData(details)
+    console.log("USER MODAL ", data)
+    return(
+        <Modal show={show} onClose={onClose}>
+            <div tw="grid grid-cols-12 text-left p-6 rounded-lg gap-4">
+                <div tw="col-span-full flex items-center justify-between">
+                    <div tw="flex space-x-3 items-center">
+                        <h2 tw="font-bold text-4xl text-gray-800">{data.full_name}</h2>
+                        <Tag>Data Scientist</Tag>
+                    </div>
+                    <Button tw="float-right">Delete User</Button>
                 </div>
-                <div>
-                    <p tw="text-gray-800 font-bold">10.00 ɛ</p>
-                    <p>Allocated Budget</p>
+                <p tw="col-span-full">Change Role</p> 
+
+                <h3 tw="col-span-full font-bold mt-3 text-gray-600">Privacy Budget</h3>
+                <div tw="col-span-full flex bg-gray-50 items-center justify-between border border-gray-100 rounded p-4 space-x-3">
+                    <div>
+                        <p tw="text-error-400 font-bold">{data.budget} ɛ</p>
+                        <p>Current Balance</p>
+                    </div>
+                    <div>
+                        <p tw="text-gray-800 font-bold">10.00 ɛ</p>
+                        <p>Allocated Budget</p>
+                    </div>
+                    <Button variant={"primary"} isSmall isHollow>Adjust Budget</Button>
                 </div>
-                <Button variant={"primary"} isSmall isHollow>Adjust Budget</Button>
+                <h3 tw="col-span-full font-bold mt-3 text-gray-600">Background</h3>
+                <div tw="col-span-full flex-col border border-gray-100 rounded p-4 space-y-3">
+                    <div tw="flex space-x-3">
+                        <p tw="font-bold text-gray-600">Email:</p>
+                        <p>{data.email}</p>
+                    </div>
+                    <div tw="flex space-x-3">
+                        <p tw="font-bold text-gray-600">Company/Institution:</p>
+                        <p>{data.institution}</p>
+                    </div>
+                    <div tw="flex space-x-3">
+                        <p tw="font-bold text-gray-600">Website/profile:</p>
+                        <p>{data.website}</p>
+                    </div>
+                </div>
+                <h3 tw="col-span-full font-bold mt-3 text-gray-600">System</h3>
+                <div tw="col-span-full flex-col border border-gray-100 rounded p-4 space-y-3">
+                    <div tw="flex space-x-3">
+                        <p tw="font-bold text-gray-600">Date Added:</p>
+                        <p>{data.added_by}</p>
+                    </div>
+                    <div tw="flex space-x-3">
+                        <p tw="font-bold text-gray-600">Data Access Agreement:</p>
+                        <p>{data.daa_pdf}</p>
+                    </div>
+                    <div tw="flex space-x-3">
+                        <p tw="font-bold text-gray-600">Uploaded On:</p>
+                        <p>{data.created_at}</p>
+                    </div>
+                </div>
             </div>
-            <h3 tw="col-span-full font-bold mt-3">Background</h3>
-            <div tw="col-span-full flex-col border border-gray-100 rounded p-4 space-y-3">
-                <p>Email:</p>
-                <p>Company/Institution:</p>
-                <p>Website/profile:</p>
-            </div>
-            <h3 tw="col-span-full font-bold mt-3">System</h3>
-            <div tw="col-span-full flex-col border border-gray-100 rounded p-4 space-y-3">
-                <p>Date Added:</p>
-                <p>Data Access Agreement:</p>
-                <p>Uploaded On:</p>
-            </div>
-        </div>
-    </Modal>
-)
+        </Modal>
+    )
+}
 
 function CreateUserModal({show, onClose}){
     const { register, handleSubmit, errors, reset } = useForm();
@@ -92,7 +189,7 @@ function CreateUserModal({show, onClose}){
         } catch (err) {
           console.error(err);
         }
-      }
+    }
 
     return(
         <Modal show={show} onClose={onClose}>
@@ -192,9 +289,10 @@ function CreateUserModal({show, onClose}){
 function Pending(){
     const [showAlert, setShowAlert] = useState(true);
     const [userList, setUserList] = useState([]);
-    const { userlist, isLoading, isError } = getUserlist()
+    const { userlist, isLoading, isError } = getPendingUserlist()
     console.log("useSWR in default function", userlist)
     if (isLoading) return <div>loading...</div>
+    pendingUserlistLength = Object.keys(userlist).length;
     // function getUserlist(e){
     //     e.preventDefault()
     //     const Token = getToken()
@@ -228,132 +326,6 @@ function Pending(){
                 </div>
             </div>
             {/* <Button variant={'primary'} onClick={getUserlist}>Get All Users</Button> */}
-            <table tw="min-w-full my-3">
-                <thead>
-                    <tr>
-                        <th
-                            tw="px-6 py-3 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Name</th>
-                        <th
-                            tw="px-6 py-3 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Σ Balance</th>
-                        <th
-                            tw="px-6 py-3 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            Σ Allocated Budget</th>
-                        <th
-                            tw="px-6 py-3 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            <FontAwesomeIcon icon={faCalendar} size="sm" tw="mr-1"/>Date Added</th>
-                        <th
-                            tw="px-6 py-3 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            <FontAwesomeIcon icon={faUser} size="sm" tw="mr-1"/>Added By</th>
-                        <th
-                            tw="px-6 py-3 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-b border-gray-200 bg-gray-50">
-                            <FontAwesomeIcon icon={faEnvelope} size="sm" tw="mr-1"/>Email</th>
-                    </tr>
-                </thead>
-
-                <tbody tw="bg-white">
-                {
-                    userlist.map(user => (
-                    <tr key={user.email}>
-                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                            <div tw="flex items-center">
-                                <div tw="flex-shrink-0 w-10 h-10">
-                                    <img tw="w-10 h-10 rounded-full" src="https://source.unsplash.com/user/erondu"
-                                        alt="admin dashboard ui"/>
-                                </div>
-
-                                <div tw="ml-4">
-                                    <div tw="text-sm font-medium leading-5 text-gray-900">
-                                        {user.full_name}
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-
-                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                            <div tw="ml-4">
-                                <div tw="text-sm font-medium leading-5 text-gray-900">
-                                    {user.budget}
-                                </div>
-                            </div>
-                        </td>
-
-                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                            <div tw="ml-4">
-                                <div tw="text-sm font-medium leading-5 text-gray-900">
-                                    {user.created_at}
-                                </div>
-                            </div>
-                        </td>
-
-                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                            <div tw="ml-4">
-                                <div tw="text-sm font-medium leading-5 text-gray-900">
-                                    {user.added_by}
-                                </div>
-                            </div>
-                        </td>
-
-                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                            <div tw="text-sm leading-5 text-gray-500">{user.email}</div>
-                        </td>
-
-                        <td tw="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                            <div tw="text-sm leading-5 text-gray-500">{user.email}</div>
-                        </td>
-                    </tr>))
-                }
-                </tbody>
-            </table>
-        </>
-    )
-}
-function Active(){
-    const [showAlert, setShowAlert] = useState(true);
-    const [showModal, setShowModal] = useState(false);
-    const [showUserModal, setShowUserModal] = useState(false);
-    const [userList, setUserList] = useState([]);
-    const { userlist, isLoading, isError } = getUserlist()
-    console.log("useSWR in default function", userlist)
-    if (isLoading) return <div>loading...</div>
-    // function getUserlist(e){
-    //     e.preventDefault()
-    //     const Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDE4Mjc5MDQsInN1YiI6IjgzNWY2MjYwLTUxYjYtNGNlNS1hYjFmLTA0ZjA4MDk5YWY2MyJ9.wqHVG4GzA7-Eolp4ABw_Px6eZDCGThF4FhiSN3BcuMg"
-    //     // const Token = getToken()
-    //     console.log("The token is:", Token)
-    //     axios.get('http://localhost:80/api/v1/users/active-users',{ headers: {'Authorization': `Bearer ${Token}`}})
-    //         .then(res => setUserList(res.data))
-    //         .catch(err => console.log(err))
-        
-    // }
-    return (
-        <>
-            <Alert show={showAlert} onClose={() => setShowAlert(false)}>
-                <FontAwesomeIcon icon={faInfoCircle} size="2x" tw=""/>
-                <p>Active users are users who you have manually created or users who have had their account applications approved</p>
-            </Alert>
-            <div tw="col-span-full">
-                <div tw="flex justify-between">
-                    <div tw="flex my-6 space-x-4">
-                        <input
-                            tw="inline p-3 border border-gray-300 rounded-lg focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                            name="search"
-                            type="text"
-                            placeholder="Search"
-                        />
-                        {/* <input
-                            tw="p-3 border border-gray-300 rounded-lg focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                            name="search"
-                            type="text"
-                            placeholder="Role"
-                        /> */}
-                        <ListBox/>
-                    </div>
-                    <button tw="bg-gray-800 rounded text-primary-200 text-center my-6 px-3 py-2 font-bold" onClick={() => setShowModal(true)}><FontAwesomeIcon icon={faPlus} tw="mr-3"/>Create User</button>
-                </div>
-                    <CreateUserModal show={showModal} onClose={()=>setShowModal(false)}/>
-                    {/* <Button variant={'primary'} onClick={getUserlist}>Get All Users</Button> */}
             <table tw="min-w-full my-3">
                 <thead>
                     <tr>
@@ -436,18 +408,291 @@ function Active(){
                 }
                 </tbody>
             </table>
-            <UserModal show={showUserModal} onClose={()=>setShowUserModal(false)}/>
+        </>
+    )
+}
+function Active(){
+    const [showAlert, setShowAlert] = useState(true);
+    const [showModal, setShowModal] = useState(false);
+    const [userDetail, setUserDetail] = useState([])
+    const [showUserModal, setShowUserModal] = useState(false);
+    // const [userlist, setUserList] = useState([]);
+    const handleUserClick = (values) => {
+        setUserDetail(values);
+        setShowUserModal(true);
+    }
+
+    const getUser = async (values) => {
+        try {
+            // const email =  values.email;
+            const email = "admin@backend.com"
+            const body =JSON.stringify({
+               email
+            })
+            console.log("values from login page", body)
+            const apiRes = await fetch('/api/get_user_by_id',
+                {
+                    method: "POST",
+                    headers:{
+                        'Accept': "application/json",
+                        'Content-Type': "application/json"
+                    },
+                    body: body
+                });
+            if(apiRes.status == 200){
+                const data = await apiRes.json()
+                console.log("GET USER BY ID", data)
+
+            }
+            else{         
+                alert("Ooops! NO DATA", apiRes.status)
+            }
+
+        }catch (err) {
+            console.error(err)
+        }
+    }
+    const { userlist, isLoading, isError } = getAcceptedUserlist()
+    console.log("useSWR inside active function", userlist)
+    if (isLoading) return <div>loading...</div>
+    acceptedUserlistLength = Object.keys(userlist).length;
+    // const { userinfo, isLoading } = getUserByID('admin@backend.com')
+    // console.log("useSWR in default function", userinfo)
+    // if (isLoading) return <div>loading...</div>
+    // function getUserlist(e){
+    //     e.preventDefault()
+    //     const Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDE4Mjc5MDQsInN1YiI6IjgzNWY2MjYwLTUxYjYtNGNlNS1hYjFmLTA0ZjA4MDk5YWY2MyJ9.wqHVG4GzA7-Eolp4ABw_Px6eZDCGThF4FhiSN3BcuMg"
+    //     // const Token = getToken()
+    //     console.log("The token is:", Token)
+    //     axios.get('http://localhost:80/api/v1/users/active-users',{ headers: {'Authorization': `Bearer ${Token}`}})
+    //         .then(res => setUserList(res.data))
+    //         .catch(err => console.log(err))
+        
+    // }
+    return (
+        <>
+            <Alert show={showAlert} onClose={() => setShowAlert(false)}>
+                <FontAwesomeIcon icon={faInfoCircle} size="2x" tw=""/>
+                <p>Active users are users who you have manually created or users who have had their account applications approved</p>
+            </Alert>
+            <div tw="col-span-full">
+                <div tw="flex justify-between">
+                    <div tw="flex my-6 space-x-4">
+                        <input
+                            tw="inline p-3 border border-gray-300 rounded-lg focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                            name="search"
+                            type="text"
+                            placeholder="Search"
+                        />
+                        {/* <input
+                            tw="p-3 border border-gray-300 rounded-lg focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                            name="search"
+                            type="text"
+                            placeholder="Role"
+                        /> */}
+                        <ListBox/>
+                    </div>
+                    <button tw="bg-gray-800 rounded text-primary-200 text-center my-6 px-3 py-2 font-bold" onClick={() => setShowModal(true)}><FontAwesomeIcon icon={faPlus} tw="mr-3"/>Create User</button>
+                </div>
+                    <CreateUserModal show={showModal} onClose={()=>setShowModal(false)}/>
+                    {/* <Button variant={'primary'} onClick={getUserlist}>Get All Users</Button> */}
+            <table tw="min-w-full my-3">
+                <thead>
+                    <tr>
+                        <th
+                            tw="px-6 py-4 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-t border-b border-gray-200">
+                            Name</th>
+                        <th
+                            tw="px-6 py-4 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                            Σ Balance</th>
+                        <th
+                            tw="px-6 py-4 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                            Σ Allocated Budget</th> 
+                        <th
+                            tw="px-6 py-4 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                            <FontAwesomeIcon icon={faCalendar} size="sm" tw="mr-1"/>Date Added</th>
+                        <th
+                            tw="px-6 py-4 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                            <FontAwesomeIcon icon={faUser} size="sm" tw="mr-1"/>Added By</th>
+                        <th
+                            tw="px-6 py-4 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-t border-b border-gray-200">
+                            <FontAwesomeIcon icon={faEnvelope} size="sm" tw="mr-1"/>Email</th>
+                    </tr>
+                </thead>
+
+                <tbody tw="bg-white">
+                {
+                    userlist.map(user => (
+                    <tr key={user.email}>
+                        <td tw="px-6 py-4 whitespace-nowrap border-t border-b border-gray-200">
+                            <div tw="flex items-center">
+                                <div tw="flex-shrink-0 w-10 h-10">
+                                    <img tw="w-10 h-10 rounded-full" src="https://source.unsplash.com/user/erondu"
+                                        alt="admin dashboard ui"/>
+                                </div>
+
+                                <div tw="ml-4">
+                                    <div tw="text-sm font-medium leading-5 text-gray-900">
+                                    <button onClick={() => handleUserClick(user.email)}>
+                                        {user.full_name}
+                                    </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border border-gray-200">
+                            <div tw="ml-4">
+                                <div tw="text-sm font-medium leading-5 text-gray-900">
+                                    {user.budget}
+                                </div>
+                            </div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border border-gray-200">
+                            <div tw="ml-4">
+                                <div tw="text-sm font-medium leading-5 text-gray-900">
+                                    {user.created_at}
+                                </div>
+                            </div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border border-gray-200">
+                            <div tw="ml-4">
+                                <div tw="text-sm font-medium leading-5 text-gray-900">
+                                    {user.added_by}
+                                </div>
+                            </div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border border-gray-200">
+                            <div tw="text-sm leading-5 text-gray-500">{user.email}</div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border-t border-b border-gray-200">
+                            <div tw="text-sm leading-5 text-gray-500">{user.email}</div>
+                        </td>
+                    </tr>))
+                }
+                </tbody>
+            </table>
+            <UserModal show={showUserModal} onClose={()=>setShowUserModal(false)} userID={'lorenz.dang@gmail.com'}/>
+            </div>
+        </>
+    )
+}
+function Denied(){
+    const [showAlert, setShowAlert] = useState(true);
+    const [showModal, setShowModal] = useState(false);
+    // const [showUserModal, setShowUserModal] = useState(false);
+    // const [userList, setUserList] = useState([]);
+    const { userlist, isLoading, isError } = getDeniedUserlist()
+    console.log("useSWR in default function", userlist)
+    if (isLoading) return <div>loading...</div>
+    // function getUserlist(e){
+    //     e.preventDefault()
+    //     const Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDE4Mjc5MDQsInN1YiI6IjgzNWY2MjYwLTUxYjYtNGNlNS1hYjFmLTA0ZjA4MDk5YWY2MyJ9.wqHVG4GzA7-Eolp4ABw_Px6eZDCGThF4FhiSN3BcuMg"
+    //     // const Token = getToken()
+    //     console.log("The token is:", Token)
+    //     axios.get('http://localhost:80/api/v1/users/active-users',{ headers: {'Authorization': `Bearer ${Token}`}})
+    //         .then(res => setUserList(res.data))
+    //         .catch(err => console.log(err))
+        
+    // }
+    return (
+        <>
+            <div tw="col-span-full">
+            <CreateUserModal show={showModal} onClose={()=>setShowModal(false)}/>
+            {/* <Button variant={'primary'} onClick={getUserlist}>Get All Users</Button> */}
+            <table tw="min-w-full my-3">
+                <thead>
+                    <tr>
+                        <th
+                            tw="px-6 py-4 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-t border-b border-gray-200">
+                            Name</th>
+                        <th
+                            tw="px-6 py-4 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                            Σ Balance</th>
+                        <th
+                            tw="px-6 py-4 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                            Σ Allocated Budget</th> 
+                        <th
+                            tw="px-6 py-4 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                            <FontAwesomeIcon icon={faCalendar} size="sm" tw="mr-1"/>Date Added</th>
+                        <th
+                            tw="px-6 py-4 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                            <FontAwesomeIcon icon={faUser} size="sm" tw="mr-1"/>Added By</th>
+                        <th
+                            tw="px-6 py-4 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-t border-b border-gray-200">
+                            <FontAwesomeIcon icon={faEnvelope} size="sm" tw="mr-1"/>Email</th>
+                    </tr>
+                </thead>
+
+                <tbody tw="bg-white">
+                {
+                    userlist.map(user => (
+                    <tr key={user.email}>
+                        <td tw="px-6 py-4 whitespace-nowrap border-t border-b border-gray-200">
+                            <div tw="flex items-center">
+                                <div tw="flex-shrink-0 w-10 h-10">
+                                    <img tw="w-10 h-10 rounded-full" src="https://source.unsplash.com/user/erondu"
+                                        alt="admin dashboard ui"/>
+                                </div>
+
+                                <div tw="ml-4">
+                                    <div tw="text-sm font-medium leading-5 text-gray-900">
+                                    <button onClick={() => setShowUserModal(true)}>
+                                        {user.full_name}
+                                    </button>
+                                    </div>
+        
+                                
+                                </div>
+                            </div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border border-gray-200">
+                            <div tw="ml-4">
+                                <div tw="text-sm font-medium leading-5 text-gray-900">
+                                    {user.budget}
+                                </div>
+                            </div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border border-gray-200">
+                            <div tw="ml-4">
+                                <div tw="text-sm font-medium leading-5 text-gray-900">
+                                    {user.created_at}
+                                </div>
+                            </div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border border-gray-200">
+                            <div tw="ml-4">
+                                <div tw="text-sm font-medium leading-5 text-gray-900">
+                                    {user.added_by}
+                                </div>
+                            </div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border border-gray-200">
+                            <div tw="text-sm leading-5 text-gray-500">{user.email}</div>
+                        </td>
+
+                        <td tw="px-6 py-4 whitespace-nowrap border-t border-b border-gray-200">
+                            <div tw="text-sm leading-5 text-gray-500">{user.email}</div>
+                        </td>
+                    </tr>))
+                }
+                </tbody>
+            </table>
+            {/* <UserModal show={showUserModal} onClose={()=>setShowUserModal(false)}/> */}
             </div>
         </>
     )
 }
 
-function ActiveUsers(){
-
-}
-
 export function Tab(){
-
     const [toggleState, setToggleState] = useState(1);
 
     const toggleTab = (index) => {
@@ -465,7 +710,7 @@ export function Tab(){
                     onClick={() => toggleTab(1)}
                 >
                 <h3 css={[tw`text-center font-bold text-gray-600`, (toggleState === 1) && tw`text-primary-500`]}>
-                    Active Users (3)
+                    Active Users ({acceptedUserlistLength})
                 </h3>
                 </button>
                 <button
@@ -474,7 +719,7 @@ export function Tab(){
                     onClick={() => toggleTab(2)}
                 >
                 <h3 css={[tw`text-center font-bold text-gray-600`, (toggleState === 2) && tw`text-primary-500`]}>
-                    Pending Users (3)
+                    Pending Users ({pendingUserlistLength})
                 </h3>
                 </button>
                 <button
@@ -483,7 +728,7 @@ export function Tab(){
                     onClick={() => toggleTab(3)}
                 >
                 <h3 css={[tw`text-center font-bold text-gray-600`, (toggleState === 3) && tw`text-primary-500`]}>
-                    Denied Users (0)
+                    Denied Users ({deniedUserlistLength})
                 </h3>
                 </button>
             </div>
@@ -508,6 +753,7 @@ export function Tab(){
                     css={[tw`bg-white p-5 w-full h-full hidden`,
                     (toggleState === 3) && tw`bg-white block`,]}
                 >
+                    <Denied/>
                 </div>
 
             </div>
