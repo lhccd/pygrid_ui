@@ -31,8 +31,6 @@ export default function AccountSettings() {
     }, []);
 
     async function getUser() {
-        console.log("################################################################################");
-
         try{
             const apiRes = await fetch(
                 "api/user-profile",
@@ -95,6 +93,36 @@ export default function AccountSettings() {
     }
 
     async function onUpdatePassword(values) {
+        console.log(values);
+        const body =JSON.stringify({
+            current_password: values.password_old,
+            password: values.password_new
+        });
+        try{
+            const apiRes = await fetch(
+                "api/update-password",
+                {
+                    method: "PUT",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: body
+                }
+            );
+
+            if(apiRes.status === 200){
+                const user = await apiRes.json();
+                alert("Password change is successful!");
+            }
+            else{
+                const error = await apiRes.json();
+                alert("Error: " + error);
+            }
+        }
+        catch (error){
+            alert("Server error: "  + error);
+        }
         /*
         let config = {
             method: 'put',
@@ -245,7 +273,7 @@ export default function AccountSettings() {
                         </div>
 
                         <div id="buttons" tw="col-start-1 text-center mt-10 inline-flex content-start whitespace-nowrap">
-                            <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="submit">Change Password</button>
+                            <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="button" onClick={onUpdatePassword}>Change Password</button>
                             <button tw="text-primary-500 font-bold" type="reset">Cancel</button>
                         </div>
                     </form>
