@@ -20,13 +20,12 @@ export default async (req, res) => {
             password
         };
         try{
-            const apiRes = await axios.put(`${API_URL}/users/update-password`, {
+            const apiRes = await axios.put(`${API_URL}/users/update-password`, data,{
                 method: 'PUT',
                 headers: {
                     "Accept": "application/json",
                     "Authorization": `Bearer ${access}`
                 },
-                data: data
             });
 
             if(apiRes.status === 200){

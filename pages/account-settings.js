@@ -23,6 +23,8 @@ export default function AccountSettings() {
     const [email, setEmail] = useState("");
     const [institution, setInstitution] = useState("");
     const [website, setWebsite] = useState("");
+    const [current_password, setCurrent_password] = useState("");
+    const [password, setPassword] = useState("");
 
     const [isDomainOwner, setIsDomainOwner] = useState(false);
 
@@ -92,13 +94,13 @@ export default function AccountSettings() {
         }
     }
 
-    async function onUpdatePassword(values) {
-        console.log(values);
+    async function onUpdatePassword() {
         const body =JSON.stringify({
-            current_password: values.password_old,
-            password: values.password_new
+            current_password: current_password,
+            password: password
         });
         try{
+            console.log(body);
             const apiRes = await fetch(
                 "api/update-password",
                 {
@@ -113,34 +115,16 @@ export default function AccountSettings() {
 
             if(apiRes.status === 200){
                 const user = await apiRes.json();
-                alert("Password change is successful!");
+                console.log("Password changed");
             }
             else{
                 const error = await apiRes.json();
-                alert("Error: " + error);
+                console.log(error);
             }
         }
         catch (error){
-            alert("Server error: "  + error);
+            console.log(error);
         }
-        /*
-        let config = {
-            method: 'put',
-            url: 'http://localhost/api/v1/users/me',
-            body: {
-                "password_old": values.password_old,
-                "password_new": values.password_new,
-            }
-        }
-        try{
-            const response = await axios(config)
-            console.log(response);
-            await router.push('/account_settings')
-        }catch (err){
-            console.error(err);
-        }
-
-         */
     }
 
     async function onDeleteAccount() {
@@ -202,7 +186,7 @@ export default function AccountSettings() {
 
     const onClickSkipFeedback = () => {
         setShowFeedbackModal(false);
-        router.push('/login');
+        router.push('/signup');
     }
 
     return (
@@ -264,12 +248,14 @@ export default function AccountSettings() {
                             <label tw="text-sm font-bold" htmlFor="password-old">Current Password</label><p tw="pl-1 inline relative bottom-1 text-primary-500 font-bold">*</p>
                         </div>
                         <div tw="mt-2">
-                            <input tw="p-2 border border-gray-300 rounded text-black w-full" id="password-old" name="password-old" type="password" placeholder="********" required />                        </div>
+                            <input tw="p-2 border border-gray-300 rounded text-black w-full" id="password-old" name="password-old"
+                                   value={current_password} onChange={e => setCurrent_password(e.target.value)} type="password" placeholder="********" required />                        </div>
                         <div tw="mt-4">
                             <label tw="text-sm font-bold" htmlFor="password-new">New Password</label><p tw="pl-1 inline relative bottom-1 text-primary-500 font-bold">*</p>
                         </div>
                         <div tw="mt-2">
-                            <input tw="p-2 border border-gray-300 rounded text-black w-full" id="password-new" name="password-new" type="password" placeholder="********" required />
+                            <input tw="p-2 border border-gray-300 rounded text-black w-full" id="password-new" name="password-new"
+                                   value={password} onChange={e => setPassword(e.target.value)} type="password" placeholder="********" required />
                         </div>
 
                         <div id="buttons" tw="col-start-1 text-center mt-10 inline-flex content-start whitespace-nowrap">

@@ -61,6 +61,11 @@ const DomainBody = [
 ]
 
 function Profile(){
+    const [name, setName] = useState("");
+    const [id, setId] = useState("");
+    const [datasets, setDatasets] = useState(0);
+    const [deployed, setDeployed] = useState("");
+    const [owner, setOwner] = useState("");
     const [description, setDescription] = useState("");
     const [email, setEmail] = useState("");
     const [newTag, setNewTag] = useState("");
@@ -69,6 +74,43 @@ function Profile(){
     const [showModal, setShowModal] = useState(false);
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
     const { register, handleSubmit, errors, reset } = useForm();
+
+    useEffect(() => {
+        //getDomain();
+    }, []);
+
+    async function getDomain() {
+        try{
+            const apiRes = await fetch(
+                "api/domain-profile",
+                {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
+
+            if(apiRes.status == 200){
+                const domain = await apiRes.json();
+                setName(domain.name);
+                setId(domain.id);
+                setDatasets(domain.datasets);
+                setDeployed(domain.deployed);
+                setOwner(domain.owner);
+                setDescription(domain.description);
+                setEmail(domain.email);
+                setTags(domain.tags);
+            }
+            else{
+                alert("Couldn't fetch the domain profile!");
+            }
+        }
+        catch (error){
+            console.log(error);
+        }
+    }
 
     const onAddTag = () => {
         if (newTag!=""){
@@ -143,18 +185,41 @@ function Profile(){
         catch (error){
             console.log(error);
         }
-
          */
     }
 
     async function onSubmitFeedbackForm(values) {
-        setShowFeedbackModal(false)
-        router.push('/login');
+        try {
+            const frustrations =  values.frustrations;
+            const suggestions =  values.suggestions;
+            const body =JSON.stringify({
+                frustrations,
+                suggestions
+            })
+            const apiRes = await fetch("api/utils/feedback",
+                {
+                    method: "POST",
+                    headers:{
+                        'Accept': "application/json",
+                        'Content-Type': "application/json"
+                    },
+                    body: body
+                });
+            if(apiRes.status == 200){
+                setShowFeedbackModal(false);
+                router.push('/signup');
+            }
+            else{
+                alert(apiRes.status + " Something went wrong! Please try again!")
+            }
+        }catch (err) {
+            console.error(err)
+        }
     }
 
     const onClickSkipFeedback = () => {
         setShowFeedbackModal(false);
-        router.push('/login');
+        router.push('/signup');
     }
 
     return (
@@ -422,21 +487,54 @@ function Config(){
 
 
 function Updates(){
+    const [lastUpdated, setLastUpdated] = useState("");
+    const [version, setVersion] = useState("");
     const [repo, setRepo] = useState("");
     const [branch, setBranch] = useState("");
     const [hash, setHash] = useState("");
     const { register, handleSubmit, errors, reset } = useForm();
 
-    async function onUpdate() {
+    useEffect(() => {
+        //getVersion();
+    }, []);
+
+    async function getVersion() {
+        try{
+            const apiRes = await fetch(
+                "api/domain-version",
+                {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
+
+            if(apiRes.status == 200){
+                const domain = await apiRes.json();
+                setLastUpdated(domain.lastUpdated);
+                setVersion(domain.version);
+            }
+            else{
+                alert("Couldn't fetch the domain version!");
+            }
+        }
+        catch (error){
+            console.log(error);
+        }
+    }
+
+    async function onUpdate(){
         /*
-        const body = JSON.stringify({
-            repo,
+        const body =JSON.stringify({
+            repository,
             branch,
             hash
         })
-        try {
+        try{
             const apiRes = await fetch(
-                "api/domain-profile",
+                "api/domain-version",
                 {
                     method: "PUT",
                     headers: {
@@ -447,18 +545,20 @@ function Updates(){
                 }
             );
 
-            if (apiRes.status == 200) {
+            if(apiRes.status == 200){
                 const domain = await apiRes.json();
                 console.log(domain);
-            } else {
-                alert("Couldn't update the domain profile!");
             }
-        } catch (error) {
+            else{
+                alert("Couldn't update the domain version!");
+            }
+        }
+        catch (error){
             console.log(error);
         }
-
          */
     }
+
 
     return (
         <>
