@@ -92,7 +92,7 @@ function DomainInfo(){
                     <p tw="relative text-xl font-bold truncate">Canada Domain</p>
                     <p tw="relative text-lg truncate">ID: 5724724357124372437</p>
                     <button tw="text-left" onClick={logout}>
-                        <p size="sm" underline tw="lowercase bg-transparent hover:text-white">
+                        <p size="sm" tw="lowercase bg-transparent hover:text-white">
                             {('logout')}
                         </p>
                     </button>
