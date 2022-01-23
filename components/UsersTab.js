@@ -1,7 +1,12 @@
+// *************************** PLEASE READ *************************** 
+// This Tab is not used anymore, switched to headless ui tab 
+// This component got redundant and will be deleted before deployment 
+// *************************** PLEASE READ *************************** 
+
+
 import { useState, useEffect, useMemo } from 'react';
 import { get, set, useForm } from "react-hook-form"
 import tw, {styled} from 'twin.macro';
-import { Table2 } from './Table2';
 import { Link } from 'next/link'
 import Tag from '../components/Tag'
 import Modal from '../components/Modal';
@@ -10,16 +15,14 @@ import Button from '../components/Button';
 import {faCalendar, faEnvelope, faPlus, faUser, faUserPlus, faInfoCircle, faCheckCircle, faTimesCircle} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import ListBox from './ListBox';
-import HttpService from '../services/HttpService'
 import axios from 'axios'
-import {getToken} from "../services/UserService";
-import useSWR from 'swr'
-import { unstable_renderSubtreeIntoContainer } from 'react-dom';
 import { useRouter } from 'next/router'
 
 import { useGlobalFilter, useSortBy, useTable } from 'react-table'
 import { GlobalFilter } from '../components/GlobalFilter';
 import { Router } from 'next/router';
+import { Tab } from "@headlessui/react"
+import { Fragment } from 'react'
 
 const Table = tw.table`
   table-auto
@@ -657,74 +660,38 @@ function Denied(){
     )
 }
 
-export function Tab(){
-    const [toggleState, setToggleState] = useState(1);
-    const [acceptedUsers, loading] = getUsers('accepted_userlist')
-    const [pendingUsers] = getUsers('pending_userlist')
-    const [deniedUsers] = getUsers('denied_userlist')
 
-    // console.log({acceptedUsers}, {loading})
-
-    const toggleTab = (index) => {
-        setToggleState(index);
-    };
-
+export function UsersTab(){
     return (
-        <div tw="flex flex-col relative w-auto bg-white break-all">
-            <div tw="flex">
-                <button
-                    css={[tw`p-4 bg-white text-center w-1/2 bg-white border-b-2 border-primary-500 `,
-                        (toggleState === 1) && tw`border-primary-500 border-b-0 border-t-2 border-r-2 border-l-2 rounded-t-md`]}
-                    onClick={() => toggleTab(1)}
-                >
-                <h3 css={[tw`text-center font-bold text-gray-600`, (toggleState === 1) && tw`text-primary-500`]}>
-                    Active Users ({acceptedUsers.length})
-                </h3>
-                </button>
-                <button
-                    css={[tw`p-4 bg-white text-center w-1/2 bg-white border-b-2 border-primary-500 `,
-                    (toggleState === 2) && tw`border-primary-500 border-b-0 border-t-2 border-r-2 border-l-2 rounded-t-md`]}
-                    onClick={() => toggleTab(2)}
-                >
-                <h3 css={[tw`text-center font-bold text-gray-600`, (toggleState === 2) && tw`text-primary-500`]}>
-                    Pending Users ({pendingUsers.length})
-                </h3>
-                </button>
-                <button
-                    css={[tw`p-4 bg-white text-center w-1/2 bg-white border-b-2 border-primary-500 `,
-                    (toggleState === 3) && tw`border-primary-500 border-b-0 border-t-2 border-r-2 border-l-2 rounded-t-md`]}
-                    onClick={() => toggleTab(3)}
-                >
-                <h3 css={[tw`text-center font-bold text-gray-600`, (toggleState === 3) && tw`text-primary-500`]}>
-                    Denied Users ({deniedUsers.length})
-                </h3>
-                </button>
-            </div>
-
-
-            <div tw="">
-                <div 
-                    css={[tw`bg-white p-5 w-full h-full hidden`,
-                    (toggleState === 1) && tw`bg-white block`,]}
-                >   
-                <Active />
-                </div>
-
-                <div
-                    css={[tw`bg-white p-5 w-full h-full hidden`,
-                    (toggleState === 2) && tw`bg-white block`,]}
-                >
-                    <Pending/>
-                </div>
-
-                <div
-                    css={[tw`bg-white p-5 w-full h-full hidden`,
-                    (toggleState === 3) && tw`bg-white block`,]}
-                >
-                    <Denied/>
-                </div>
-
-            </div>
-        </div>
-    )
+        <Tab.Group>
+            <Tab.List tw="flex">
+                <Tab as={Fragment}>
+                    {({ selected }) => (
+                    <button
+                        css={[tw`p-4 bg-white text-center w-1/2 bg-white border-b-2 border-primary-500 `,
+                        selected && tw`border-primary-500 border-b-0 border-t-2 border-r-2 border-l-2 rounded-t-md`]}>Tab 1</button>
+                    )}
+                </Tab>
+                <Tab as={Fragment}>
+                    {({ selected }) => (
+                    <button
+                        css={[tw`p-4 bg-white text-center w-1/2 bg-white border-b-2 border-primary-500 `,
+                        selected && tw`border-primary-500 border-b-0 border-t-2 border-r-2 border-l-2 rounded-t-md`]}>Tab 2</button>
+                    )}
+                </Tab>
+                <Tab as={Fragment}>
+                    {({ selected }) => (
+                    <button
+                        css={[tw`p-4 bg-white text-center w-1/2 bg-white border-b-2 border-primary-500 `,
+                        selected && tw`border-primary-500 border-b-0 border-t-2 border-r-2 border-l-2 rounded-t-md`]}>Tab 3</button>
+                    )}
+                </Tab>
+            </Tab.List>
+            <Tab.Panels>
+            <Tab.Panel><Active/></Tab.Panel>
+            <Tab.Panel><Pending/></Tab.Panel>
+            <Tab.Panel><Denied/></Tab.Panel>
+            </Tab.Panels>
+        </Tab.Group>
+      )
 }
