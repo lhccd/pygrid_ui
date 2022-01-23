@@ -8,10 +8,9 @@ import Alert from '../components'
 import Textfield from '../components/Textfield'
 import axios from "axios"
 import { faFontAwesome } from "@fortawesome/free-brands-svg-icons";
-import {faPlus, faUserPlus, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
+import {faDownload, faTimes, faPlus, faUserPlus, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import fileSaver from "file-saver";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faDownload, faPlus, faTimes} from "@fortawesome/free-solid-svg-icons";
 
 const Background = styled.div`
     background-image: url("../signup_background_image.png");

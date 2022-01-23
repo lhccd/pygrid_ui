@@ -59,14 +59,7 @@ const SidebarNav = () => {
                 <div tw="px-3">
                     <DomainConnectionStatus/>
                 </div>
-                <Link href="/account-settings">
-                    <div tw="flex items-center space-x-3 px-6 py-5 hover:bg-gray-500">
-                        <div>
-                            <FontAwesomeIcon icon={faUserCircle} size="sm" />
-                        </div>
-                        <CurrentUser/>
-                    </div>
-                </Link>
+                <CurrentUser/>
             </footer>
         </aside>
     )
@@ -79,7 +72,7 @@ function CurrentUser() {
     if (!data) return <div>loading...</div>
   
     return (
-        <Link href="/account_settings">
+        <Link href="/account-settings">
             <div tw="flex items-center space-x-3 px-6 py-5 hover:bg-gray-500">
                 <div>
                     <FontAwesomeIcon icon={faUserCircle} size="sm" />
