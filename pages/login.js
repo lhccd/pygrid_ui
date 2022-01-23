@@ -60,10 +60,12 @@ export default function Login() {
                 setVariant('success');
                 setShowAlert(true);
             }
-            else{
-                alert("Ooops! Bad credentials :/")
+            else if(apiRes.status == 400) {
+                alert("The user has not found or accepted yet!")
             }
-
+            else{
+                alert("Something went wrong! Please try again!")
+            }
         }catch (err) {
             console.error(err)
             setVariant('error');

@@ -6,32 +6,26 @@ const API_URL = "http://localhost/api/v1";
 export default async (req, res) => {
     //GET
     if(req.method == "GET"){
-        const cookies =  cookie.parse(req.headers.cookie ?? '');
-        const access = cookies.access ?? false;
-
-        if ( access === false){
-            return res.status(401).json({
-                error: 'User is not authorized!'
-            })
-        }
-
         try{
-            const apiRes = await axios.get(`${API_URL}/users/user-profile`,
+            const apiRes = await axios.get(`${API_URL}/domain/domain-detail`,
                 {
                     method: 'GET',
                     headers: {
                         "Accept": "application/json",
-                        "Authorization": `Bearer ${access}`
                     }
                 });
             const data = apiRes.data;
 
             if (apiRes.status === 200){
                 return res.status(200).json({
-                    full_name: data.full_name,
+                    name: data.name,
+                    id: data.id,
+                    datasets: data.datasets,
+                    deployed: data.deployed,
+                    owner: data.owner,
+                    description: data.description,
                     email: data.email,
-                    institution: data.institution,
-                    website: data.website
+                    tags: data.tags
                 });
             }
             else{
@@ -57,13 +51,12 @@ export default async (req, res) => {
 
         try {
             const body = {
-                "full_name": req.body.full_name,
+                "description": req.body.description,
                 "email": req.body.email,
-                "institution": req.body.institution,
-                "website": req.body.website
+                "tags": req.body.tags
             }
 
-            const apiRes = await axios.put(`${API_URL}/users`,
+            const apiRes = await axios.put(`${API_URL}/domain/CHANGE_HERE`,
                 body,
                 {
                     method: 'PUT',
@@ -76,10 +69,9 @@ export default async (req, res) => {
 
             if (apiRes.status === 200) {
                 return res.status(200).json({
-                    full_name: data.full_name,
+                    description: data.description,
                     email: data.email,
-                    institution: data.institution,
-                    website: data.website
+                    tags: data.tags
                 });
             } else {
                 return res.status(apiRes.status).json({
@@ -102,7 +94,7 @@ export default async (req, res) => {
         }
 
         try {
-            const apiRes = await axios.delete(`${API_URL}/users`,
+            const apiRes = await axios.delete(`${API_URL}/domain/CHANGE_HERE`,
                 {
                     method: 'DELETE',
                     headers: {

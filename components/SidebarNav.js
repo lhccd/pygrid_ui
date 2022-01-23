@@ -59,7 +59,14 @@ const SidebarNav = () => {
                 <div tw="px-3">
                     <DomainConnectionStatus/>
                 </div>
-                <CurrentUser/>
+                <Link href="/account-settings">
+                    <div tw="flex items-center space-x-3 px-6 py-5 hover:bg-gray-500">
+                        <div>
+                            <FontAwesomeIcon icon={faUserCircle} size="sm" />
+                        </div>
+                        <CurrentUser/>
+                    </div>
+                </Link>
             </footer>
         </aside>
     )
@@ -92,7 +99,7 @@ function DomainInfo(){
                     <p tw="relative text-xl font-bold truncate">Canada Domain</p>
                     <p tw="relative text-lg truncate">ID: 5724724357124372437</p>
                     <button tw="text-left" onClick={logout}>
-                        <p size="sm" tw="lowercase bg-transparent hover:text-white">
+                        <p size="sm" tw="lowercase bg-transparent hover:text-white underline">
                             {('logout')}
                         </p>
                     </button>
