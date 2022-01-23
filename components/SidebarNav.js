@@ -5,11 +5,14 @@ import Link from 'next/link'
 import {logout} from '../lib/auth'
 import DomainConnectionStatus from '../components/DomainConnectionStatus'
 import useSWR from 'swr'
+import Avatar from './Avatar'
 
 const SidebarNav = () => {
     return (
         <aside tw="flex flex-col justify-between h-screen sticky top-0 bg-gradient-to-r from-black to-gray-800 text-gray-200 py-6 min-w-min max-w-xs">
-            <DomainInfo tw="p-6" />
+            {/* <DomainInfo tw="p-6" />
+            <div tw="">hgallo</div> */}
+            <Avatar tw="flex" name={"Canada Domain"} domainid={"ID: 5724741532"}/>
             <div tw="my-10"></div>
             <nav tw="text-lg mb-auto">
                 <ul tw="">
