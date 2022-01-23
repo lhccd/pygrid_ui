@@ -4,6 +4,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import Link from 'next/link'
 import {logout} from '../lib/auth'
 import DomainConnectionStatus from '../components/DomainConnectionStatus'
+import useSWR from 'swr'
 
 const SidebarNav = () => {
     return (
@@ -63,11 +64,29 @@ const SidebarNav = () => {
                         <div>
                             <FontAwesomeIcon icon={faUserCircle} size="sm" />
                         </div>
-                        <p tw="">Kyoko Eng</p>
+                        <CurrentUser/>
                     </div>
                 </Link>
             </footer>
         </aside>
+    )
+}
+
+function CurrentUser() {
+    const fetcher = (...args) => fetch(...args).then(res => res.json())
+    const { data, error } = useSWR('/api/user-profile', fetcher)
+    if (error) return <div>failed to load user</div>
+    if (!data) return <div>loading...</div>
+  
+    return (
+        <Link href="/account_settings">
+            <div tw="flex items-center space-x-3 px-6 py-5 hover:bg-gray-500">
+                <div>
+                    <FontAwesomeIcon icon={faUserCircle} size="sm" />
+                </div>
+                <p>{data.full_name}</p>
+            </div>
+        </Link>
     )
 }
 
@@ -93,3 +112,4 @@ function DomainInfo(){
     )
 }
 export {SidebarNav}
+

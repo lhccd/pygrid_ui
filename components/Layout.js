@@ -7,7 +7,7 @@ export function Layout({children}){
     return(
         <div tw="flex">
             <SidebarNav/>
-            <main tw="relative w-full h-full">
+            <main tw="relative w-full h-full max-w-full p-5">
                 <Page>
                     <Grid>{children}</Grid>
                 </Page>

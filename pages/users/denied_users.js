@@ -1,47 +1,70 @@
 import { useState, useEffect, useMemo } from 'react';
+import { get, set, useForm } from "react-hook-form"
+import tw, {styled} from 'twin.macro';
+import { Link } from 'next/link'
+import Tag from '../../components/Tag'
+import Modal from '../../components/Modal';
+import Alert from '../../components/Alert';
+import Button from '../../components/Button';
+import {faCalendar, faEnvelope, faPlus, faUser, faUserPlus, faInfoCircle, faCheckCircle, faTimesCircle} from '@fortawesome/free-solid-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import axios from 'axios'
+import { useRouter } from 'next/router'
+
 import { useGlobalFilter, useSortBy, useTable } from 'react-table'
-import axios from 'axios';
-import tw from 'twin.macro';
-import { GlobalFilter } from '../components/GlobalFilter';
+import { GlobalFilter } from '../../components/GlobalFilter';
+import { Router } from 'next/router';
+import { Tab } from "@headlessui/react"
+import { Fragment } from 'react'
 
 const Table = tw.table`
-  table-fixed
+  table-auto
   text-base
   text-gray-900
 `;
 
 const TableHead = tw.thead`
-    px-6 py-4 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-t border-b border-gray-200
+    px-6 py-4 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border border-gray-200
 `;
 
 const TableRow = tw.tr`
-    px-6 py-4 whitespace-nowrap border-t border-b border-gray-200
+    px-6 py-4 whitespace-nowrap border border-gray-200
 `;
 
 const TableHeader = tw.th`
-    px-6 py-4 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border-t border-b border-gray-200    
+    px-6 py-4 text-base font-medium leading-4 tracking-wider text-left text-gray-500 uppercase border border-gray-200    
 `;
 
 const TableBody = tw.tbody`
 `;
 
 const TableData = tw.td`
-    px-6 py-4 whitespace-nowrap border-t border-b border-gray-200
+    px-6 py-4 whitespace-nowrap border border-gray-200
 `;
 
-const Button = tw.button`
-  pl-4
-  pr-4
-  pt-2
-  pb-2
-  text-black
-  rounded-md
-  bg-primary-300
-  hover:bg-primary-200
-  transition-colors
-`;
-export default function UsersOld(){
+async function denyUserByID(email){
+    console.log("denyUserByID Called", {email})
+    try{
+        const body = JSON.stringify(email)
+        console.log("requesting put", body)
+        const apiRes = await fetch('/api/deny_user_by_id',
+            {
+                method: "PUT",
+                headers:{
+                    'Accept': "application/json",
+                    'Content-Type': "application/json"
+                },
+                body: body
+            });
+        const data = await apiRes.json()
+        console.log("DENY USER BY ID outside returns", data)
+    }
+    catch(error) {
+        console.log("error in updateUserByID", error)
+    }
+}
 
+export default function Denied(){
     const [userlist, setUserlist] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -49,7 +72,7 @@ export default function UsersOld(){
         try{
             setLoading(true);
             const apiRes = await fetch(
-                '/api/accepted_userlist',
+                '/api/denied_userlist',
                 {
                     method: "GET",
                     headers: {
@@ -80,13 +103,14 @@ export default function UsersOld(){
     );
     
     const tableHooks = (hooks) => {
+        const router = useRouter()
         hooks.visibleColumns.push((columns) => [
             ...columns,
             {
                 id: "Edit", 
                 Header: 'Edit',
                 Cell: ({ row }) => (
-                    <Button onClick={() => alert("Editing: " + row.values.id)}>Edit</Button>
+                    <Button onClick={() => acceptUserByID(row.values.email)}><FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-success-500" /></Button>
                 )
             }
         ])
@@ -102,7 +126,6 @@ export default function UsersOld(){
 
     return(
         <div tw="flex-col justify-center">
-            <h1 tw="text-center">REACT TABLE</h1>
             <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} setGlobalFilter={setGlobalFilter} globalFilter={state.globalFilter}/>
             <div tw="flex justify-center" >
                 <Table {...getTableProps()}>

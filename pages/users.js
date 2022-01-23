@@ -1,43 +1,15 @@
 import { Layout } from '../components/Layout'
-import { Tab } from '../components/Tab'
 import tw, {styled} from 'twin.macro'
 import {faUsers} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import Modal from '../components/Modal'
-import {useState, useEffect} from 'react';
-import axios from 'axios';
-import {getToken, decodeToken} from '../lib/auth'
-import {useRouter} from 'next/router'
 
-// export const getStaticProps = async () => {
-//     const res = await fetch('http://localhost:80/api/v1/users/active_users');
-//     const data = await res.json();
-//     return(
-//         console.log(data)
-//     )
-// }
+import { Tab } from "@headlessui/react"
+import { Fragment } from 'react'
+import Active from './users/active_users'
+import Pending from './users/pending_users'
+import Denied from './users/denied_users'
 
 export default function Users() {
-    const isAuthenticated = getToken()
-    const router = useRouter()
-    const access_token = decodeToken()
-
-    // if (typeof window !== 'undefined'){
-    //     if (isAuthenticated){
-    //         (async () => {
-    //             const response = await axios.get('http://localhost:80/api/v1/users/active_users',{
-    //                 headers: {
-    //                     'Authorization': `token ${access_token}`
-    //                 }})
-    //                 .then((res)=>{
-    //                     console.log(access_token)
-    //                     console.log(res.data)
-    //                 })
-    //                 .catch((error)=>{
-    //                     console.error(error)
-    //                 })
-    //         })()
-
     return(
         <Layout>
             <div tw="col-span-12">
@@ -48,14 +20,37 @@ export default function Users() {
                     </div>
                 </div>
                 <p tw="mb-8">Manage users, edit user permissions and credentials.</p>
-                <Tab></Tab>
+                <Tab.Group>
+                    <Tab.List tw="flex">
+                        <Tab as={Fragment}>
+                            {({ selected }) => (
+                            <button
+                                css={[tw`p-4 bg-white text-center font-bold text-gray-400 w-1/2 bg-white border-b-2 border-primary-500 `,
+                                selected && tw`border-primary-500 text-primary-500 border-b-0 border-t-2 border-r-2 border-l-2 rounded-t-md`]}>Active Users</button>
+                            )}
+                        </Tab>
+                        <Tab as={Fragment}>
+                            {({ selected }) => (
+                            <button
+                                css={[tw`p-4 bg-white text-center font-bold text-gray-400 w-1/2 bg-white border-b-2 border-primary-500 `,
+                                selected && tw`border-primary-500 text-primary-500 border-b-0 border-t-2 border-r-2 border-l-2 rounded-t-md`]}>Pending Users</button>
+                            )}
+                        </Tab>
+                        <Tab as={Fragment}>
+                            {({ selected }) => (
+                            <button
+                                css={[tw`p-4 bg-white text-center font-bold text-gray-400 w-1/2 bg-white border-b-2 border-primary-500 `,
+                                selected && tw`border-primary-500 text-primary-500 border-b-0 border-t-2 border-r-2 border-l-2 rounded-t-md`]}>Denied Users</button>
+                            )}
+                        </Tab>
+                    </Tab.List>
+                    <Tab.Panels>
+                    <Tab.Panel><Active/></Tab.Panel>
+                    <Tab.Panel><Pending/></Tab.Panel>
+                    <Tab.Panel><Denied/></Tab.Panel>
+                    </Tab.Panels>
+                </Tab.Group>
             </div>
         </Layout>
     )
-    //     }else{
-    //         router.replace('/login')
-    //         return null
-    //     }
-    // }
-    // return null
 }

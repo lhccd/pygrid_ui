@@ -27,7 +27,7 @@ const Button2 = styled.button(({ variant, isSmall }) => [
   `,
 ])
 
-const Button = styled.button(({ variant, isMedium, isSmall }) => [
+const Button = styled.button(({ variant, isMedium, isSmall, isHollow }) => [
   // The common button styles added with the tw import
   tw`px-8 py-2 rounded font-bold font-roboto focus:outline-none transform duration-75`,
 
@@ -39,6 +39,11 @@ const Button = styled.button(({ variant, isMedium, isSmall }) => [
 
   // Combine regular css with tailwind classes within backticks
   variant === 'gray' && tw`bg-gray-800 text-primary-200`,
+  variant === 'success' && tw`bg-success-500 text-white`,
+  variant === 'error' && tw`bg-error-500 text-white`,
+  variant === 'warning' && tw`bg-warning-500 text-white`,
+
+  isHollow ? tw`bg-opacity-0 border border-primary-500 text-primary-500` : tw``,
 
   isSmall ? tw`text-sm` : tw`text-lg`,
 ])
