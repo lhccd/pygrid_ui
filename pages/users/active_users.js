@@ -256,7 +256,7 @@ export default function Active(){
     return(
         <div tw="flex-col justify-center">
             <div tw="flex justify-between">
-                <div tw="flex my-6 space-x-4">
+                <div tw="inline-flex my-6 space-x-4">
                     <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} setGlobalFilter={setGlobalFilter} globalFilter={state.globalFilter}/>
                 </div>
                 <button tw="bg-gray-800 rounded text-primary-200 text-center my-6 px-3 py-2 font-bold" onClick={() => setShowCreateUserModal(true)}><FontAwesomeIcon icon={faPlus} tw="mr-3"/>Create User</button>

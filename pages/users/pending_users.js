@@ -59,6 +59,27 @@ async function acceptUserByID(email){
         console.log("error in updateUserByID", error)
     }
 }
+async function denyUserByID(email){
+    console.log("denyUserByID Called", {email})
+    try{
+        const body = JSON.stringify(email)
+        console.log("requesting put", body)
+        const apiRes = await fetch('/api/deny_user_by_id',
+            {
+                method: "PUT",
+                headers:{
+                    'Accept': "application/json",
+                    'Content-Type': "application/json"
+                },
+                body: body
+            });
+        const data = await apiRes.json()
+        console.log("DENY USER BY ID outside returns", data)
+    }
+    catch(error) {
+        console.log("error in updateUserByID", error)
+    }
+}
 export default function Pending(){
     const [userlist, setUserlist] = useState([]);
     const [loading, setLoading] = useState(true);

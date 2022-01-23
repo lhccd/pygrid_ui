@@ -11,32 +11,44 @@ import Modal from '../../../components/Modal';
 import useSWR from 'swr'
 import {useRouter} from 'next/router'
 
-function getUserlist(){
-    const fetcher = (...args) => fetch(...args).then(res => res.json())
-    const { data, error } = useSWR('/api/userlist', fetcher)
-    console.log("useSWR in outside function", data)
-    return {
-        userlist: data,
-        isLoading: !error && !data,
-        isError: error
-    }
-}
-
 const defaultEndpoint = 'https://rickandmortyapi.com/api/character/'
 const API_URL = "http://localhost/api/v1/users/user-detail?user_email="
 
 import cookie from "cookie"
 
 // WORKING getServerSideProps!!!! 
+// export async function getServerSideProps({ query }){
+//     const access = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDMyMDg1MTEsInN1YiI6IjExNmMwOWZhLWYwYWMtNDhmMC04YTEyLTBhNGZkNjcwYTUyOSJ9.ZTVQuKhYcK-kzAsRYG_H_Yu0z3J1teUpOGIPRzkdSYw'
+//     const { email } = query;
+//     const res = await fetch(`${API_URL}${email}`, { 
+//         method: 'get', 
+//         headers: {
+//             "Accept": "application/json", "Authorization": `Bearer ${access}`
+//         }
+//     })
+//     const data = await res.json();
+//     console.log("res", res, "data", data)
+//     return{
+//         props: {
+//             data
+//         }
+//     }
+// }
 export async function getServerSideProps({ query }){
-    const access = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDMyMDg1MTEsInN1YiI6IjExNmMwOWZhLWYwYWMtNDhmMC04YTEyLTBhNGZkNjcwYTUyOSJ9.ZTVQuKhYcK-kzAsRYG_H_Yu0z3J1teUpOGIPRzkdSYw'
-    const { email } = query;
-    const res = await fetch(`${API_URL}${email}`, { 
-        method: 'get', 
-        headers: {
-            "Accept": "application/json", "Authorization": `Bearer ${access}`
-        }
+    const email =  query;
+    const body =JSON.stringify({
+        email
     })
+    alert(email)
+    const res = await fetch('http://localhost:3000/api/get_user_by_id', 
+        { 
+            method: 'POST', 
+            headers:{
+                'Accept': "application/json",
+                'Content-Type': "application/json"
+            },
+            body: body
+        })
     const data = await res.json();
     console.log("res", res, "data", data)
     return{
