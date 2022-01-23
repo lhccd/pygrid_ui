@@ -185,6 +185,44 @@ function CreateUserModal({show, onClose}){
         </Modal>
     )
 }
+function getUserByID(id){
+    const [userDetail, setUserDetail] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(()=>{
+        async function fetchData() {
+            try{
+                const email =  id;
+                setLoading(true);
+                const body =JSON.stringify({
+                    email
+                })
+                const apiRes = await fetch('/api/get_user_by_id',
+                    {
+                        method: "POST",
+                        headers:{
+                            'Accept': "application/json",
+                            'Content-Type': "application/json"
+                        },
+                        body: body
+                    });
+                const data = await apiRes.json()
+                console.log("GET USER BY ID outside returns", data)
+                setUserDetail(data)
+            }
+            finally {
+                setLoading(false);
+            }
+        }
+
+        if(id !== ''){
+            fetchData();
+        }
+    }, []);
+
+    return [userDetail, loading]; 
+}
+
 export default function Active(){
     const [userlist, setUserlist] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -262,6 +300,7 @@ export default function Active(){
                 <button tw="bg-gray-800 rounded text-primary-200 text-center my-6 px-3 py-2 font-bold" onClick={() => setShowCreateUserModal(true)}><FontAwesomeIcon icon={faPlus} tw="mr-3"/>Create User</button>
             </div>
             <CreateUserModal show={showCreateUserModal} onClose={()=>setShowCreateUserModal(false)}/>
+            <button tw="bg-primary-500" onClick={getUserByID("admin@backend.com")}>GET USER BY ID</button>
             <div tw="flex w-auto">
                 <Table {...getTableProps()}>
                     <TableHead>

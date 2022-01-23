@@ -4,6 +4,7 @@ import axios from "axios"
 const API_URL = "http://localhost/api/v1";
 
 export default async (req, res) => {
+    console.log("API LAYER", req.body.email)
     if(req.method == "POST"){
         const cookies =  cookie.parse(req.headers.cookie ?? '');
         const access = cookies.access ?? false;

@@ -35,11 +35,9 @@ import cookie from "cookie"
 //     }
 // }
 export async function getServerSideProps({ query }){
-    const email =  query;
-    const body =JSON.stringify({
-        email
-    })
-    alert(email)
+    const body = JSON.stringify(query);
+    console.log("from index page before req", query, "body", body)
+    // const res = await fetch('http://localhost:3000/api/accepted_userlist', 
     const res = await fetch('http://localhost:3000/api/get_user_by_id', 
         { 
             method: 'POST', 
@@ -50,7 +48,7 @@ export async function getServerSideProps({ query }){
             body: body
         })
     const data = await res.json();
-    console.log("res", res, "data", data)
+    console.log("from index page res", res, "data", data)
     return{
         props: {
             data
