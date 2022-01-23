@@ -39,6 +39,9 @@ const Button = styled.button(({ variant, isMedium, isSmall, isHollow }) => [
 
   // Combine regular css with tailwind classes within backticks
   variant === 'gray' && tw`bg-gray-800 text-primary-200`,
+  variant === 'success' && tw`bg-success-500 text-white`,
+  variant === 'error' && tw`bg-error-500 text-white`,
+  variant === 'warning' && tw`bg-warning-500 text-white`,
 
   isHollow ? tw`bg-opacity-0 border border-primary-500 text-primary-500` : tw``,
 

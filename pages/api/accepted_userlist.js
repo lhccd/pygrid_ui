@@ -24,7 +24,7 @@ export default async (req, res) => {
                     }
                 });
             const data = apiRes.data;
-            console.log("accepted userlist data from api", data)
+            //console.log("accepted userlist data from api", data)
 
             if (apiRes.status === 200){
                 return res.status(200).json(data);
