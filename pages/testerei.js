@@ -7,54 +7,69 @@ import {faCalendar, faEnvelope, faPlus, faUser, faUserPlus, faInfoCircle, faChev
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import Modal from '../components/Modal';
 import { Menu, Transition } from '@headlessui/react'
-
+import { SidebarNav } from '../components/SidebarNav';
+import { Controller } from 'react-hook-form';
 export default function Testerei(){
     const name = "Canada Domain"
     const domainid = "ID451346262346246"
     return (
-        <div tw="flex items-center">
-            <img src={"avatar.jpg"} tw="w-20 h-20 rounded-full mr-4" alt={name} />
-            <div tw="block">
-                <Menu>
-                    <Menu.Button tw="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-black rounded-md bg-opacity-20">
-                            {name}<FontAwesomeIcon size="sm" icon={faChevronDown}/>
-                    </Menu.Button>
-                    <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                        >
-                    <Menu.Items tw="w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        <Menu.Item>
-                        {({ active }) => (
-                            <a
-                            css={[tw`flex rounded-md items-center w-full px-2 py-2 text-sm`, active && tw`bg-primary-200`]}
-                            href="/account-settings"
-                            >
-                            Account settings
-                            </a>
-                        )}
-                        </Menu.Item>
-                        <Menu.Item>
-                        {({ active }) => (
-                            <a
-                            css={[tw`flex rounded-md items-center w-full px-2 py-2 text-sm`, active && tw`bg-primary-200`]}
-                            href="/account-settings"
-                            >
-                            Documentation
-                            </a>
-                        )}
-                        </Menu.Item>
-                    </Menu.Items>
-                    </Transition>
-                </Menu>
-                <div tw="block text-lg truncate">{domainid}</div>
+        <div tw="h-screen w-screen bg-error-50 flex">
+            <SidebarNav></SidebarNav>
+            <div tw="relative p-1 flex flex-col justify-between w-64 gap-5 h-screen bg-gray-300 z-10">
+                <header tw="flex flex-grow bg-primary-200 justify-center items-center"> 
+                    HEADER
+                </header>
+                <div tw="flex flex-grow bg-primary-500 justify-center items-center">
+                    CONTENT
+                </div>
+                <footer tw="flex flex-grow bg-primary-800 justify-center items-center">
+                    FOOTER
+                </footer>
             </div>
         </div>
+        // <div tw="flex items-center">
+        //     <img src={"avatar.jpg"} tw="w-20 h-20 rounded-full mr-4" alt={name} />
+        //     <div tw="block">
+        //         <Menu>
+        //             <Menu.Button tw="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-black rounded-md bg-opacity-20">
+        //                     {name}<FontAwesomeIcon size="sm" icon={faChevronDown}/>
+        //             </Menu.Button>
+        //             <Transition
+        //                 as={Fragment}
+        //                 enter="transition ease-out duration-100"
+        //                 enterFrom="transform opacity-0 scale-95"
+        //                 enterTo="transform opacity-100 scale-100"
+        //                 leave="transition ease-in duration-75"
+        //                 leaveFrom="transform opacity-100 scale-100"
+        //                 leaveTo="transform opacity-0 scale-95"
+        //                 >
+        //             <Menu.Items tw="w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        //                 <Menu.Item>
+        //                 {({ active }) => (
+        //                     <a
+        //                     css={[tw`flex rounded-md items-center w-full px-2 py-2 text-sm`, active && tw`bg-primary-200`]}
+        //                     href="/account-settings"
+        //                     >
+        //                     Account settings
+        //                     </a>
+        //                 )}
+        //                 </Menu.Item>
+        //                 <Menu.Item>
+        //                 {({ active }) => (
+        //                     <a
+        //                     css={[tw`flex rounded-md items-center w-full px-2 py-2 text-sm`, active && tw`bg-primary-200`]}
+        //                     href="/account-settings"
+        //                     >
+        //                     Documentation
+        //                     </a>
+        //                 )}
+        //                 </Menu.Item>
+        //             </Menu.Items>
+        //             </Transition>
+        //         </Menu>
+        //         <div tw="block text-lg truncate">{domainid}</div>
+        //     </div>
+        // </div>
     )
 }
 // export  const getServerSideProps = async () => {

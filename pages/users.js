@@ -5,9 +5,9 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 
 import { Tab } from "@headlessui/react"
 import { Fragment } from 'react'
-import Active from './users/active_users'
-import Pending from './users/pending_users'
-import Denied from './users/denied_users'
+import Active from './users/active-users'
+import Pending from './users/pending-users'
+import Denied from './users/denied-users'
 
 export default function Users() {
     return(
