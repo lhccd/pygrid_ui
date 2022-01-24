@@ -4,22 +4,34 @@ import axios from "axios"
 const API_URL = "http://localhost/api/v1";
 
 export default async (req, res) => {
+    const cookies = cookie.parse(req.headers.cookie ?? '');
+    const access = cookies.access ?? false;
+
+    if (access === false) {
+        return res.status(401).json({
+            error: 'User is not authorized!'
+        })
+    }
     //GET
     if(req.method == "GET"){
+        const domain_name=req.query.domain_name
         try{
-            const apiRes = await axios.get(`${API_URL}/domain/CHANGE THIS`,
-                {
-                    method: 'GET',
-                    headers: {
-                        "Accept": "application/json",
-                    }
-                });
+            const apiRes = await axios({
+                method: 'GET',
+                url: `${API_URL}/domain/domain-version`,
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": `Bearer ${access}`
+                },
+                params: {
+                    domain_name: domain_name
+                }
+            });
             const data = apiRes.data;
-
             if (apiRes.status === 200){
                 return res.status(200).json({
-                    lastUpdated: data.lastUpdated,
-                    version: data.version
+                    lastUpdated: data.last_updated,
+                    version: data.version_name
                 });
             }
             else{
@@ -34,14 +46,6 @@ export default async (req, res) => {
             });
         }
     } else if(req.method == "PUT") {
-        const cookies = cookie.parse(req.headers.cookie ?? '');
-        const access = cookies.access ?? false;
-
-        if (access === false) {
-            return res.status(401).json({
-                error: 'User is not authorized!'
-            })
-        }
 
         try {
             const body = {

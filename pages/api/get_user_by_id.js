@@ -17,7 +17,10 @@ export default async (req, res) => {
         try{
             const email = req.body.email
             console.log("get user by id, req body", email)
-            const apiRes = await axios({method: 'get', url: `${API_URL}/users/user-detail`, headers: {"Accept": "application/json", "Authorization": `Bearer ${access}`}, params: {user_email: email}})
+            const apiRes = await axios({method: 'get',
+                url: `${API_URL}/users/user-detail`,
+                headers: {"Accept": "application/json", "Authorization": `Bearer ${access}`},
+                params: {user_email: email}})
                 // {
                 //     method: 'GET',
                 //     headers: {

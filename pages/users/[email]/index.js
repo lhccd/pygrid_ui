@@ -29,13 +29,13 @@ import cookie from "cookie"
 
 // WORKING getServerSideProps!!!! 
 export async function getServerSideProps({ query }){
-    const access = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDMyMDg1MTEsInN1YiI6IjExNmMwOWZhLWYwYWMtNDhmMC04YTEyLTBhNGZkNjcwYTUyOSJ9.ZTVQuKhYcK-kzAsRYG_H_Yu0z3J1teUpOGIPRzkdSYw'
-    const { email } = query;
-    const res = await fetch(`${API_URL}${email}`, { 
-        method: 'get', 
+    const body = JSON.stringify(query);
+    const res = await fetch(`api/user-detail`, {
+        method: 'POST',
         headers: {
-            "Accept": "application/json", "Authorization": `Bearer ${access}`
-        }
+            "Accept": "application/json"
+        },
+        body: body
     })
     const data = await res.json();
     console.log("res", res, "data", data)

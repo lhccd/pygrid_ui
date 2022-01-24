@@ -4,28 +4,41 @@ import axios from "axios"
 const API_URL = "http://localhost/api/v1";
 
 export default async (req, res) => {
+    const cookies = cookie.parse(req.headers.cookie ?? '');
+    const access = cookies.access ?? false;
+
+    if (access === false) {
+        return res.status(401).json({
+            error: 'User is not authorized!'
+        })
+    }
     //GET
-    if(req.method == "GET"){
+    if(req.method === "GET"){
+        const domain_name=req.query.domain_name
         try{
-            const apiRes = await axios.get(`${API_URL}/domain/domain-detail`,
-                {
-                    method: 'GET',
-                    headers: {
-                        "Accept": "application/json",
-                    }
-                });
+            const apiRes = await axios({
+                method: 'GET',
+                url: `${API_URL}/domain/domain-profile`,
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": `Bearer ${access}`
+                },
+                params: {
+                    domain_name: domain_name
+                }
+            });
             const data = apiRes.data;
 
             if (apiRes.status === 200){
                 return res.status(200).json({
                     name: data.name,
                     id: data.id,
-                    datasets: data.datasets,
-                    deployed: data.deployed,
-                    owner: data.owner,
+                    datasets:2,
+                    deployed: data.deployed_on,
+                    owner: "TO BE FETCHED",
                     description: data.description,
-                    email: data.email,
-                    tags: data.tags
+                    email: data.support_email,
+                    tags: ["dummy tag 1", "dummy tag 2"]
                 });
             }
             else{
@@ -35,20 +48,12 @@ export default async (req, res) => {
             }
         }
         catch (error){
+            console.log(error)
             return res.status(500).json({
                 error: "Oops! Server Error!"
             });
         }
     } else if(req.method == "PUT") {
-        const cookies = cookie.parse(req.headers.cookie ?? '');
-        const access = cookies.access ?? false;
-
-        if (access === false) {
-            return res.status(401).json({
-                error: 'User is not authorized!'
-            })
-        }
-
         try {
             const body = {
                 "description": req.body.description,
