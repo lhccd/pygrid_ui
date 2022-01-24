@@ -18,6 +18,7 @@ import {useForm} from "react-hook-form";
 import ToggleSwitch from "./ToggleSwitch";
 import {faCheckCircle} from "@fortawesome/free-solid-svg-icons/faCheckCircle";
 import * as fileSaver from "file-saver";
+import axios from "axios";
 
 // const styles = {
 //     container: ({ hasBg }) => [
@@ -76,24 +77,25 @@ function Profile(){
     const { register, handleSubmit, errors, reset } = useForm();
 
     useEffect(() => {
-        //getDomain();
+        getDomain();
     }, []);
 
     async function getDomain() {
         try{
-            const apiRes = await fetch(
-                "api/domain-profile",
-                {
-                    method: "GET",
-                    headers: {
-                        "Accept": "application/json",
-                        "Content-Type": "application/json"
-                    }
+            const domain_name = "d1"
+            const apiRes = await axios({
+                method: "GET",
+                url: "api/domain-profile",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                },
+                params: {
+                    domain_name: domain_name
                 }
-            );
-
+            });
             if(apiRes.status == 200){
-                const domain = await apiRes.json();
+                const domain = await apiRes.data;
                 setName(domain.name);
                 setId(domain.id);
                 setDatasets(domain.datasets);
@@ -108,7 +110,7 @@ function Profile(){
             }
         }
         catch (error){
-            console.log(error);
+            console.error(error);
         }
     }
 
@@ -495,24 +497,26 @@ function Updates(){
     const { register, handleSubmit, errors, reset } = useForm();
 
     useEffect(() => {
-        //getVersion();
+        getVersion();
     }, []);
 
     async function getVersion() {
         try{
-            const apiRes = await fetch(
-                "api/domain-version",
-                {
-                    method: "GET",
-                    headers: {
-                        "Accept": "application/json",
-                        "Content-Type": "application/json"
-                    }
+            const domain_name = "d1"
+            const apiRes = await axios({
+                method: "GET",
+                url: "api/domain-version",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                },
+                params: {
+                    domain_name: domain_name
                 }
-            );
+            });
 
             if(apiRes.status == 200){
-                const domain = await apiRes.json();
+                const domain = await apiRes.data;
                 setLastUpdated(domain.lastUpdated);
                 setVersion(domain.version);
             }
@@ -521,7 +525,7 @@ function Updates(){
             }
         }
         catch (error){
-            console.log(error);
+            console.error(error);
         }
     }
 
@@ -570,11 +574,11 @@ function Updates(){
                             <ul id="domain-info" tw="text-left text-sm mt-4 mb-8">
                                 <li tw="py-2" key="lastUpdated">
                                     <a tw="font-bold text-gray-700">Last Updated: </a>
-                                    <a tw="font-mono">{DomainBody[0].LastUpdated}</a>
+                                    <a tw="font-mono">{lastUpdated}</a>
                                 </li>
                                 <li tw="py-2" key="version">
                                     <a tw="font-bold text-gray-700">Version: </a>
-                                    <a tw="font-mono">{DomainBody[0].Version}</a>
+                                    <a tw="font-mono">{version}</a>
                                 </li>
                             </ul>
                         </div>
