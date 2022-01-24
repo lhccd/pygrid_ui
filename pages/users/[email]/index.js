@@ -34,6 +34,7 @@ import cookie from "cookie"
 //         }
 //     }
 // }
+/*
 export async function getServerSideProps({ query }){
     const body = JSON.stringify(query);
     console.log("from index page before req", query, "body", body)
@@ -221,3 +222,6 @@ export default function Testerei({ data }){
         </Layout>
     )
 }
+
+
+ */
