@@ -15,7 +15,8 @@ import {
     faInfoCircle,
     faCheckCircle,
     faTimesCircle,
-    faTrash
+    faTrash,
+    faExpandAlt
 } from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import axios from 'axios'
@@ -229,6 +230,7 @@ function UserModal ({show, onClose, data}) {
     const [added_by, setAdded_by] = useState("")
     const [daa_pdf, setDaa_pdf] = useState("")
     const [created_at, setCreated_at] = useState("")
+    const router = useRouter();
 
     useEffect(() => {
         setFull_name(data.full_name);
@@ -254,6 +256,7 @@ function UserModal ({show, onClose, data}) {
     return (
         <Modal show={show} onClose={onClose}>
             <div tw="h-auto">
+                <div tw="flex"><button tw="items-center font-bold space-x-2" onClick={()=>router.push(`/users/${email}`)}><FontAwesomeIcon size="sm" icon={faExpandAlt}/>   Expand Page</button></div>
                 <div tw="flex items-center justify-between my-5">
                     <div tw="flex space-x-3 items-center">
                         <h2 tw="font-bold text-4xl text-gray-800">{full_name}</h2>

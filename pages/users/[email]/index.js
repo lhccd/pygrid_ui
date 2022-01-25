@@ -17,45 +17,45 @@ const API_URL = "http://localhost/api/v1/users/user-detail?user_email="
 import cookie from "cookie"
 
 // WORKING getServerSideProps!!!! 
-// export async function getServerSideProps({ query }){
-//     const access = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDMyMDg1MTEsInN1YiI6IjExNmMwOWZhLWYwYWMtNDhmMC04YTEyLTBhNGZkNjcwYTUyOSJ9.ZTVQuKhYcK-kzAsRYG_H_Yu0z3J1teUpOGIPRzkdSYw'
-//     const { email } = query;
-//     const res = await fetch(`${API_URL}${email}`, { 
-//         method: 'get', 
-//         headers: {
-//             "Accept": "application/json", "Authorization": `Bearer ${access}`
-//         }
-//     })
-//     const data = await res.json();
-//     console.log("res", res, "data", data)
-//     return{
-//         props: {
-//             data
-//         }
-//     }
-// }
-/*
 export async function getServerSideProps({ query }){
-    const body = JSON.stringify(query);
-    console.log("from index page before req", query, "body", body)
-    // const res = await fetch('http://localhost:3000/api/accepted_userlist', 
-    const res = await fetch('http://localhost:3000/api/get_user_by_id', 
-        { 
-            method: 'POST', 
-            headers:{
-                'Accept': "application/json",
-                'Content-Type': "application/json"
-            },
-            body: body
-        })
+    const access = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDMyMDg1MTEsInN1YiI6IjExNmMwOWZhLWYwYWMtNDhmMC04YTEyLTBhNGZkNjcwYTUyOSJ9.ZTVQuKhYcK-kzAsRYG_H_Yu0z3J1teUpOGIPRzkdSYw'
+    const { email } = query;
+    const res = await fetch(`${API_URL}${email}`, { 
+        method: 'get', 
+        headers: {
+            "Accept": "application/json", "Authorization": `Bearer ${access}`
+        }
+    })
     const data = await res.json();
-    console.log("from index page res", res, "data", data)
+    console.log("res", res, "data", data)
     return{
         props: {
             data
         }
     }
 }
+
+// export async function getServerSideProps({ query }){
+//     const body = JSON.stringify(query);
+//     console.log("from index page before req", query, "body", body)
+//     // const res = await fetch('http://localhost:3000/api/accepted_userlist', 
+//     const res = await fetch('http://localhost:3000/api/get_user_by_id', 
+//         { 
+//             method: 'POST', 
+//             headers:{
+//                 'Accept': "application/json",
+//                 'Content-Type': "application/json"
+//             },
+//             body: body
+//         })
+//     const data = await res.json();
+//     console.log("from index page res", res, "data", data)
+//     return{
+//         props: {
+//             data
+//         }
+//     }
+// }
 
 export async function getServerSidePropsTESTrickAndMortyAPI({ query }){
     const { email } = query;
@@ -222,6 +222,3 @@ export default function Testerei({ data }){
         </Layout>
     )
 }
-
-
- */
