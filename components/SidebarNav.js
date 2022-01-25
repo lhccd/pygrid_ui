@@ -7,66 +7,127 @@ import DomainConnectionStatus from '../components/DomainConnectionStatus'
 import useSWR from 'swr'
 import Avatar from './Avatar'
 
-const SidebarNav = () => {
+const SidebarNav = () => {
     return (
-        <aside tw="flex flex-col justify-between h-screen sticky top-0 bg-gradient-to-r from-black to-gray-800 text-gray-200 py-6 min-w-min max-w-xs">
-            {/* <DomainInfo tw="p-6" />
-            <div tw="">hgallo</div> */}
-            <Avatar tw="flex" name={"Canada Domain"} domainid={"ID: 5724741532"}/>
-            <div tw="my-10"></div>
-            <nav tw="text-lg mb-auto">
-                <ul tw="">
-                    <Link href="/dashboard">
-                        <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
-                            <div tw="p-2">
-                                <FontAwesomeIcon size="sm" icon={faThLarge} />
+        <div tw="sticky flex flex-col justify-between h-screen top-0 bg-gradient-to-r from-black to-gray-900 min-w-max max-w-xs text-gray-200 px-5">
+            <header tw="py-10 border-b border-gray-600">
+                <Avatar name={"Hong Kong Domain"} domainid={"ID: 234567898765434567643456743256234"}/>
+            </header>
+            <div>
+                <nav tw="text-lg mb-auto">
+                    <ul tw="cursor-pointer">
+                        {/* <Link href="/dashboard">
+                            <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
+                                <div tw="p-2">
+                                    <FontAwesomeIcon size="sm" icon={faThLarge} />
+                                </div>
+                                <a>Dashboard</a>
                             </div>
-                            <a>Dashboard</a>
-                        </div>
-                    </Link>
-                    <Link href="/users">
-                        <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
-                            <div tw="p-2">
-                                <FontAwesomeIcon size="sm" icon={faUsers} />
+                        </Link> */}
+                        <Link href="/users">
+                            <div tw="flex items-center space-x-3 px-3 py-6 hover:bg-gray-500">
+                                <div tw="p-2">
+                                    <FontAwesomeIcon size="sm" icon={faUsers} />
+                                </div>
+                                <a>Users</a>
                             </div>
-                            <a>Users</a>
-                        </div>
-                    </Link>
-                    <Link href="/permissions">
-                        <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
-                            <div tw="p-2">
-                                <FontAwesomeIcon size="sm" icon={faCheck} />
+                        </Link>
+                        <Link href="/permissions">
+                            <div tw="flex items-center space-x-3 px-3 py-6 hover:bg-gray-500">
+                                <div tw="p-2">
+                                    <FontAwesomeIcon size="sm" icon={faCheck} />
+                                </div>
+                                <a>Permissions</a>
                             </div>
-                            <a>Permissions</a>
-                        </div>
-                    </Link>
-                    <Link href="/requests">
-                        <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
-                            <div tw="p-2">
-                                <FontAwesomeIcon size="sm" icon={faLemon} />
+                        </Link>
+                        <Link href="/requests">
+                            <div tw="flex items-center space-x-3 px-3 py-6 hover:bg-gray-500">
+                                <div tw="p-2">
+                                    <FontAwesomeIcon size="sm" icon={faLemon} />
+                                </div>
+                                <a>Requests</a>
                             </div>
-                            <a>Requests</a>
-                        </div>
-                    </Link>
-                    <Link href="/networks">
-                        <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
-                            <div tw="p-2">
-                                <FontAwesomeIcon size="sm" icon={faHandsHelping} />
+                        </Link>
+                        <Link href="/networks">
+                            <div tw="flex items-center space-x-3 px-3 py-6 hover:bg-gray-500">
+                                <div tw="p-2">
+                                    <FontAwesomeIcon size="sm" icon={faHandsHelping} />
+                                </div>
+                                <a>Networks</a>
                             </div>
-                            <a>Networks</a>
-                        </div>
-                    </Link>
-                </ul>
-            </nav>
-            <footer tw="text-lg">
+                        </Link>
+                    </ul>
+                </nav>
+            </div>
+            <footer tw="py-10 text-lg border-t border-gray-600">
                 <div tw="px-3">
                     <DomainConnectionStatus/>
                 </div>
                 <CurrentUser/>
             </footer>
-        </aside>
+        </div>
     )
 }
+// const SidebarNav = () => {
+//     return (
+//         <aside tw="flex flex-col justify-between h-screen sticky top-0 bg-gradient-to-r from-black to-gray-800 text-gray-200 py-6 min-w-min max-w-xs">
+//             {/* <DomainInfo tw="p-6" />
+//             <div tw="">hgallo</div> */}
+//             <Avatar tw="flex" name={"Canada Domain"} domainid={"ID: 5724741532"}/>
+//             <div tw="my-10"></div>
+            // <nav tw="text-lg mb-auto">
+            //     <ul tw="">
+            //         {/* <Link href="/dashboard">
+            //             <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
+            //                 <div tw="p-2">
+            //                     <FontAwesomeIcon size="sm" icon={faThLarge} />
+            //                 </div>
+            //                 <a>Dashboard</a>
+            //             </div>
+            //         </Link> */}
+            //         <Link href="/users">
+            //             <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
+            //                 <div tw="p-2">
+            //                     <FontAwesomeIcon size="sm" icon={faUsers} />
+            //                 </div>
+            //                 <a>Users</a>
+            //             </div>
+            //         </Link>
+            //         <Link href="/permissions">
+            //             <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
+            //                 <div tw="p-2">
+            //                     <FontAwesomeIcon size="sm" icon={faCheck} />
+            //                 </div>
+            //                 <a>Permissions</a>
+            //             </div>
+            //         </Link>
+            //         <Link href="/requests">
+            //             <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
+            //                 <div tw="p-2">
+            //                     <FontAwesomeIcon size="sm" icon={faLemon} />
+            //                 </div>
+            //                 <a>Requests</a>
+            //             </div>
+            //         </Link>
+            //         <Link href="/networks">
+            //             <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
+            //                 <div tw="p-2">
+            //                     <FontAwesomeIcon size="sm" icon={faHandsHelping} />
+            //                 </div>
+            //                 <a>Networks</a>
+            //             </div>
+            //         </Link>
+            //     </ul>
+            // </nav>
+            // <footer tw="text-lg">
+            //     <div tw="px-3">
+            //         <DomainConnectionStatus/>
+            //     </div>
+            //     <CurrentUser/>
+            // </footer>
+//         </aside>
+//     )
+// }
 
 function CurrentUser() {
     const fetcher = (...args) => fetch(...args).then(res => res.json())

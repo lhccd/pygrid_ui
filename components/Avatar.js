@@ -7,12 +7,12 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 
 export default function Avatar({ name, picture, domainid }) {
     return (
-      <div tw="flex items-center mx-4 my-6">
+      <div tw="flex items-center px-4">
             <img src={"avatar.jpg"} tw="w-20 h-20 rounded-full mr-1" alt={name} />
-            <div tw="block">
-                <Menu>
-                    <Menu.Button tw="flex space-x-2 items-center w-full px-4 text-xl font-bold truncate text-gray-50 rounded-md bg-opacity-20">
-                            <p tw="truncate">{name}</p>
+            {/* <div tw="block"> */}
+                <Menu as="div" tw="w-40 space-y-2">
+                    <Menu.Button fullWidth tw="px-2 flex w-full space-x-2 items-center text-xl font-bold truncate text-gray-50 rounded-md bg-gray-500 bg-opacity-20">
+                            <div tw="truncate">{name}</div>
                             <FontAwesomeIcon size="sm" icon={faChevronDown}/>
                     </Menu.Button>
                     <Transition
@@ -77,17 +77,16 @@ export default function Avatar({ name, picture, domainid }) {
                               </button>
                           )}
                         </Menu.Item>
-
                     </Menu.Items>
                     </Transition>
-                    <div tw="mx-4 my-2 px-2 text-gray-50 block text-sm font-bold rounded truncate bg-gray-800 text-primary-200">{domainid}</div>
-                    <button tw="px-4 text-left" onClick={logout}>
+                    <div tw="px-2 text-gray-50 block text-sm font-bold rounded truncate bg-gray-800 text-primary-200">{domainid}</div>
+                    <button tw="px-2 text-left" onClick={logout}>
                         <p size="sm" tw="lowercase bg-transparent hover:text-white underline">
                             {('logout')}
                         </p>
                     </button>
                 </Menu>
-            </div>
-        </div>
+            {/* </div> */}
+       </div>
     )
 }
