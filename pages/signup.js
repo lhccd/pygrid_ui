@@ -106,7 +106,7 @@ export default function Signup() {
         document.body.removeChild(a)
       }
       else{
-        alert("Couldn't update the user profile!");
+        alert("Couldn't find any agreement file in the domain");
       }
     }
     catch (error){
