@@ -77,6 +77,43 @@ export default function Signup() {
     fileSaver.saveAs(daa);
   };
 
+  async function downloadAgreement() {
+    const domain_name = "dp2"
+    try{
+      const apiRes =await axios({
+        method: 'GET',
+        url: "http://localhost/api/v1/domain/domain-pdf",
+        headers: {
+          "Accept": "application/json",
+        },
+        params: {
+          domain_name: domain_name
+        }
+      });
+
+      if(apiRes.status === 200){
+        const data = await apiRes.data;
+        let decodedStringAtoB = atob(data);
+        let bytes = new Uint8Array(decodedStringAtoB.length);
+        for (let i=0; i<decodedStringAtoB.length; i++)
+          bytes[i] = decodedStringAtoB.charCodeAt(i);
+        let a = window.document.createElement('a');
+
+        a.href = window.URL.createObjectURL(new Blob([bytes], { type: 'application/octet-stream' }));
+        a.download = "Canada_Domain_Agreement.pdf";
+        document.body.appendChild(a)
+        a.click();
+        document.body.removeChild(a)
+      }
+      else{
+        alert("Couldn't update the user profile!");
+      }
+    }
+    catch (error){
+      console.log(error);
+    }
+  }
+
   return (
     <Background>
       <div id="app" tw="flex flex-col h-screen w-screen py-10 font-rubik">
@@ -261,7 +298,7 @@ export default function Signup() {
                           {...register("daa_pdf", { onChange: onUploadDaa, required: true })}
                         />
                         <button
-                          tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 my-5">
+                          tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 my-5" onClick={downloadAgreement}>
                           <FontAwesomeIcon icon={faDownload} tw="mr-2" />
                           Download agreement
                         </button>
