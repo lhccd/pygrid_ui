@@ -6,7 +6,18 @@ import Tag from '../../components/Tag'
 import Modal from '../../components/Modal';
 import Alert from '../../components/Alert';
 import Button from '../../components/Button';
-import {faCalendar, faEnvelope, faPlus, faUser, faUserPlus, faInfoCircle, faCheckCircle, faTimesCircle} from '@fortawesome/free-solid-svg-icons'
+import {
+    faCalendar,
+    faEnvelope,
+    faPlus,
+    faUser,
+    faUserPlus,
+    faInfoCircle,
+    faCheckCircle,
+    faTimesCircle,
+    faTrash,
+    faExpandAlt
+} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import axios from 'axios'
 import { useRouter } from 'next/router'
@@ -65,6 +76,29 @@ async function acceptUserByID(email){
         console.log("error in updateUserByID", error)
     }
 }
+
+async function adjustBudget(email, budget){
+    console.log("adjustBudget Called", {email})
+    try{
+        const body = JSON.stringify({"email": email, "budget":budget})
+        console.log("requesting put", body)
+        const apiRes = await fetch('/api/adjust_budget_by_id',
+            {
+                method: "PUT",
+                headers:{
+                    'Accept': "application/json",
+                    'Content-Type': "application/json"
+                },
+                body: body
+            });
+        const data = await apiRes.json()
+        console.log("ADJUST BUDGET BY ID outside returns", data)
+    }
+    catch(error) {
+        console.log("error in updateUserByID", error)
+    }
+}
+
 function CreateUserModal({show, onClose}){
     const { register, handleSubmit, errors, reset } = useForm();
 
@@ -104,7 +138,7 @@ function CreateUserModal({show, onClose}){
                     </p>
                 </div>
                 <div tw="col-span-6 text-left ">
-                    <label tw="block my-2" htmlFor="fullname">Full Name<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
+                    <label tw="block my-2" htmlFor="full_name">Full Name<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
                     <input
                     tw="block p-3 border border-gray-300 rounded-lg w-full
                                 focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
@@ -185,6 +219,169 @@ function CreateUserModal({show, onClose}){
         </Modal>
     )
 }
+
+function UserModal ({show, onClose, data}) {
+    const [showAdjustBudgetModal, setShowAdjustBudgetModal] = useState(false)
+    const [full_name, setFull_name] = useState("")
+    const [budget, setBudget] = useState("")
+    const [email, setEmail] = useState("");
+    const [institution, setInstitution] = useState("");
+    const [website, setWebsite] = useState("");
+    const [added_by, setAdded_by] = useState("")
+    const [daa_pdf, setDaa_pdf] = useState("")
+    const [created_at, setCreated_at] = useState("")
+    const router = useRouter();
+
+    useEffect(() => {
+        setFull_name(data.full_name);
+        setBudget(data.budget);
+        setEmail(data.email);
+        setInstitution(data.institution);
+        setWebsite(data.website);
+        setAdded_by(data.added_by);
+        setDaa_pdf(data.daa_pdf);
+        setCreated_at(data.created_at);
+    }, [data]);
+
+    useEffect(() => {
+    }, [showAdjustBudgetModal]);
+
+    useEffect(() => {
+    }, [budget]);
+
+    function handleBudgetInUserModal(value) {
+        setBudget(value)
+    };
+
+    return (
+        <Modal show={show} onClose={onClose}>
+            <div tw="h-auto">
+                <div tw="flex"><button tw="items-center font-bold space-x-2" onClick={()=>router.push(`/users/${email}`)}><FontAwesomeIcon size="sm" icon={faExpandAlt}/>   Expand Page</button></div>
+                <div tw="flex items-center justify-between my-5">
+                    <div tw="flex space-x-3 items-center">
+                        <h2 tw="font-bold text-4xl text-gray-800">{full_name}</h2>
+                        <Tag>Data Scientist</Tag>
+                    </div>
+                    <Button tw="float-right" tw="space-x-3 text-gray-400"><FontAwesomeIcon size="sm" icon={faTrash}/>  Delete User</Button>
+                </div>
+                <p tw="">Change Role</p>
+
+                <h3 tw="font-bold mt-10 text-gray-600">Privacy Budget</h3>
+                <div tw="flex bg-gray-50 items-center justify-between border border-gray-100 rounded p-4 space-x-3">
+                    <div>
+                        <p tw="text-error-400 font-bold">{budget} ɛ</p>
+                        <p>Current Balance</p>
+                    </div>
+                    <div>
+                        <p tw="text-gray-800 font-bold">{budget} ɛ</p>
+                        <p>Allocated Budget</p>
+                    </div>
+                    <Button variant={"primary"} onClick={() => setShowAdjustBudgetModal(true)} isSmall isHollow>Adjust Budget</Button>
+                    <AdjustBudgetModal show={showAdjustBudgetModal} onClose={() => setShowAdjustBudgetModal(false)}
+                                        email={email} data={budget} handleBudgetInUserModal={handleBudgetInUserModal}/>
+                </div>
+                <h3 tw="font-bold mt-10 text-gray-600">Background</h3>
+                <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
+                    <div tw="flex space-x-3">
+                        <p tw="font-bold text-gray-600">Email:</p>
+                        <p>{email}</p>
+                    </div>
+                    <div tw="flex space-x-3">
+                        <p tw="font-bold text-gray-600">Company/Institution:</p>
+                        <p>{institution}</p>
+                    </div>
+                    <div tw="flex space-x-3">
+                        <p tw="font-bold text-gray-600">Website/profile:</p>
+                        <p>{website}</p>
+                    </div>
+                </div>
+                <h3 tw="font-bold mt-10 text-gray-600">System</h3>
+                <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
+                    <div tw="flex space-x-3">
+                        <p tw="font-bold text-gray-600">Date Added:</p>
+                        <p>{added_by}</p>
+                    </div>
+                    <div tw="flex space-x-3">
+                        <p tw="font-bold text-gray-600">Data Access Agreement:</p>
+                        <p>{daa_pdf}</p>
+                    </div>
+                    <div tw="flex space-x-3">
+                        <p tw="font-bold text-gray-600">Uploaded On:</p>
+                        <p>{created_at}</p>
+                    </div>
+                </div>
+            </div>
+        </Modal>
+    );
+}
+
+function AdjustBudgetModal({show, onClose, email, data, handleBudgetInUserModal}){
+    console.log("adjustbudgetmodal data", data)
+
+    const [balance, setBalance] = useState(0)
+    const [budget, setBudget] = useState(0)
+
+    useEffect(()=>{
+        setBalance(data);
+        setBudget(data);
+    }, [data])
+
+    useEffect(()=>{
+
+    }, [balance])
+
+    function incrementBudget(){
+        setBudget(prevCount => prevCount + 1)
+    }
+    function decrementBudget(){
+        setBudget(prevCount => prevCount - 1)
+    }
+
+    const onUpgrade = ()=> {
+        console.log("budget", budget)
+        setBalance(budget);
+        console.log("balance", balance)
+        adjustBudget(email, budget)
+        handleBudgetInUserModal(budget);
+        onClose();
+        console.log("onUpgrade", email, balance, budget)
+    }
+
+    return(
+        <Modal show={show} onClose={onClose}>
+            <div tw="grid grid-cols-12 text-left p-6 rounded-lg gap-4">
+                <div tw="col-span-full flex-col items-center">
+                    <h2 tw="font-bold text-4xl my-6 text-gray-800">∑</h2>
+                    <h2 tw="font-bold text-4xl my-6 text-gray-800">Upgrade Budget</h2>
+                </div>
+                <p tw="col-span-full text-justify my-6">Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy budget as credits you give to a user to perform computations from. These credits of  Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. The more budget the more visibility. By default all users start with 0ɛ and must have their data requests approved manually until upgraded. You can learn more about privacy budgets and how to allocate them at Course.OpenMined.org</p>
+
+                <h3 tw="col-span-full font-bold mt-3 text-gray-600">Adjust Privacy Budget</h3>
+                <div tw="col-span-full flex bg-gray-50 items-center justify-between border border-gray-100 rounded p-4 space-x-3 my-6">
+                    <div>
+                        <p tw="text-error-400 font-bold">{balance} ɛ</p>
+                        <p>Current Balance</p>
+                    </div>
+                    <div>
+                        <p tw="text-gray-800 font-bold">{budget} ɛ</p>
+                        <p>Allocated Budget</p>
+                    </div>
+                    <div tw="flex border border-gray-200 rounded justify-between">
+                        <Button tw='bg-gray-200 text-white' isSmall onClick={decrementBudget}>-</Button>
+                        <p tw="px-8 py-2 text-center text-lg">{budget}</p>
+                        <Button tw='bg-gray-200 text-white' isSmall onClick={incrementBudget}>+</Button>
+                    </div>
+                </div>
+                <div tw="col-span-full flex justify-between">
+                    <Button variant={"primary"} isHollow onClick={onClose}>Cancel</Button>
+                    <Button variant={"primary"} onClick={onUpgrade}>Upgrade</Button>
+                </div>
+            </div>
+        </Modal>
+    )
+}
+
+/*
 function getUserByID(id){
     const [userDetail, setUserDetail] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -220,13 +417,34 @@ function getUserByID(id){
         }
     }, []);
 
-    return [userDetail, loading]; 
+    return [userDetail, loading];
 }
+
+ */
 
 export default function Active(){
     const [userlist, setUserlist] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showCreateUserModal, setShowCreateUserModal] = useState(false);
+    const [showUserModal, setShowUserModal] = useState(false);
+    const [userData, setUserData] = useState(
+        {
+            "email": "",
+            "full_name": "",
+            "id": 0,
+            "institution": "",
+            "website": "",
+            "status": "",
+            "role": null,
+            "budget": 0,
+            "created_at": "",
+            "added_by": "",
+            "daa_pdf": ""
+        });
+
+    useEffect(() => {
+        fetchUserlist()
+    }, [showUserModal])
 
     const fetchUserlist = async () => {
         try{
@@ -250,6 +468,38 @@ export default function Active(){
         }
     }
 
+    async function getUser(email) {
+        const body =JSON.stringify({
+            email,
+        })
+        try{
+            const apiRes = await fetch(
+                "api/get_user_by_id",
+                {
+                    method: "POST",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body
+                }
+            );
+
+            if(apiRes.status == 200){
+                const data = await apiRes.json();
+                setUserData(data)
+                console.log("userData: ", userData)
+            }
+            else{
+                alert("Couldn't fetch the user!");
+            }
+        }
+        catch (error){
+            console.log(error);
+        }
+    }
+
+
     const usersData = useMemo(() => [...userlist], [userlist]);
     const usersColumns = useMemo(
         () => 
@@ -264,13 +514,17 @@ export default function Active(){
     
     const tableHooks = (hooks) => {
         const router = useRouter()
+
         hooks.visibleColumns.push((columns) => [
             ...columns,
             {
                 id: "Edit", 
                 Header: 'Edit',
                 Cell: ({ row }) => (
-                    <Button variant={'primary'} onClick={() => router.push('/users/'+row.values.email)}>Edit</Button>
+                    <Button variant={'primary'} onClick={() => {
+                        getUser(row.values.email);
+                        setShowUserModal(true);
+                    }}>Edit</Button>
                 )
             },
             {
@@ -300,7 +554,7 @@ export default function Active(){
                 <button tw="bg-gray-800 rounded text-primary-200 text-center my-6 px-3 py-2 font-bold" onClick={() => setShowCreateUserModal(true)}><FontAwesomeIcon icon={faPlus} tw="mr-3"/>Create User</button>
             </div>
             <CreateUserModal show={showCreateUserModal} onClose={()=>setShowCreateUserModal(false)}/>
-            <button tw="bg-primary-500" onClick={getUserByID("admin@backend.com")}>GET USER BY ID</button>
+            <UserModal show={showUserModal} onClose={()=>setShowUserModal(false)} data={userData} />
             <div tw="flex w-auto">
                 <Table {...getTableProps()}>
                     <TableHead>
