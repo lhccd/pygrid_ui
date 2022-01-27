@@ -27,7 +27,23 @@ export default async (req, res) => {
                     domain_name: domain_name
                 }
             });
+
+            const apiTag = await axios({
+                method: 'GET',
+                url: `${API_URL}/domain/domain-tags`,
+                headers: {
+                "Accept": "application/json",
+                    "Authorization": `Bearer ${access}`
+                },
+            });
+
             const data = apiRes.data;
+            const data_tags = apiTag.data;
+
+            let tags = []
+            for (let tag of data_tags){
+                tags.push(tag.name)
+            }
 
             if (apiRes.status === 200){
                 return res.status(200).json({
@@ -38,7 +54,7 @@ export default async (req, res) => {
                     owner: "TO BE FETCHED",
                     description: data.description,
                     email: data.support_email,
-                    tags: ["dummy tag 1", "dummy tag 2"]
+                    tags: tags
                 });
             }
             else{
