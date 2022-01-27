@@ -3,30 +3,125 @@ import {Link} from 'next';
 import {useState, Fragment} from 'react';
 import tw from 'twin.macro';
 import Button from '../components/Button'
-import {faCalendar, faEnvelope, faPlus, faUser, faUserPlus, faInfoCircle, faChevronDown} from '@fortawesome/free-solid-svg-icons'
+import {faCalendar, faEnvelope, faPlus, faUser, faUserPlus, faInfoCircle, faCheck, faCheckCircle, faChevronDown} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import Modal from '../components/Modal';
 import { Menu, Transition } from '@headlessui/react'
 import { SidebarNav } from '../components/SidebarNav';
 import { Controller } from 'react-hook-form';
+import { Listbox } from '@headlessui/react'
+
+const roles = [
+  { id: 1, name: 'Owner'},
+  { id: 2, name: 'Admin'},
+  { id: 3, name: 'Data Scientist'}
+]
+const [selectedRole, setSelectedRole] = useState(roles[0])
 export default function Testerei(){
     const name = "Canada Domain"
     const domainid = "ID451346262346246"
-    return (
-        <div tw="h-screen w-screen bg-error-50 flex">
-            <SidebarNav></SidebarNav>
-            <div tw="relative p-1 flex flex-col justify-between w-64 gap-5 h-screen bg-gray-300 z-10">
-                <header tw="flex flex-grow bg-primary-200 justify-center items-center"> 
-                    HEADER
-                </header>
-                <div tw="flex flex-grow bg-primary-500 justify-center items-center">
-                    CONTENT
+    const [selectedRole, setSelectedRole] = useState(roles[0])
+    // function ChangeRoleModal({show, onClose, email, data}){
+    //     console.log("changemodal data", data)
+    
+    //     const [role, setRole] = useState("")
+    
+    //     useEffect(()=>{
+    //         setBudget(data.role);
+    //     }, [data])
+    
+    //     useEffect(()=>{
+    
+    //     }, [balance])
+    
+    //     function incrementBudget(){
+    //         setBudget(prevCount => prevCount + 1)
+    //     }
+    //     function decrementBudget(){
+    //         setBudget(prevCount => prevCount - 1)
+    //     }
+    
+    //     const onUpgrade = ()=> {
+    //         console.log("budget", budget)
+    //         setBalance(budget);
+    //         console.log("balance", balance)
+    //         adjustBudget(email, budget)
+    //         handleBudgetInUserModal(budget);
+    //         onClose();
+    //         console.log("onUpgrade", email, balance, budget)
+    //     }
+    
+        return(
+            <Modal show={true} onClose={""}>
+                <div tw="grid grid-cols-12 text-left p-6 rounded-lg gap-4">
+                    <div tw="col-span-full flex-col items-center">
+                        <h2 tw="font-bold text-4xl my-6 text-gray-800"><FontAwesomeIcon size="xl" icon={faCheck} tw="mr-3"/></h2>
+                        <h2 tw="font-bold text-4xl my-6 text-gray-800">Change Roles</h2>
+                    </div>
+                    <p tw="col-span-full text-justify my-6">Permissions for a user are set by their assigned role. These permissions are used for managing the domain. To review and customize the default set of roles visit the Permissions page.</p>
+    
+                    <h3 tw="col-span-full font-bold mt-3 text-gray-600">Change Role</h3>
+                    <Listbox value={selectedRole} onChange={setSelectedRole}>
+                        <Listbox.Button tw="col-span-full flex py-4 px-6 border border-gray-200 rounded-lg text-left justify-between focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800">
+                            <span>{selectedRole.name}</span>
+                            <span>▼</span>
+                        </Listbox.Button>
+                        <Transition
+                            as={Fragment}
+                            leave="transition ease-in duration-100"
+                            leaveFrom="opacity-100"
+                            leaveTo="opacity-0"
+                        >
+                        <Listbox.Options tw="relative col-span-full overflow-auto text-gray-800 rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        {roles.map((role) => (
+                                <Listbox.Option key={role.id} value={role} tw="cursor-default select-none relative text-gray-800">
+                                        {({ selected }) => (
+                                            <div css={[tw`py-2 px-6  items-center`, selected && tw`flex justify-between bg-gray-50`]}>
+                                            <span css={[tw`font-normal`, selected && tw`font-medium`]}>{role.name}</span>
+                                            {selected ? (<span tw='items-center'><FontAwesomeIcon icon={faCheck} size="sm"/> </span> ) : null}
+                                            </div>
+                                        )}
+                                   
+                                </Listbox.Option>
+                        ))}
+                        </Listbox.Options>
+                        </Transition>
+                    </Listbox>
+                    <div tw="col-span-full flex-col bg-gray-50 items-center border border-gray-100 rounded p-6 space-x-3 my-6">
+                        <div>
+                            <p>This role is for users who will be performing computations on your datasets. They may be users you know directly or those who found your domain through search and discovery.</p>
+                        </div>
+                        <div tw="flex py-10 space-x-10 items-center">
+                            <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-success-500"/>
+                            <div tw="block">
+                                <p tw="font-bold text-black">Can Make Data Requests</p>
+                                <p>Allows users to make data requests</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div tw="col-span-full flex justify-between">
+                        <Button variant={"primary"} isHollow onClick={""}>Cancel</Button>
+                        <Button variant={"primary"} onClick={""}>Upgrade</Button>
+                    </div>
                 </div>
-                <footer tw="flex flex-grow bg-primary-800 justify-center items-center">
-                    FOOTER
-                </footer>
-            </div>
-        </div>
+            </Modal>
+        )
+    }
+    // return (
+    //     <div tw="h-screen w-screen bg-error-50 flex">
+    //         <SidebarNav></SidebarNav>
+    //         <div tw="relative p-1 flex flex-col justify-between w-64 gap-5 h-screen bg-gray-300 z-10">
+    //             <header tw="flex flex-grow bg-primary-200 justify-center items-center"> 
+    //                 HEADER
+    //             </header>
+    //             <div tw="flex flex-grow bg-primary-500 justify-center items-center">
+    //                 CONTENT
+    //             </div>
+    //             <footer tw="flex flex-grow bg-primary-800 justify-center items-center">
+    //                 FOOTER
+    //             </footer>
+    //         </div>
+    //     </div>)}
         // <div tw="flex items-center">
         //     <img src={"avatar.jpg"} tw="w-20 h-20 rounded-full mr-4" alt={name} />
         //     <div tw="block">
@@ -70,8 +165,8 @@ export default function Testerei(){
         //         <div tw="block text-lg truncate">{domainid}</div>
         //     </div>
         // </div>
-    )
-}
+//     )
+// }
 // export  const getServerSideProps = async () => {
 //     // const res = await fetch('https://jsonplaceholder.typicode.com/users')
 //     const res = await fetch('http://localhost:80/api/v1/users/active_users', {headers: { Accept: 'application/json', Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDExNDU3NjQsInN1YiI6IjkwNTZhNjY4LTg1YWQtNGI1Ni04ZmFhLTU2YjAzMDZlYzY0MSJ9.6pWAvJerU-TyQujMBDAXE0qIyKJqKMNyAT6PLZYEuDA`}})

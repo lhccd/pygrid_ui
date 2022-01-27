@@ -42,12 +42,12 @@ const TableData = tw.td`
     px-6 py-4 whitespace-nowrap border border-gray-200
 `;
 
-async function denyUserByID(email){
-    console.log("denyUserByID Called", {email})
+async function acceptUserByID(email){
+    console.log("acceptUserByID Called", {email})
     try{
         const body = JSON.stringify(email)
         console.log("requesting put", body)
-        const apiRes = await fetch('/api/deny_user_by_id',
+        const apiRes = await fetch('/api/accept_user_by_id',
             {
                 method: "PUT",
                 headers:{
@@ -57,7 +57,7 @@ async function denyUserByID(email){
                 body: body
             });
         const data = await apiRes.json()
-        console.log("DENY USER BY ID outside returns", data)
+        console.log("ACCEPT USER BY ID outside returns", data)
     }
     catch(error) {
         console.log("error in updateUserByID", error)
@@ -110,7 +110,14 @@ export default function Denied(){
                 id: "Edit", 
                 Header: 'Edit',
                 Cell: ({ row }) => (
-                    <Button onClick={() => acceptUserByID(row.values.email)}><FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-success-500" /></Button>
+                    <Button onClick={ async () => 
+                        {
+                            await acceptUserByID(row.values.email);
+                            console.log("DELETING ROW FROM PENDING TABLE ...", {row})
+                            // setUserlist(userlist.splice(row.id, 1))
+                            await fetchUserlist();
+                        }
+                    }><FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-success-500" /></Button>
                 )
             }
         ])

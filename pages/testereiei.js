@@ -295,8 +295,7 @@ export default function Testereiei(){
 
     const productsData = useMemo(() => [...products], [products]);
     const productsColumns = useMemo(
-        () => 
-            products[0] 
+        () => products[0] 
                 ? Object.keys(products[0])
                     .filter((key) => key !== 'rating')
                     .map((key) => {

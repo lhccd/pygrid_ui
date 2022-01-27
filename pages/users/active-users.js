@@ -25,7 +25,7 @@ import { useRouter } from 'next/router'
 import { useGlobalFilter, useSortBy, useTable } from 'react-table'
 import { GlobalFilter } from '../../components/GlobalFilter';
 import { Router } from 'next/router';
-import { Tab } from "@headlessui/react"
+import { Tab, Listbox, Transition } from "@headlessui/react"
 import { Fragment } from 'react'
 
 const Table = tw.table`
@@ -101,14 +101,15 @@ async function adjustBudget(email, budget){
 
 function CreateUserModal({show, onClose}){
     const { register, handleSubmit, errors, reset } = useForm();
-
+    const [budget, setBudget] = useState(0)
     async function onSubmitForm(values) {
         const data = {
             "email" : values.email,
             "full_name": values.full_name,
             "institution": values.institution,
             "password": values.password,
-            "website": values.website
+            "website": values.website,
+            "budget": budget
         }
 
         let config = {
@@ -117,7 +118,7 @@ function CreateUserModal({show, onClose}){
           data
         }
         try {
-          console.log("config data: ", values)
+          console.log("createuser modal form post to backend config data: ", values)
           const response = await axios(config)
           console.log(response);
           onClose();
@@ -125,8 +126,14 @@ function CreateUserModal({show, onClose}){
           console.error(err);
         }
     }
+    function incrementBudget(){
+        setBudget(prevCount => prevCount + 1)
+    }
+    function decrementBudget(){
+        setBudget(prevCount => prevCount - 1)
+    }
     return(
-        <Modal show={show} onClose={onClose}>
+        <Modal tw="p-20" show={show} onClose={onClose}>
             <form onSubmit={handleSubmit(onSubmitForm)} tw="grid grid-cols-12 text-sm text-center font-bold p-6 rounded-lg gap-4 ">
                 <div tw="col-span-12 my-3 text-left text-gray-800">
                     <FontAwesomeIcon icon={faUserPlus} size="2x" tw="my-4"/>  
@@ -199,14 +206,11 @@ function CreateUserModal({show, onClose}){
                 </div>
                 <div tw="col-span-5">
                     <label tw="col-span-full block my-2 text-left" htmlFor="website">Set Privacy Budget (PB)<p tw="pl-1 inline text-base italic font-normal text-primary-500 ">(optional)</p></label>
-                    <input
-                        tw="col-span-3 block p-3 border border-gray-300 rounded-lg w-full
-                                    focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                        name="website"
-                        type="text"
-                        placeholder="This can help a domain owner vett your application"
-                        autoComplete="on"
-                    />
+                    <div tw="flex">
+                        <button tw='px-6 py-4 font-bold text-lg rounded-l-lg border-2 border-gray-200 bg-gray-50' type="button" onClick={decrementBudget}>-</button>
+                        <p tw="px-8 py-4 border-t-2 border-b-2 border-gray-200 text-lg">{budget}</p>
+                        <button tw='px-6 py-4 font-bold text-lg rounded-r-lg border-2 border-gray-200 bg-gray-50' type="button" onClick={incrementBudget}>+</button>
+                    </div>
                 </div>
                 <div tw="col-span-7 text-justify font-normal font-mono my-2">
                     <p>Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy budget as credits you give to a user to perform computations from. These credits of Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. You can learn more about privacy budgets and how to allocate them at Course.OpenMined.org</p>
@@ -255,7 +259,7 @@ function UserModal ({show, onClose, data}) {
 
     return (
         <Modal show={show} onClose={onClose}>
-            <div tw="h-auto">
+            <div tw="h-auto p-20">
                 <div tw="flex"><button tw="items-center font-bold space-x-2" onClick={()=>router.push(`/users/${email}`)}><FontAwesomeIcon size="sm" icon={faExpandAlt}/>   Expand Page</button></div>
                 <div tw="flex items-center justify-between my-5">
                     <div tw="flex space-x-3 items-center">
@@ -315,6 +319,70 @@ function UserModal ({show, onClose, data}) {
     );
 }
 
+function ChangeRoleModal({show, onClose, email, data}){
+    console.log("changemodal data", data)
+    const roles = [
+        { id: 1, name: 'Owner'},
+        { id: 2, name: 'Admin'},
+        { id: 3, name: 'Data Scientist'}
+    ]
+    const [selectedRole, setSelectedRole] = useState(roles[0])
+    return(
+        <Modal show={show} onClose={onClose}>
+            <div tw="grid grid-cols-12 text-left p-6 rounded-lg gap-4">
+                <div tw="col-span-full flex-col items-center">
+                    <h2 tw="font-bold text-4xl my-6 text-gray-800"><FontAwesomeIcon size="xl" icon={faCheck} tw="mr-3"/></h2>
+                    <h2 tw="font-bold text-4xl my-6 text-gray-800">Change Roles</h2>
+                </div>
+                <p tw="col-span-full text-justify my-6">Permissions for a user are set by their assigned role. These permissions are used for managing the domain. To review and customize the default set of roles visit the Permissions page.</p>
+
+                <h3 tw="col-span-full font-bold mt-3 text-gray-600">Change Role</h3>
+                <Listbox value={selectedRole} onChange={setSelectedRole}>
+                    <Listbox.Button tw="col-span-full flex py-4 px-6 border border-gray-200 rounded-lg text-left justify-between focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800">
+                        <span>{selectedRole.name}</span>
+                        <span>▼</span>
+                    </Listbox.Button>
+                    <Transition
+                        as={Fragment}
+                        leave="transition ease-in duration-100"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                    <Listbox.Options tw="relative col-span-full overflow-auto text-gray-800 rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    {roles.map((role) => (
+                            <Listbox.Option key={role.id} value={role} tw="cursor-default select-none relative text-gray-800">
+                                    {({ selected }) => (
+                                        <div css={[tw`py-2 px-6  items-center`, selected && tw`flex justify-between bg-gray-50`]}>
+                                        <span css={[tw`font-normal`, selected && tw`font-medium`]}>{role.name}</span>
+                                        {selected ? (<span tw='items-center'><FontAwesomeIcon icon={faCheck} size="sm"/> </span> ) : null}
+                                        </div>
+                                    )}
+                               
+                            </Listbox.Option>
+                    ))}
+                    </Listbox.Options>
+                    </Transition>
+                </Listbox>
+                <div tw="col-span-full flex-col bg-gray-50 items-center border border-gray-100 rounded p-6 space-x-3 my-6">
+                    <div>
+                        <p>This role is for users who will be performing computations on your datasets. They may be users you know directly or those who found your domain through search and discovery.</p>
+                    </div>
+                    <div tw="flex py-10 space-x-10 items-center">
+                        <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-success-500"/>
+                        <div tw="block">
+                            <p tw="font-bold text-black">Can Make Data Requests</p>
+                            <p>Allows users to make data requests</p>
+                        </div>
+                    </div>
+                </div>
+                <div tw="col-span-full flex justify-between">
+                    <Button variant={"primary"} isHollow onClick={onClose}>Cancel</Button>
+                    <Button variant={"primary"} onClick={onClose}>Change Role</Button>
+                </div>
+            </div>
+        </Modal>
+    )
+}
 function AdjustBudgetModal({show, onClose, email, data, handleBudgetInUserModal}){
     console.log("adjustbudgetmodal data", data)
 
@@ -366,10 +434,10 @@ function AdjustBudgetModal({show, onClose, email, data, handleBudgetInUserModal}
                         <p tw="text-gray-800 font-bold">{budget} ɛ</p>
                         <p>Allocated Budget</p>
                     </div>
-                    <div tw="flex border border-gray-200 rounded justify-between">
-                        <Button tw='bg-gray-200 text-white' isSmall onClick={decrementBudget}>-</Button>
-                        <p tw="px-8 py-2 text-center text-lg">{budget}</p>
-                        <Button tw='bg-gray-200 text-white' isSmall onClick={incrementBudget}>+</Button>
+                    <div tw="flex">
+                        <button tw='px-6 py-4 font-bold text-lg rounded-l-lg border-2 border-gray-200 bg-gray-50' onClick={decrementBudget}>-</button>
+                        <p tw="px-8 py-4 border-t-2 border-b-2 border-gray-200 text-lg">{budget}</p>
+                        <button tw='px-6 py-4 font-bold text-lg rounded-r-lg border-2 border-gray-200 bg-gray-50' onClick={incrementBudget}>+</button>
                     </div>
                 </div>
                 <div tw="col-span-full flex justify-between">
@@ -502,14 +570,65 @@ export default function Active(){
 
     const usersData = useMemo(() => [...userlist], [userlist]);
     const usersColumns = useMemo(
-        () => 
-            userlist[0] 
-                ? Object.keys(userlist[0])
-                    .map((key) => {
-                        return { Header: key, accessor: key };
-                    })
-            : [], 
-        [userlist]
+        () => [
+            { Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize text-lg">Name</div></div>, accessor: 'full_name' }, 
+            { Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize text-lg">Σ Balance</div></div>, accessor: 'budget' },
+            { Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize text-lg">Σ Allocated Budget</div></div>, accessor: 'id' },
+            { Header: () => 
+                <div tw="flex font-normal space-x-2 items-center">
+                    <FontAwesomeIcon icon={faCalendar} size="sm"/>
+                    <div tw="font-roboto capitalize text-lg">Date Added</div>
+                </div>, 
+            accessor: 'created_at',  
+            // Cell: ({ cell: { value } }) => {
+            //     const hour = Math.floor(value / 60);
+            //     const min = Math.floor(value % 60);
+            //     return (
+            //     <>
+            //         {hour > 0 ? `${hour} hr${hour > 1 ? "s" : ""} ` : ""}
+            //         {min > 0 ? `${min} min${min > 1 ? "s" : ""}` : ""}
+            //     </>
+            //     )}
+            },
+            { Header: () => <div tw="flex font-normal space-x-2 items-center"><FontAwesomeIcon icon={faUser} size="sm"/><div tw="font-roboto capitalize text-lg">Added By</div></div>, accessor: 'added_by' },
+            { Header: () => <div tw="flex font-normal space-x-2 items-center"><FontAwesomeIcon icon={faEnvelope} size="sm"/><div tw="font-roboto capitalize text-lg">Email</div></div>, accessor: 'email' }],[]
+        //     {
+        //         Header: 'Balance',
+        //         accessor: 'budget'
+        //     },
+        //     {
+        //         Header: 'Date Added',
+        //         accessor: 'created_at'
+        //     },
+        //     {
+        //         Header: 'Added By',
+        //         accessor: 'added_by'
+        //     },
+        //     {
+        //         Header: 'Email',
+        //         accessor: 'email'
+        //     }
+        // ],[]
+        // () => userlist[0] 
+        //         ? Object.keys(userlist[0])
+        //             .filter((key) => key !== 'id')
+        //             .map((key) => {
+        //                 if (key === 'full_name')
+        //                     return { Header: () => <div tw="flex font-medium space-x-2"><h1>Name</h1></div>, accessor: key };
+        //                 if (key === 'budget')
+        //                     return { Header: () => <div tw="flex font-medium space-x-2"><h1>Σ Balance</h1></div>, accessor: key };
+        //                 if (key === 'budget')
+        //                     return { Header: () => <div tw="flex font-medium space-x-2"><h1>Σ Allocated Budget</h1></div>, accessor: key };
+        //                 if (key === 'created_at')
+        //                     return { Header: () => <div tw="flex font-medium space-x-2"><FontAwesomeIcon icon={faCalendar} size="sm"/><h1>Date Added</h1></div>, accessor: key };
+        //                 if (key === 'added_by')
+        //                     return { Header: () => <div tw="flex font-medium space-x-2"><FontAwesomeIcon icon={faUser} size="sm"/><h1>Added By</h1></div>, accessor: key };
+        //                 if (key === 'email')
+        //                     return { Header: () => <div tw="flex font-medium space-x-2"><FontAwesomeIcon icon={faEnvelope} size="sm"/><h1>Email</h1></div>, accessor: key };
+        //                 return { Header: key, accessor: key };
+        //             })
+        //     : [], 
+        // [userlist]
     );
     
     const tableHooks = (hooks) => {
@@ -562,8 +681,10 @@ export default function Active(){
                             <TableRow {...headerGroup.getHeaderGroupProps()}>
                                 {headerGroup.headers.map((column) => ( 
                                     <TableHeader {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                        <div css={[tw`flex justify-between items-center space-x-2`]}>
                                         { column.render("Header")}
-                                        { column.isSorted ? (column.isSortedDesc ? " ▼" : " ▲") : ""}
+                                        { column.isSorted ? (column.isSortedDesc ? <div> ▼</div> : <div>▲ </div>) : <div> </div>}
+                                        </div>
                                     </TableHeader>
                                 ))}
                             </TableRow>

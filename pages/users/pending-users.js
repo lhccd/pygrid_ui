@@ -129,8 +129,28 @@ export default function Pending(){
                 Header: 'Edit',
                 Cell: ({ row }) => (
                     <div>
-                        <Button onClick={() => acceptUserByID(row.values.email)}><FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-success-500" /></Button>
-                        <Button onClick={() => denyUserByID(row.values.email)}><FontAwesomeIcon size="lg" icon={faTimesCircle} title="Decline" tw="text-error-500" /></Button>
+                        <Button onClick={async () => 
+                            {
+                                await acceptUserByID(row.values.email);
+                                console.log("DELETING ROW FROM PENDING TABLE ...", {row})
+                                // setUserlist(userlist.splice(row.id, 1))
+                                await fetchUserlist();
+                            }
+                        }><FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-success-500" /></Button>
+                        <Button onClick={async () => {
+                            await denyUserByID(row.values.email);
+                            console.log("DELETING ROW FROM PENDING TABLE ...", {row})
+                            // setUserlist(userlist.splice(row.id, 1));
+                            await fetchUserlist();
+                        }
+                        }><FontAwesomeIcon size="lg" icon={faTimesCircle} title="Decline" tw="text-error-500" /></Button>
+                        <Button variant={'primary'} onClick={() => 
+                                {
+                                    console.log("FETCHING DATA FROM BACKEND AGAIN ...", {row})
+                                    // setUserlist(userlist.splice(row.id, 1))
+                                    fetchUserlist();
+                                }
+                        }>REFRESH LIST</Button>
                     </div>
                 )
                 
