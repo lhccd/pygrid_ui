@@ -69,21 +69,26 @@ export default async (req, res) => {
                 error: "Oops! Server Error!"
             });
         }
-    } else if(req.method == "PUT") {
+    } else if(req.method === "PUT") {
         try {
+            const domain_name = "d1"
             const body = {
                 "description": req.body.description,
                 "email": req.body.email,
-                "tags": req.body.tags
             }
 
-            const apiRes = await axios.put(`${API_URL}/domain/CHANGE_HERE`,
+            console.log(body)
+
+            const apiRes = await axios.put(`${API_URL}/domain/domain-profile`,
                 body,
                 {
                     method: 'PUT',
                     headers: {
                         "Accept": "application/json",
                         "Authorization": `Bearer ${access}`
+                    },
+                    params: {
+                        domain_name: domain_name
                     }
                 });
             const data = apiRes.data;
@@ -92,7 +97,6 @@ export default async (req, res) => {
                 return res.status(200).json({
                     description: data.description,
                     email: data.email,
-                    tags: data.tags
                 });
             } else {
                 return res.status(apiRes.status).json({

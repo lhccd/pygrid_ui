@@ -114,6 +114,35 @@ export default function Signup() {
     }
   }
 
+
+  async function getMetaData(){
+    try{
+      const domain_name= "d1"
+      const apiRes = await axios({
+        method: 'GET',
+        url: `api/utils/domain-metadata`,
+        headers: {
+          "Accept": "application/json"
+        },
+        params: {
+          domain_name: domain_name
+        }
+      });
+
+      if(apiRes.status === 200){
+        const data = await apiRes.data;
+        console.log(data);
+      }
+      else{
+        alert("Couldn't fetch the metadata!")
+      }
+
+    }
+    catch (e) {
+      console.error(e);
+    }
+  }
+
   return (
     <Background>
       <div id="app" tw="flex flex-col h-screen w-screen py-10 font-rubik">
