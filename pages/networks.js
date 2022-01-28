@@ -8,6 +8,7 @@ import {getToken, decodeToken} from '../lib/auth'
 import {useRouter} from 'next/router'
 import Accordion from "../components/Accordion";
 
+
 const UnitedNations = [
     {
         Name: 'United Nations',
@@ -50,7 +51,7 @@ export default function Networks() {
                     <div tw="flex items-center">
                         <div tw="flex mb-4">
                             <FontAwesomeIcon size="3x" icon={faHandsHelping} tw="mr-4"/>
-                            <h1 tw="text-5xl font-rubik">Networks</h1>
+                            <h1 tw="text-5xl font-normal font-rubik">Networks</h1>
                         </div>
                     </div>
                     <p tw="mb-4">Networks are the primary way you’ll attract Data Scientists to your Domain node.
@@ -61,7 +62,7 @@ export default function Networks() {
                     <div tw="my-10">
                         <div tw="w-96 flex content-center border border-gray-300 rounded-lg p-2 focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800">
                             <FontAwesomeIcon icon={faSearch} tw="mx-2 my-1 mr-4"/>
-                            <input
+                            <inpu
                                 name="search"
                                 type="text"
                                 placeholder="Search"

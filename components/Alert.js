@@ -5,7 +5,7 @@ import {faCheckCircle, faExclamationTriangle, faExpandAlt, faTimes} from '@forta
 
 const Toast = styled.div(({ variant, isSmall}) => [
     // The common alert styles added with the tw import
-    tw`col-span-full flex items-center justify-between space-x-3 px-3 py-2 bg-primary-100 border-t-4 border-primary-500 text-gray-800 cursor-pointer`,
+    tw`my-10 col-span-full flex items-center justify-between space-x-3 px-3 py-2 bg-primary-100 border-t-4 border-primary-500 text-gray-800 cursor-pointer`,
     variant === 'primary' && tw`bg-primary-100 border-primary-500`,
     variant === 'error' && tw`bg-error-100 border-error-500`,
     variant === 'success' && tw`bg-success-100 border-success-500`,

@@ -34,7 +34,9 @@ const DomainBody = [
 export default function Login() {
     const { register, handleSubmit, errors, reset } = useForm();
     const [showAlert, setShowAlert] = useState(false);
-    const [variant, setVariant] = useState('primary')
+    const [alertMessage, setAlertMessage] = useState("");
+    const [variant, setVariant] = useState('primary');
+
     const router = useRouter()
 
     const onSubmitForm = async (values) => {
@@ -58,17 +60,25 @@ export default function Login() {
             if(apiRes.status == 200){
                 router.push('/users')
                 setVariant('success');
+                setAlertMessage('Your credentials are correct!')
                 setShowAlert(true);
             }
             else if(apiRes.status == 400) {
-                alert("The user has not found or accepted yet!")
+                console.error(err)
+                setVariant('error');
+                setAlertMessage('YOUR APPLICATION IS STILL PENDING! THE DAA IS BEING REVIEWED!');
+                setShowAlert(true);
             }
             else{
-                alert("Something went wrong! Please try again!")
+                console.error(err)
+                setVariant('error');
+                setAlertMessage('Your credentials are incorrect!');
+                setShowAlert(true);
             }
         }catch (err) {
             console.error(err)
             setVariant('error');
+            setAlertMessage('YOUR APPLICATION IS STILL PENDING! THE DAA IS BEING REVIEWED!');
             setShowAlert(true);
         }
     }
@@ -81,7 +91,7 @@ export default function Login() {
                     <div tw="col-start-9 col-span-4">
                         <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={variant}>
                             <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
-                            {variant==='error' ? <p>Your credentials are incorrect!</p> : <p>Your credentials are correct!</p>}
+                            <p>{alertMessage}</p>
                         </Alert>
                     </div>
                 </div>
