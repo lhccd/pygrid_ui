@@ -7,10 +7,10 @@ export function Layout({children}){
     return(
         <div tw="flex">
             <SidebarNav/>
-            <main tw="relative w-full h-full max-w-full p-5">
-                <Page>
+            <main tw="relative w-full h-full max-w-full px-16 py-10">
+                {/* <Page> */}
                     <Grid>{children}</Grid>
-                </Page>
+                {/* </Page> */}
             </main>
         </div>
     )

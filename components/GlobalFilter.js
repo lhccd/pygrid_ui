@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import regeneratorRuntime from "regenerator-runtime";
 import { useAsyncDebounce } from "react-table";
 import tw from "twin.macro";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 const SearchContainer = tw.div`
   mb-6
@@ -9,22 +11,20 @@ const SearchContainer = tw.div`
   flex
   justify-center
   items-center
-`;
-
-const SearchText = tw.h2`
-  text-xl
-text-gray-600
-  mr-6
+  text-sm
+  h-10
+  rounded-lg
+  border-2
+  border-solid
+  border-gray-200
+ 
 `;
 
 const Input = tw.input`
-  h-8
-  border-2
-  border-solid
-  border-primary-500
-  outline-none
   p-4
   rounded-lg
+  h-8
+  items-center
 `;
 
 export function GlobalFilter({
@@ -40,15 +40,15 @@ export function GlobalFilter({
 
   return (
     <SearchContainer>
-      <SearchText>Search:</SearchText>
-      <Input
-        value={value || ""}
-        onChange={(e) => {
-          setValue(e.target.value);
-          onChange(e.target.value);
-        }}
-        placeholder={`${count} records...`}
-      />
+        <FontAwesomeIcon tw="mx-2 text-gray-600" icon={faSearch} size="lg"/>
+        <Input
+          value={value || ""}
+          onChange={(e) => {
+            setValue(e.target.value);
+            onChange(e.target.value);
+          }}
+          placeholder={`Search: ${count} records...`}
+        />
     </SearchContainer>
   );
 }

@@ -277,6 +277,7 @@ export default function AccountSettings() {
                             onClick={() => setShowModal(true)}
                         >Delete Account</button>
                         <Modal show={showModal} onClose={() => setShowModal(false)}>
+                            <div tw="col-span-full">
                             <div tw="text-center ">
                                 <div tw="flex flex-col p-3 mt-3">
                                     <FontAwesomeIcon icon={faExclamationTriangle} size="2x" tw="text-warning-500 self-center m-6"/>
@@ -328,10 +329,11 @@ export default function AccountSettings() {
                                     </button>
                                 </div>
                             </div>
+                            </div>
                         </Modal>
 
                         <Modal show={showFeedbackModal} onClose={() => setShowFeedbackModal(false)}>
-                            <div tw="text-center">
+                            <div tw="col-span-full text-center">
                                 <div tw="flex flex-col p-3 mt-3">
                                     <FontAwesomeIcon icon={faCheckCircle} size="2x" tw="text-success-500 self-center m-6"/>
                                     <h1 tw="text-3xl font-bold font-rubik text-gray-800">
