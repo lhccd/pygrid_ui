@@ -31,9 +31,12 @@ export default async (req, res) => {
                 method: 'GET',
                 url: `${API_URL}/domain/domain-tags`,
                 headers: {
-                "Accept": "application/json",
+                    "Accept": "application/json",
                     "Authorization": `Bearer ${access}`
                 },
+                params:{
+                    domain_name: domain_name
+                }
             });
 
             const data = apiRes.data;
@@ -63,7 +66,6 @@ export default async (req, res) => {
             }
         }
         catch (error){
-            console.log(error)
             return res.status(500).json({
                 error: "Oops! Server Error!"
             });
