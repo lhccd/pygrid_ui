@@ -21,7 +21,6 @@ export default async (req, res) => {
                 url: `${API_URL}/domain/domain-profile`,
                 headers: {
                     "Accept": "application/json",
-                    "Authorization": `Bearer ${access}`
                 },
                 params: {
                     domain_name: domain_name

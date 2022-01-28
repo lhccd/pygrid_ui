@@ -327,7 +327,7 @@ export default function Signup() {
                           {...register("daa_pdf", { onChange: onUploadDaa, required: true })}
                         />
                         <button
-                          tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 my-5" onClick={downloadAgreement}>
+                          tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 my-5" onClick={getMetaData}>
                           <FontAwesomeIcon icon={faDownload} tw="mr-2" />
                           Download agreement
                         </button>
