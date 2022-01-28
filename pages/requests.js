@@ -1,8 +1,9 @@
 import { Layout } from '../components/Layout'
 import tw, {styled} from 'twin.macro'
-import {faUsers} from '@fortawesome/free-solid-svg-icons'
+import {faExclamationCircle, faUsers} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 
+import Alert from '../components/Alert';
 import {useState, useEffect} from 'react'
 import { Tab } from "@headlessui/react"
 import { Fragment } from 'react'
@@ -10,11 +11,12 @@ import Active from './users/active-users'
 import Pending from './users/pending-users'
 import Denied from './users/denied-users'
 
-export default function Users() {
+export default function Requests() {
     const [acceptedUsersLength, setAcceptedUsersLength] = useState("")
     const [deniedUsersLength, setDeniedUsersLength] = useState("")
     const [pendingUsersLength, setPendingUsersLength] = useState("")
     const [toggleTab, setToggleTab] = useState("")
+    const [showAlert, setShowAlert ] =useState(true)
 
     const fetchUserlist = async (list_type) => {
         try{
@@ -59,23 +61,18 @@ export default function Users() {
                 <div tw="col-span-full">
                     <div tw="flex items-center">
                         <div tw="flex mb-4">
-                            <FontAwesomeIcon size="3x" icon={faUsers} tw="mr-4"/>
-                            <h1 tw="text-5xl font-normal font-rubik">Users</h1>
+                            <h1 tw="text-4xl font-bold font-rubik mr-4">∑</h1>
+                            <h1 tw="text-5xl font-normal font-rubik">Data Requests</h1>
                         </div>
                     </div>
-                    <p tw="mb-8">Manage users, edit user permissions and credentials.</p>
+                    <div tw="my-10">
+                        <Alert variant={'primary'} show={showAlert} onClose={()=>setShowAlert(false)}><FontAwesomeIcon icon={faExclamationCircle} size="sm"/><p>Data requests are one-time requests made from Data Scientists on your node to download the results of their computations. Unlike setting privacy budgets data requests must be manually triaged and do not count as ongoing credits. They are individual allowances based off of specific computations on specified data objects.</p></Alert>
+                    </div>
                     <Tab.Group onChange={(index) => {
                         console.log('Changed selected tab to:', index);
                         setToggleTab(index)
                     }}>
                         <Tab.List tw="flex">
-                            <Tab as={Fragment}>
-                                {({ selected }) => (
-                                <button
-                                    css={[tw`p-4 bg-white text-center font-bold text-gray-400 w-1/2 bg-white border-b-2 border-primary-500 `,
-                                    selected && tw`border-primary-500 text-primary-500 border-b-0 border-t-2 border-r-2 border-l-2 rounded-t-md`]}>Active Users ({acceptedUsersLength})</button>
-                                )}
-                            </Tab>
                             <Tab as={Fragment}>
                                 {({ selected }) => (
                                 <button
@@ -92,7 +89,6 @@ export default function Users() {
                             </Tab>
                         </Tab.List>
                         <Tab.Panels>
-                        <Tab.Panel><Active/></Tab.Panel>
                         <Tab.Panel><Pending/></Tab.Panel>
                         <Tab.Panel><Denied/></Tab.Panel>
                         </Tab.Panels>
