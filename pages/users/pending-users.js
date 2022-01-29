@@ -101,7 +101,7 @@ async function denyUserByID(email) {
 }
 
 function PendingUserModal({ show, onClose, data }) {
-    const [showAdjustBudgetModal, setShowAdjustBudgetModal] = useState(false)
+    const [showConfirmationFlowModal, setShowConfirmationFlowModal] = useState(false)
     const [full_name, setFull_name] = useState("")
     const [budget, setBudget] = useState("")
     const [email, setEmail] = useState("");
@@ -124,7 +124,7 @@ function PendingUserModal({ show, onClose, data }) {
     }, [data]);
 
     useEffect(() => {
-    }, [showAdjustBudgetModal]);
+    }, [showConfirmationFlowModal]);
 
     useEffect(() => {
     }, [budget]);
@@ -145,18 +145,18 @@ function PendingUserModal({ show, onClose, data }) {
                             <Tag variant={'primary'}>Data Scientist</Tag>
                         </div>
                         <div tw="inline-flex p-5 space-x-2">
-                            <button onClick={() => setShowAdjustBudgetModal(true)}>
+                            <button onClick={() => setShowConfirmationFlowModal(true)}>
                                 <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-gray-200" />
                             </button>
                             <button onClick={async () => {
-                                await denyUserByID(row.values.email);
-                                console.log("DELETING ROW FROM PENDING TABLE ...", { row })
+                                await denyUserByID(email);
+                                console.log("DELETING ROW FROM PENDING TABLE ...", email)
                                 // setUserlist(userlist.splice(row.id, 1));
-                                await fetchUserlist();
+                                onClose();
                             }
                             }><FontAwesomeIcon size="lg" icon={faTimesCircle} title="Decline" tw="text-gray-200" /></button>
                         </div>
-                        <ConfirmationFlowModal show={showAdjustBudgetModal} onClose={() => setShowAdjustBudgetModal(false)}
+                        <ConfirmationFlowModal show={showConfirmationFlowModal} onClose={() => setShowConfirmationFlowModal(false)}
                         email={email} data={budget} handleBudgetInUserModal={handleBudgetInUserModal} />
                     </div>
 
@@ -195,71 +195,71 @@ function PendingUserModal({ show, onClose, data }) {
         </Modal>
     );
 }
-function AdjustBudgetModal({ show, onClose, email, data, handleBudgetInUserModal }) {
-    console.log("adjustbudgetmodal data", data)
+// function ConfirmationFlowModal({ show, onClose, email, data, handleBudgetInUserModal }) {
+//     console.log("adjustbudgetmodal data", data)
 
-    const [balance, setBalance] = useState(0)
-    const [budget, setBudget] = useState(0)
+//     const [balance, setBalance] = useState(0)
+//     const [budget, setBudget] = useState(0)
 
-    useEffect(() => {
-        setBalance(data);
-        setBudget(data);
-    }, [data])
+//     useEffect(() => {
+//         setBalance(data);
+//         setBudget(data);
+//     }, [data])
 
-    useEffect(() => {
+//     useEffect(() => {
 
-    }, [balance])
+//     }, [balance])
 
-    function incrementBudget() {
-        setBudget(prevCount => prevCount + 1)
-    }
-    function decrementBudget() {
-        setBudget(prevCount => prevCount - 1)
-    }
+//     function incrementBudget() {
+//         setBudget(prevCount => prevCount + 1)
+//     }
+//     function decrementBudget() {
+//         setBudget(prevCount => prevCount - 1)
+//     }
 
-    const onUpgrade = () => {
-        console.log("budget", budget)
-        setBalance(budget);
-        console.log("balance", balance)
-        adjustBudget(email, budget)
-        handleBudgetInUserModal(budget);
-        onClose();
-        console.log("onUpgrade", email, balance, budget)
-    }
+//     const onUpgrade = () => {
+//         console.log("budget", budget)
+//         setBalance(budget);
+//         console.log("balance", balance)
+//         adjustBudget(email, budget)
+//         handleBudgetInUserModal(budget);
+//         onClose();
+//         console.log("onUpgrade", email, balance, budget)
+//     }
 
-    return (
-        <Modal show={show} onClose={onClose}>
-            <div tw="grid grid-cols-12 text-left p-6 rounded-lg gap-4">
-                <div tw="col-span-full flex-col items-center">
-                    <h2 tw="font-bold text-4xl my-6 text-gray-800">∑</h2>
-                    <h2 tw="font-bold text-4xl my-6 text-gray-800">Upgrade Budget</h2>
-                </div>
-                <p tw="col-span-full text-justify my-6">Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy budget as credits you give to a user to perform computations from. These credits of  Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. The more budget the more visibility. By default all users start with 0ɛ and must have their data requests approved manually until upgraded. You can learn more about privacy budgets and how to allocate them at Course.OpenMined.org</p>
+//     return (
+//         <Modal show={show} onClose={onClose}>
+//             <div tw="grid grid-cols-12 text-left p-6 rounded-lg gap-4">
+//                 <div tw="col-span-full flex-col items-center">
+//                     <h2 tw="font-bold text-4xl my-6 text-gray-800">∑</h2>
+//                     <h2 tw="font-bold text-4xl my-6 text-gray-800">Upgrade Budget</h2>
+//                 </div>
+//                 <p tw="col-span-full text-justify my-6">Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy budget as credits you give to a user to perform computations from. These credits of  Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. The more budget the more visibility. By default all users start with 0ɛ and must have their data requests approved manually until upgraded. You can learn more about privacy budgets and how to allocate them at Course.OpenMined.org</p>
 
-                <h3 tw="col-span-full font-bold mt-3 text-gray-600">Adjust Privacy Budget</h3>
-                <div tw="col-span-full flex bg-gray-50 items-center justify-between border border-gray-100 rounded p-4 space-x-3 my-6">
-                    <div>
-                        <p tw="text-error-400 font-bold">{balance} ɛ</p>
-                        <p>Current Balance</p>
-                    </div>
-                    <div>
-                        <p tw="text-gray-800 font-bold">{budget} ɛ</p>
-                        <p>Allocated Budget</p>
-                    </div>
-                    <div tw="flex">
-                        <button tw='px-6 py-4 font-bold text-lg rounded-l-lg border-2 border-gray-200 bg-gray-50' onClick={decrementBudget}>-</button>
-                        <p tw="px-8 py-4 border-t-2 border-b-2 border-gray-200 text-lg">{budget}</p>
-                        <button tw='px-6 py-4 font-bold text-lg rounded-r-lg border-2 border-gray-200 bg-gray-50' onClick={incrementBudget}>+</button>
-                    </div>
-                </div>
-                <div tw="col-span-full flex justify-between">
-                    <Button variant={"primary"} isHollow onClick={onClose}>Cancel</Button>
-                    <Button variant={"primary"} onClick={onUpgrade}>Upgrade</Button>
-                </div>
-            </div>
-        </Modal>
-    )
-}
+//                 <h3 tw="col-span-full font-bold mt-3 text-gray-600">Adjust Privacy Budget</h3>
+//                 <div tw="col-span-full flex bg-gray-50 items-center justify-between border border-gray-100 rounded p-4 space-x-3 my-6">
+//                     <div>
+//                         <p tw="text-error-400 font-bold">{balance} ɛ</p>
+//                         <p>Current Balance</p>
+//                     </div>
+//                     <div>
+//                         <p tw="text-gray-800 font-bold">{budget} ɛ</p>
+//                         <p>Allocated Budget</p>
+//                     </div>
+//                     <div tw="flex">
+//                         <button tw='px-6 py-4 font-bold text-lg rounded-l-lg border-2 border-gray-200 bg-gray-50' onClick={decrementBudget}>-</button>
+//                         <p tw="px-8 py-4 border-t-2 border-b-2 border-gray-200 text-lg">{budget}</p>
+//                         <button tw='px-6 py-4 font-bold text-lg rounded-r-lg border-2 border-gray-200 bg-gray-50' onClick={incrementBudget}>+</button>
+//                     </div>
+//                 </div>
+//                 <div tw="col-span-full flex justify-between">
+//                     <Button variant={"primary"} isHollow onClick={onClose}>Cancel</Button>
+//                     <Button variant={"primary"} onClick={onUpgrade}>Upgrade</Button>
+//                 </div>
+//             </div>
+//         </Modal>
+//     )
+// }
 async function adjustBudget(email, budget) {
     console.log("adjustBudget Called", { email })
     try {
@@ -283,6 +283,7 @@ async function adjustBudget(email, budget) {
 }
 
 export default function Pending() {
+    const [showConfirmationFlowModal, setShowConfirmationFlowModal] = useState(false)
     const [userlist, setUserlist] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showUserModal, setShowUserModal] = useState(false);
@@ -404,12 +405,14 @@ export default function Pending() {
                 Header: 'Action',
                 Cell: ({ row }) => (
                     <div>
-                        <Button onClick={async () => {
-                            await acceptUserByID(row.values.email);
-                            console.log("DELETING ROW FROM PENDING TABLE ...", { row })
-                            // setUserlist(userlist.splice(row.id, 1))
-                            await fetchUserlist();
-                        }
+                        <Button onClick={
+                            () => setShowConfirmationFlowModal(true)
+                            // async () => {
+                            //     await acceptUserByID(row.values.email);
+                            //     console.log("DELETING ROW FROM PENDING TABLE ...", { row })
+                            //     // setUserlist(userlist.splice(row.id, 1))
+                            //     await fetchUserlist();
+                            // }
                         }><FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-gray-200" /></Button>
                         <Button onClick={async () => {
                             await denyUserByID(row.values.email);
@@ -446,6 +449,7 @@ export default function Pending() {
                 </div>
             </div>
             <PendingUserModal show={showUserModal} onClose={() => setShowUserModal(false)} data={userData} />
+            <ConfirmationFlowModal show={showConfirmationFlowModal} onClose={() => setShowConfirmationFlowModal(false)}/>
             {loading ?
                 <div tw="my-10 flex w-full justify-center">
                     <Spinner />

@@ -67,6 +67,33 @@ async function acceptUserByID(email){
     }
 }
 
+/* 
+    FOR YUSUF, the button sends you the email of the user in the table!!!
+    AS FOR NOW, ONLY A POST REQUEST REACHES THE API MIDDLEWARE, GET REQUEST DOESN'T REACH ANYWHERE
+    If you figured out, how the below function can work with your api middleware, it should be done ;) 
+*/
+async function downloadDAA(email){
+    console.log("downloadDAA by EMAIL Called", {email})
+    try{
+        const body = JSON.stringify(email)
+        console.log("requesting get", body)
+        const apiRes = await fetch('/api/user-daa-pdf',
+            {
+                method: "POST",
+                headers:{
+                    'Accept': "application/json",
+                    'Content-Type': "application/json"
+                },
+                body: body
+            });
+        const data = await apiRes.json()
+        console.log("DOWNLOAD DAA outside returns", data)
+    }
+    catch(error) {
+        console.log("error in DOWNLOAD DAA ", error)
+    }
+}
+
 export default function Denied(){
     const [userlist, setUserlist] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -176,7 +203,23 @@ export default function Denied(){
                 }
             },
             { Header: () => <div tw="flex font-normal space-x-2 items-center"><FontAwesomeIcon icon={faUser} size="sm" /><div tw="font-roboto capitalize">Denied By</div></div>, accessor: 'added_by' },
-            { Header: () => <div tw="flex font-normal space-x-2 items-center"><div tw="font-roboto capitalize">DAA</div></div>, accessor: 'daa' },
+            { 
+                Header: () => <div tw="flex font-normal space-x-2 items-center"><div tw="font-roboto capitalize">DAA</div></div>, 
+                accessor: 'daa',
+                Cell: ({ row }) => (
+                    <button tw="flex space-x-2 items-center bg-gray-100 px-2 py-1" 
+                        onClick={
+                            async () => 
+                                {
+                                    await downloadDAA(row.values.email);
+                                    console.log("DOWNLOADING DAA FROM DENIED TABLE ...", {row})
+                                    // setUserlist(userlist.splice(row.id, 1))
+                                }
+                        }>
+                            <p tw="text-black underline text-xs">Download DAA</p>
+                    </button>
+                ),
+            },
             { Header: () => <div tw="flex font-normal space-x-2 items-center"><div tw="font-roboto capitalize">Institution</div></div>, accessor: 'institution' },
             { Header: () => <div tw="flex font-normal space-x-2 items-center"><FontAwesomeIcon icon={faEnvelope} size="sm" /><div tw="font-roboto capitalize">Email</div></div>, accessor: 'email' }], []
     );

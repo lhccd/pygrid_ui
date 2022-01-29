@@ -32,7 +32,7 @@ const Button = styled.button(({ variant, isMedium, isSmall, isHollow }) => [
   tw`px-8 py-2 rounded font-bold font-roboto focus:outline-none transform duration-75`,
 
   // Use the variant grouping feature to add variants to multiple classes
-  tw`hocus:(scale-105 text-white)`,
+  tw`hocus:(scale-105)`,
 
   // Use props to conditionally style your components
   variant === 'primary' && tw`bg-primary-500 text-white`,

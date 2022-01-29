@@ -11,7 +11,11 @@ import Active from './users/active-users'
 import Pending from './users/pending-users'
 import Denied from './users/denied-users'
 import AccordionRoles from '../components/AccordionRoles'
-
+import { GlobalFilterRoles } from '../components/GlobalFilterRoles'
+const SearchContainer = tw.div`
+mb-6
+mt-6
+`;
 const roles = [
     {   
         id: 1, 
@@ -104,20 +108,54 @@ export default function Permissions() {
                     </div>
                 </div>
                 <p tw="mb-8 col-span-full">Permissions for a user are set by their assigned role. These permissions are used for managing the domain. Review and customize what permissions apply to the roles below.</p>
-                <Listbox value={selectedRole} onChange={setSelectedRole}>
-                    <Listbox.Button tw="col-span-4 flex py-4 px-6 border border-gray-200 rounded-lg text-left justify-between">
+                <SearchContainer>
+                    <Listbox value={selectedRole} onChange={setSelectedRole}>
+                        <Listbox.Button tw="flex w-60 p-4 h-10 border-2 border-gray-200 rounded-lg text-left text-sm text-gray-600 justify-between items-center truncate">
+                            <span>{selectedRole.role}</span>
+                            <span tw="ml-2 text-xs">▼</span>
+                        </Listbox.Button>
+                        <Transition
+                            as={Fragment}
+                            enter="transition duration-100 ease-out"
+                            enterFrom="transform scale-95 opacity-0"
+                            enterTo="transform scale-100 opacity-100"
+                            leave="transition duration-75 ease-out"
+                            leaveFrom="transform scale-100 opacity-100"
+                            leaveTo="transform scale-95 opacity-0"
+                        >
+                        <Listbox.Options tw="absolute w-60 overflow-auto text-gray-800 border-2 border-gray-200 rounded-md mt-1">
+                        {roles.map((role) => (
+                                <Listbox.Option key={role.id} value={role} tw="absolute bg-white cursor-default select-none relative text-gray-800">
+                                        {({ selected }) => (
+                                            <div css={[tw`py-2 px-6  items-center`, selected && tw`flex justify-between bg-gray-50`]}>
+                                            <span css={[tw`font-normal`, selected && tw`font-medium`]}>{role.role}</span>
+                                            {selected ? (<span tw='items-center'><FontAwesomeIcon icon={faCheck} size="sm"/> </span> ) : null}
+                                            </div>
+                                        )}
+                                    
+                                </Listbox.Option>
+                        ))}
+                        </Listbox.Options>
+                        </Transition>
+                    </Listbox>
+                </SearchContainer>
+                {/* <Listbox value={selectedRole} onChange={setSelectedRole}>
+                    <Listbox.Button tw="flex w-60 p-4 h-10 border-2 border-gray-200 rounded-lg text-left text-sm text-gray-600 justify-between items-center truncate">
                         <span>{selectedRole.role}</span>
-                        <span>▼</span>
+                        <span tw="ml-2 text-xs">▼</span>
                     </Listbox.Button>
                     <Transition
                         as={Fragment}
-                        leave="transition ease-in duration-100"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
+                        enter="transition duration-100 ease-out"
+                        enterFrom="transform scale-95 opacity-0"
+                        enterTo="transform scale-100 opacity-100"
+                        leave="transition duration-75 ease-out"
+                        leaveFrom="transform scale-100 opacity-100"
+                        leaveTo="transform scale-95 opacity-0"
                     >
-                    <Listbox.Options tw="flex flex-col relative col-span-4 overflow-auto text-gray-800 rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <Listbox.Options tw="absolute overflow-auto text-gray-800 border-2 border-gray-200 rounded-md">
                     {roles.map((role) => (
-                            <Listbox.Option key={role.id} value={role} tw="flex cursor-default select-none relative text-gray-800">
+                            <Listbox.Option key={role.id} value={role} tw="absolute bg-white cursor-default select-none relative text-gray-800">
                                     {({ selected }) => (
                                         <div css={[tw`py-2 px-6  items-center`, selected && tw`flex justify-between bg-gray-50`]}>
                                             <span css={[tw`font-normal`, selected && tw`font-medium`]}>{role.role}</span>
@@ -128,7 +166,7 @@ export default function Permissions() {
                     ))}
                     </Listbox.Options>
                     </Transition>
-                </Listbox>
+                </Listbox> */}
                 <h3 tw="col-span-full mt-8 mb-4 text-2xl font-medium">Roles</h3>
                 <div tw="col-span-full border border-gray-200 rounded-lg divide-y divide-gray-200">{RoleItems}</div>
             </div>
