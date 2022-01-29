@@ -73,24 +73,42 @@ async function acceptUserByID(email){
     If you figured out, how the below function can work with your api middleware, it should be done ;) 
 */
 async function downloadDAA(email){
-    console.log("downloadDAA by EMAIL Called", {email})
     try{
-        const body = JSON.stringify(email)
-        console.log("requesting get", body)
-        const apiRes = await fetch('/api/user-daa-pdf',
-            {
-                method: "POST",
-                headers:{
-                    'Accept': "application/json",
-                    'Content-Type': "application/json"
-                },
-                body: body
-            });
-        const data = await apiRes.json()
-        console.log("DOWNLOAD DAA outside returns", data)
+        const apiRes = await axios({
+            method: 'GET',
+            url: '/api/user-daa-pdf',
+            headers: {
+                "Accept": "application/json",
+            },
+            params: {
+                user_email: email
+            }
+        });
+        if(apiRes.status === 200){
+            try {
+                const data = await apiRes.data.data;
+                let decodedStringAtoB = atob(data);
+                let bytes = new Uint8Array(decodedStringAtoB.length);
+                for (let i = 0; i < decodedStringAtoB.length; i++)
+                    bytes[i] = decodedStringAtoB.charCodeAt(i);
+                let a = window.document.createElement('a');
+
+                a.href = window.URL.createObjectURL(new Blob([bytes], {type: 'application/octet-stream'}));
+                a.download = email + "_agreement" + ".pdf";
+                document.body.appendChild(a)
+                a.click();
+                document.body.removeChild(a)
+            }
+            catch (e) {
+                alert("Wrong file format has been uploaded! DAA is invalid!");
+            }
+        }
+        else{
+            alert("Couldn't find any agreement file in the domain");
+        }
     }
     catch(error) {
-        console.log("error in DOWNLOAD DAA ", error)
+        console.error(error)
     }
 }
 
