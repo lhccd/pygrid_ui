@@ -35,13 +35,15 @@ export function GlobalFilterRoles({
   }, 300);
 
  useEffect(() => {
-    if (selectedRole === 'Role'){
-        setValue(undefined)
+    if (selectedRole.role == 'Role'){
+      // console.log("in useeffect if", selectedRole)
+      onChange(undefined);
     }
     else{
+      // console.log("in useeffect else")
         setValue(selectedRole.role);
+        onChange(selectedRole.role);
     }
-    onChange(selectedRole.role);
 }, [selectedRole])
 
   return (
@@ -60,7 +62,7 @@ export function GlobalFilterRoles({
                 leaveFrom="transform scale-100 opacity-100"
                 leaveTo="transform scale-95 opacity-0"
             >
-            <Listbox.Options tw="absolute overflow-auto text-gray-800 border-2 border-gray-200 rounded-md">
+            <Listbox.Options tw="absolute w-60 mt-1 overflow-auto text-gray-800 border-2 border-gray-200 rounded-md">
             {roles.map((role) => (
                     <Listbox.Option key={role.id} value={role} tw="absolute bg-white cursor-default select-none relative text-gray-800">
                             {({ selected }) => (

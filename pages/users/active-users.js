@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { get, set, useForm } from "react-hook-form"
 import tw, { styled, css } from 'twin.macro';
-import { Link } from 'next/link'
+import Link from 'next/link'
 import Tag from '../../components/Tag'
 import Modal from '../../components/Modal';
 import Alert from '../../components/Alert';
@@ -13,6 +13,7 @@ import {
     faEnvelope,
     faPlus,
     faUser,
+    faCheck,
     faUserPlus,
     faInfoCircle,
     faCheckCircle,
@@ -32,7 +33,11 @@ import { Tab, Listbox, Transition } from "@headlessui/react"
 import { Fragment } from 'react'
 import moment from 'moment'
 import { GlobalFilterRoles } from '../../components/GlobalFilterRoles';
-
+const SearchContainer = tw.div`
+col-span-full
+mb-6
+mt-6
+`;
 const Table = tw.table`
     min-w-full
     my-5
@@ -59,6 +64,78 @@ const TableBody = tw.tbody`
 const TableData = tw.td`
     p-2 border border-gray-200
 `;
+
+const roles = [
+    {   
+        id: 1, 
+        role: "Owner",
+        description: "There is only one Owner account assigned to any one domain node. The owner account is the highest level permission and is a requirement for deploying a domain node. If you should ever want to transfer ownership of your domain node to someone else you can do so by following these steps.",
+        permissions: {
+            MakeDataRequests: true, 
+            EditRoles: true, 
+            TriageDataRequests: true, 
+            UploadData: true, 
+            ManagePrivacyBudgets: true, 
+            UploadLegalDocuments: true, 
+            ManageUsers: true, 
+            EditDomainSettigs: true, 
+            CreateUsers: true, 
+            ManageInfrastructure: true
+        }
+    },
+    {   
+        id: 2, 
+        role: "Admin", 
+        description: "This role is for users who will help you manage your node. This should be users you trust. The main difference between this user and a Compliance Officer is that this user by default not only can manage requests but can also edit Domain Settings. This is the highest level permission outside of an Owner.",        MakeDataRequests: true,
+        permissions: {
+            MakeDataRequests: true, 
+            EditRoles: true, 
+            TriageDataRequests: true, 
+            UploadData: true, 
+            ManagePrivacyBudgets: true, 
+            UploadLegalDocuments: true, 
+            ManageUsers: true, 
+            EditDomainSettigs: true, 
+            CreateUsers: true,
+            ManageInfrastructure: false
+        }
+    },
+    {   
+        id: 3, 
+        role: "Compliance Officer",
+        description: "This role is for users who will help you manage requests made on your node. They should be users you trust. They are not able to change domain settings or edit roles but they are by default able to accept or deny user requests on behalf of the domain node.",
+        permissions: {
+            MakeDataRequests: false, 
+            EditRoles: false, 
+            TriageDataRequests: true, 
+            UploadData: false, 
+            ManagePrivacyBudgets: true, 
+            UploadLegalDocuments: false, 
+            ManageUsers: true, 
+            EditDomainSettigs: false, 
+            CreateUsers: false, 
+            ManageInfrastructure: false
+        }
+    },
+    {   
+        id: 4, 
+        role: "Data Scientist",
+        description: "This role is for users who will be performing computations on your datasets. They may be users you know directly or those who found your domain through search and discovery. By default this user can see a list of your datasets and can request to get results. This user will also be required to sign a Data Access Agreement if you have required one in the Domain Settings Configurations.",
+        permissions: {
+            MakeDataRequests: true, 
+            EditRoles: true, 
+            TriageDataRequests: false, 
+            UploadData: false, 
+            ManagePrivacyBudgets: false, 
+            UploadLegalDocuments: false, 
+            ManageUsers: false, 
+            EditDomainSettigs: false, 
+            CreateUsers: false, 
+            ManageInfrastructure: false
+        }
+    }
+]
+
 async function acceptUserByID(email) {
     console.log("acceptUserByID Called", { email })
     try {
@@ -232,6 +309,7 @@ function CreateUserModal({ show, onClose }) {
 
 function UserModal({ show, onClose, data }) {
     const [showAdjustBudgetModal, setShowAdjustBudgetModal] = useState(false)
+    const [showChangeRoleModal, setShowChangeRoleModal] = useState(false);
     const [full_name, setFull_name] = useState("")
     const [budget, setBudget] = useState("")
     const [email, setEmail] = useState("");
@@ -275,8 +353,9 @@ function UserModal({ show, onClose, data }) {
                     </div>
                     <Button tw="float-right" tw="space-x-3 text-gray-400"><FontAwesomeIcon size="sm" icon={faTrash} />  Delete User</Button>
                 </div>
-                <p tw="">Change Role</p>
-
+                <button tw="text-primary-500 underline" onClick={()=>setShowChangeRoleModal(true)}>Change Role</button>
+                <ChangeRoleModal show={showChangeRoleModal} onClose={() => setShowChangeRoleModal(false)}
+                        email={email}/>
                 <h3 tw="font-bold mt-10 text-gray-600">Privacy Budget</h3>
                 <div tw="flex bg-gray-50 items-center justify-between border border-gray-100 rounded p-4 space-x-3">
                     <div>
@@ -329,15 +408,12 @@ function UserModal({ show, onClose, data }) {
 
 function ChangeRoleModal({ show, onClose, email, data }) {
     console.log("changemodal data", data)
-    const roles = [
-        { id: 1, name: 'Owner' },
-        { id: 2, name: 'Admin' },
-        { id: 3, name: 'Data Scientist' }
-    ]
+    
     const [selectedRole, setSelectedRole] = useState(roles[0])
     return (
         <Modal show={show} onClose={onClose}>
-            <div tw="grid grid-cols-12 text-left p-6 rounded-lg gap-4">
+            <div tw="col-span-full">
+            <div tw="grid grid-cols-12 text-left p-6 rounded-lg gap-4  text-gray-600">
                 <div tw="col-span-full flex-col items-center">
                     <h2 tw="font-bold text-4xl my-6 text-gray-800"><FontAwesomeIcon size="xl" icon={faCheck} tw="mr-3" /></h2>
                     <h2 tw="font-bold text-4xl my-6 text-gray-800">Change Roles</h2>
@@ -345,48 +421,61 @@ function ChangeRoleModal({ show, onClose, email, data }) {
                 <p tw="col-span-full text-justify my-6">Permissions for a user are set by their assigned role. These permissions are used for managing the domain. To review and customize the default set of roles visit the Permissions page.</p>
 
                 <h3 tw="col-span-full font-bold mt-3 text-gray-600">Change Role</h3>
-                <Listbox value={selectedRole} onChange={setSelectedRole}>
-                    <Listbox.Button tw="col-span-full flex py-4 px-6 border border-gray-200 rounded-lg text-left justify-between focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800">
-                        <span>{selectedRole.name}</span>
-                        <span>▼</span>
-                    </Listbox.Button>
-                    <Transition
-                        as={Fragment}
-                        leave="transition ease-in duration-100"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                    >
-                        <Listbox.Options tw="relative col-span-full overflow-auto text-gray-800 rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none">
-                            {roles.map((role) => (
-                                <Listbox.Option key={role.id} value={role} tw="cursor-default select-none relative text-gray-800">
-                                    {({ selected }) => (
-                                        <div css={[tw`py-2 px-6  items-center`, selected && tw`flex justify-between bg-gray-50`]}>
-                                            <span css={[tw`font-normal`, selected && tw`font-medium`]}>{role.name}</span>
-                                            {selected ? (<span tw='items-center'><FontAwesomeIcon icon={faCheck} size="sm" /> </span>) : null}
-                                        </div>
-                                    )}
-
+                <SearchContainer>
+                    <Listbox value={selectedRole} onChange={setSelectedRole}>
+                        <Listbox.Button tw="flex w-full p-4 h-10 border-2 border-gray-200 rounded-lg text-left text-sm text-gray-600 justify-between items-center truncate">
+                            <span>{selectedRole.role}</span>
+                            <span tw="ml-2 text-xs">▼</span>
+                        </Listbox.Button>
+                        <Transition
+                            as={Fragment}
+                            enter="transition duration-100 ease-out"
+                            enterFrom="transform scale-95 opacity-0"
+                            enterTo="transform scale-100 opacity-100"
+                            leave="transition duration-75 ease-out"
+                            leaveFrom="transform scale-100 opacity-100"
+                            leaveTo="transform scale-95 opacity-0"
+                        >
+                        <Listbox.Options tw="absolute overflow-auto text-gray-800 border-2 border-gray-200 rounded-md mt-1">
+                        {roles.map((role) => (
+                                <Listbox.Option key={role.id} value={role} tw="absolute bg-white cursor-default select-none relative text-gray-800">
+                                        {({ selected }) => (
+                                            <div css={[tw`py-2 px-6  items-center`, selected && tw`flex justify-between bg-gray-50`]}>
+                                            <span css={[tw`font-normal`, selected && tw`font-medium`]}>{role.role}</span>
+                                            {selected ? (<span tw='items-center'><FontAwesomeIcon icon={faCheck} size="sm"/> </span> ) : null}
+                                            </div>
+                                        )}
+                                    
                                 </Listbox.Option>
-                            ))}
+                        ))}
                         </Listbox.Options>
-                    </Transition>
-                </Listbox>
-                <div tw="col-span-full flex-col bg-gray-50 items-center border border-gray-100 rounded p-6 space-x-3 my-6">
+                        </Transition>
+                    </Listbox>
+                </SearchContainer>
+                <div tw="col-span-full flex-col bg-gray-50 items-center border border-gray-100 rounded p-6 space-x-3 my-6 overflow-auto">
                     <div>
-                        <p>This role is for users who will be performing computations on your datasets. They may be users you know directly or those who found your domain through search and discovery.</p>
+                        <p>{selectedRole.description}</p>
                     </div>
-                    <div tw="flex py-10 space-x-10 items-center">
-                        <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-success-500" />
-                        <div tw="block">
-                            <p tw="font-bold text-black">Can Make Data Requests</p>
-                            <p>Allows users to make data requests</p>
-                        </div>
-                    </div>
+                        {Object.keys(selectedRole.permissions).map((key, idx)=>(
+                            <div tw="flex py-2 space-x-10 items-center">
+                                { selectedRole.permissions[key] ? <FontAwesomeIcon size="xs" icon={faCheckCircle} tw="text-success-500" /> : <FontAwesomeIcon size="xs" icon={faTimesCircle} tw="text-error-500" />}
+                                <div tw="block">
+                                    <p tw="font-bold text-black">{key}</p>
+                                    {/* <p>Allows users to make data requests</p> */}
+                                </div>
+                            </div>
+                        ))}
+                </div>
+                <div tw="col-span-full mb-5">
+                    <Link href="/permissions">
+                        <a tw="text-primary-600 font-medium cursor-pointer p-2">Edit Role Permissions</a>
+                    </Link>
                 </div>
                 <div tw="col-span-full flex justify-between">
                     <Button variant={"primary"} isHollow onClick={onClose}>Cancel</Button>
                     <Button variant={"primary"} onClick={onClose}>Change Role</Button>
                 </div>
+            </div>
             </div>
         </Modal>
     )
@@ -599,11 +688,15 @@ export default function Active() {
             {
                 Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">Σ Balance</div></div>,
                 accessor: 'budget',
-                Cell: ({ row }) => (
-                    <div tw="flex space-x-2 items-center justify-center">
-                        <Tag variant={'error'} fullColor><p tw="text-white font-bold">{row.values.budget} ε</p></Tag>
-                    </div>
-                )
+                Cell: ({ row }) => {
+                    let budgetDiff = row.values.budget - row.values.allocated_budget
+                    console.log("budgetDiff", budgetDiff, "of", row.values.full_name, row.values.budget, row.values.allocate_budget)
+                    return(
+                        <div tw="flex space-x-2 items-center justify-center">
+                            <Tag variant={'error'} fullColor><p tw="text-white font-bold">{row.values.budget} ε</p></Tag>
+                        </div>
+                    )
+                }
             },
             {
                 Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">Σ Allocated Budget</div></div>,
