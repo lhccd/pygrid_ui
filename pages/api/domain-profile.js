@@ -34,9 +34,6 @@ export default async (req, res) => {
                     "Accept": "application/json",
                     "Authorization": `Bearer ${access}`
                 },
-                params:{
-                    domain_name: domain_name
-                }
             });
 
             const data = apiRes.data;
@@ -75,10 +72,9 @@ export default async (req, res) => {
             const domain_name = "d1"
             const body = {
                 "description": req.body.description,
-                "email": req.body.email,
+                "support_email": req.body.email,
             }
-
-            console.log(body)
+            console.log("body: ", body)
 
             const apiRes = await axios.put(`${API_URL}/domain/domain-profile`,
                 body,
@@ -94,10 +90,32 @@ export default async (req, res) => {
                 });
             const data = apiRes.data;
 
-            if (apiRes.status === 200) {
+            console.log("data: ", data)
+
+
+            console.log("tags: ", req.body.tags)
+            const apiResTags = await axios.put(`${API_URL}/domain/add-tags`,
+                req.body.tags,
+                {
+                    method: 'PUT',
+                    headers: {
+                        "Accept": "application/json",
+                        "Authorization": `Bearer ${access}`
+                    },
+                    /*
+                    params: {
+                        domain_name: domain_name
+                    }
+                     */
+                });
+            const dataTags = apiResTags.data;
+
+
+            console.log("datatags: ", dataTags)
+
+            if (apiRes.status === 200 && apiResTags.status === 200) {
                 return res.status(200).json({
-                    description: data.description,
-                    email: data.email,
+                    success: "Changes are successful."
                 });
             } else {
                 return res.status(apiRes.status).json({

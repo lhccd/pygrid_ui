@@ -526,7 +526,7 @@ function Active(){
                 <div tw="flex my-6 space-x-4">
                     <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} setGlobalFilter={setGlobalFilter} globalFilter={state.globalFilter}/>
                 </div>
-                <button tw="bg-gray-800 rounded text-primary-200 text-center my-6 px-3 py-2 font-bold" onClick={() => setShowCreateUserModal(true)}><FontAwesomeIcon icon={faPlus} tw="mr-3"/>Create User</button>
+                <button tw="bg-gray-800 rounded text-primary-200 text-center font-bold" onClick={() => setShowCreateUserModal(true)}><FontAwesomeIcon icon={faPlus} tw="mr-3"/>Create User</button>
             </div>
             <CreateUserModal show={showCreateUserModal} onClose={()=>setShowCreateUserModal(false)}/>
             <div tw="flex justify-center" >

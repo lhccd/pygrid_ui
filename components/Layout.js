@@ -5,7 +5,7 @@ import tw from 'twin.macro'
 
 export function Layout({children}){
     return(
-        <div tw="flex">
+        <div tw="flex font-roboto">
             <SidebarNav/>
             <main tw="relative w-full h-full max-w-full px-16 py-10">
                 {/* <Page> */}

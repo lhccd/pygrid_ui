@@ -20,24 +20,27 @@ const Background = styled.div`
     background-size: auto; 
 `
 
-const DomainBody = [
-  {
-    ID: 'ID#449f4f997a96467f90f7af8b396928f1',
-    HostedDatasets: '2',
-    DeployedOn: '09.07.2021',
-    Owner: ['Kyoko Eng', 'United Nations'],
-    Network: '---',
-    SupportContact: 'support@abc.com'
-  }
-]
-
 export default function Signup() {
+  const [tags, setTags] = useState([]);
+  const [domainName, setDomainName] = useState("");
+  const [description, setDescription] = useState("");
+  const [id, setId] = useState("");
+  const [datasets, setDatasets] = useState(0);
+  const [deployed, setDeployed] = useState("");
+  const [owner, setOwner] = useState("");
+  const [networks, setNetworks] = useState([]);
+  const [supportEmail, setSupportEmail] = useState("");
+
   const router = useRouter();
   const { register, handleSubmit, errors, reset } = useForm();
   const [DAARequired, setDAARequired] = useState(true);
   const [DAAUploaded, setDAAUploaded] = useState(false);
   const [daa, setDaa] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
+
+  useEffect (() => {
+    getMetaData();
+  }, [])
 
   async function onSubmitForm(values) {
     const formData = new FormData
@@ -78,7 +81,7 @@ export default function Signup() {
   };
 
   async function downloadAgreement() {
-    const domain_name = "dp2"
+    const domain_name = "d1"
     try{
       const apiRes =await axios({
         method: 'GET',
@@ -132,6 +135,14 @@ export default function Signup() {
       if(apiRes.status === 200){
         const data = await apiRes.data;
         console.log(data);
+        setTags(data.tags);
+        setDomainName(data.name);
+        setDescription(data.description);
+        setSupportEmail(data.email);
+        setId(data.id);
+        setDatasets(data.datasets);
+        setDeployed(data.deployed);
+        setOwner(data.owner);
       }
       else{
         alert("Couldn't fetch the metadata!")
@@ -142,6 +153,10 @@ export default function Signup() {
       console.error(e);
     }
   }
+
+  const tagItems = tags.map((tag) =>
+      <Tag>{tag}</Tag>
+  );
 
   return (
     <Background>
@@ -157,40 +172,36 @@ export default function Signup() {
         </div>
         <div id="content" tw="grid grid-cols-12 flex-grow text-gray-600 text-left text-lg rounded-lg gap-6 ">
           <div id="domain-box" tw="col-start-2 col-end-6 my-10 p-10 text-gray-800">
-            <div id="tags">
-              <Tag>Commodities</Tag>
-              <Tag>Trade</Tag>
-              <Tag>Canada</Tag>
-            </div>
-            <h1 id="domain-name" tw="font-rubik font-bold text-left text-5xl my-4">Canada Domain</h1>
-            <p tw="text-base my-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in vulputate enim. Morbi scelerisque, ante eu ultrices semper, ipsum nisl malesuada ligula, non faucibus libero purus et ligula.</p>
+            {tagItems}
+            <h1 id="domain-name" tw="font-rubik font-bold text-left text-5xl my-4">{domainName}</h1>
+            <p tw="text-base my-5">{description}</p>
             <div tw="divide-y divide-gray-200 divide-solid">
               <ul id="domain-info" tw="text-left text-sm font-semibold mt-4 mb-8">
-                <li tw="py-3">
+                <li tw="py-3" key={id.key}>
                   <a>ID#: </a>
-                  <a>{DomainBody[0].ID}</a>
+                  <a>{id}</a>
                 </li>
-                <li tw="py-3">
+                <li tw="py-3" key={datasets.key}>
                   <a>Hosted Datasets: </a>
-                  <a>{DomainBody[0].HostedDatasets}</a>
+                  <a>{datasets}</a>
                 </li>
-                <li tw="py-3">
+                <li tw="py-3" key={deployed.key}>
                   <a>Deployed On: </a>
-                  <a>{DomainBody[0].DeployedOn}</a>
+                  <a>{deployed}</a>
                 </li>
-                <li tw="py-3">
+                <li tw="py-3" key={owner.key}>
                   <a>Owner: </a>
-                  <a>{DomainBody[0].Owner}</a>
+                  <a>{owner}</a>
                 </li>
-                <li tw="py-3">
+                <li tw="py-3" key={networks.key}>
                   <a>Network: </a>
-                  <a>{DomainBody[0].Network}</a>
+                  <a>{networks}</a>
                 </li>
 
               </ul>
               <div id="support_contact" tw="text-left text-sm pt-4">
                 <p>For further assistance please email:</p>
-                <p>{DomainBody[0].SupportContact}</p>
+                <a href={"mailto:" + supportEmail} tw="text-blue-500 underline">{supportEmail}</a>
               </div>
             </div>
           </div>
@@ -306,8 +317,9 @@ export default function Signup() {
                           />
 
                           <button
-                            tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 py-2 my-5">
-                            <FontAwesomeIcon icon={faDownload} tw="mr-2" />
+                            tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 py-2 my-5"
+                            onClick={downloadAgreement}>
+                            <FontAwesomeIcon icon={faDownload} tw="mr-2"/>
                             Download Agreement
                           </button>
                         </div>
@@ -327,7 +339,8 @@ export default function Signup() {
                           {...register("daa_pdf", { onChange: onUploadDaa, required: true })}
                         />
                         <button
-                          tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 my-5" onClick={getMetaData}>
+                          tw="col-start-2 col-end-4 text-primary-500 bg-white text-center font-bold mx-6 px-3 my-5"
+                          onClick={downloadAgreement}>
                           <FontAwesomeIcon icon={faDownload} tw="mr-2" />
                           Download agreement
                         </button>

@@ -8,11 +8,11 @@ import avatarphoto from "/public/avatar.jpg"
 
 export default function Avatar({ name, picture, domainid }) {
     return (
-      <div tw="flex items-center px-4">
-            <img src="/avatar.jpg" tw="w-20 h-20 rounded-full mr-1" alt={name} />
+      <div tw="flex items-center px-3">
+            <img src="/avatar.jpg" tw="w-20 h-20 rounded-full mr-2" alt={name} />
             {/* <div tw="block"> */}
                 <Menu as="div" tw="w-40 space-y-2">
-                    <Menu.Button fullWidth tw="px-2 flex w-full space-x-2 items-center text-xl font-bold truncate text-gray-50 rounded-md bg-gray-500 bg-opacity-20">
+                    <Menu.Button tw="px-2 flex w-full space-x-2 items-center text-xl font-bold truncate text-gray-200 rounded-md bg-opacity-20">
                             <div tw="truncate">{name}</div>
                             <FontAwesomeIcon size="sm" icon={faChevronDown}/>
                     </Menu.Button>
@@ -31,7 +31,7 @@ export default function Avatar({ name, picture, domainid }) {
                               <div
                               css={[tw`flex items-center space-x-2 rounded-md items-center w-full px-2 py-2 text-sm text-gray-600`, active && tw`bg-primary-200`]}
                               >
-                                <img src="/avatar.jpg" tw="w-10 h-10 rounded-full" alt="Canada Domain"/>
+                                <img src="/avatar.jpg" tw="w-10 h-10 rounded-full" alt={name}/>
                                 <div id="content" tw="relative w-auto truncate">
                                   <p tw="relative text-xl font-bold truncate">{name}</p>
                                   <p>Online</p>
@@ -80,7 +80,7 @@ export default function Avatar({ name, picture, domainid }) {
                         </Menu.Item>
                     </Menu.Items>
                     </Transition>
-                    <div tw="px-2 text-gray-50 block text-sm font-bold rounded truncate bg-gray-800 text-primary-200">{domainid}</div>
+                    <div tw="px-2 text-gray-50 block text-sm font-bold rounded truncate bg-gray-800 text-primary-200">ID#{domainid}</div>
                     <button tw="px-2 text-left" onClick={logout}>
                         <p size="sm" tw="lowercase bg-transparent hover:text-white underline">
                             {('logout')}

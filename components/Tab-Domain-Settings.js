@@ -127,7 +127,6 @@ function Profile(){
     );
 
     async function onSubmitProfile(){
-        /*
         const body =JSON.stringify({
             description,
             email,
@@ -147,8 +146,8 @@ function Profile(){
             );
 
             if(apiRes.status == 200){
-                const domain = await apiRes.json();
-                console.log(domain);
+                const data = await apiRes.json();
+                console.log(data);
             }
             else{
                 alert("Couldn't update the domain profile!");
@@ -157,7 +156,6 @@ function Profile(){
         catch (error){
             console.log(error);
         }
-         */
     }
 
     async function onPurgeNode() {
@@ -234,23 +232,23 @@ function Profile(){
                             <ul id="domain-info" tw="text-left text-sm mt-4 mb-8">
                                 <li tw="py-2" key="name">
                                     <a tw="font-bold text-gray-700">Domain Name: </a>
-                                    <a tw="font-mono">{DomainBody[0].Name}</a>
+                                    <a tw="font-mono">{name}</a>
                                 </li>
                                 <li tw="py-2" key="id">
                                     <a tw="font-bold text-gray-700">ID#: </a>
-                                    <a>{DomainBody[0].ID}</a>
+                                    <a>{id}</a>
                                 </li>
                                 <li tw="py-2" key="datasets">
                                     <a tw="font-bold text-gray-700">Hosted Datasets: </a>
-                                    <a tw="font-mono">{DomainBody[0].HostedDatasets}</a>
+                                    <a tw="font-mono">{datasets}</a>
                                 </li>
                                 <li tw="py-2" key="deployedOn">
                                     <a tw="font-bold text-gray-700">Deployed On: </a>
-                                    <a tw="font-mono">{DomainBody[0].DeployedOn}</a>
+                                    <a tw="font-mono">{deployed}</a>
                                 </li>
                                 <li tw="py-2" key="owner">
                                     <a tw="font-bold text-gray-700">Owner: </a>
-                                    <a tw="font-mono">{DomainBody[0].Owner}</a>
+                                    <a tw="font-mono">{owner}</a>
                                 </li>
                             </ul>
                         </div>
@@ -287,7 +285,7 @@ function Profile(){
                                 {tagItems}
                             </div>
                             <div id="buttons" tw="text-center my-8 inline-flex content-start whitespace-nowrap">
-                                <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="submit">Save Changes</button>
+                                <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="button" onClick={onSubmitProfile}>Save Changes</button>
                             </div>
                         </form>
                     </div>
@@ -395,6 +393,7 @@ function Profile(){
 function Config(){
     const [DAARequired, setDAARequired] = useState(false);
     const [DAAUploaded, setDAAUploaded] = useState(false);
+    const [DAASent, setDAASent] = useState(false);
     const { register, handleSubmit, errors, reset } = useForm();
     const [daa, setDaa] = useState(null);
 
@@ -406,12 +405,23 @@ function Config(){
 
     const onUploadDaa = (e) => {
         setDAAUploaded(true);
+        setDAASent(false);
         let files = e.target.files;
         setDaa(files[0]);
     }
+
+    const onXClick = () => {
+        setDAAUploaded(false);
+        setDaa(null);
+    }
+
     const onDAAClick = () => {
         fileSaver.saveAs(daa);
     };
+
+    const sendDaa = () => {
+        setDAASent(true);
+    }
 
     return (
         <>
@@ -432,7 +442,7 @@ function Config(){
                     {DAARequired
                         ? [
                             <div tw="">
-                                <p tw="text-xl text-left font-bold font-rubik mt-10">Data Access Agreement<p tw="pl-2 inline relative bottom-1 text-primary-500 font-bold">*</p></p>
+                                <p tw="text-xl text-left font-bold font-rubik mt-10">Data Access Agreement<div tw="pl-2 inline relative bottom-1 text-primary-500 font-bold">*</div></p>
                                 <div tw="text-gray-500 text-sm py-6 rounded-lg gap-2">
                                     <p tw="text-sm mr-5">
                                         A Data Access Agreement (DAA) is a... Please upload the legal agreement you would like to require for your domain users.
@@ -440,20 +450,53 @@ function Config(){
                                 </div>
                                 {DAAUploaded
                                     ?
-                                    <div>
-                                        <div tw="w-2/3 flex justify-between bg-gray-100 text-black my-4 py-1">
-                                            <button tw="mx-2 underline font-bold " type="button" onClick={onDAAClick}>
-                                                {daa.name}
-                                            </button>
+                                    [DAASent
+                                        ?
+                                        <div>
+                                            <div tw="w-2/3 flex justify-between bg-gray-100 text-black my-4 py-1">
+                                                <button tw="mx-2 underline font-bold " type="button" onClick={onDAAClick}>
+                                                    {daa.name}
+                                                </button>
+                                            </div>
+                                            <div tw="my-10 flex items-center space-x-3 p-3 bg-primary-100">
+                                                <FontAwesomeIcon icon={faInfoCircle} tw="" />
+                                                <p tw="text-gray-800 cursor-pointer break-normal">
+                                                    If you need to change your data access agreement, please contact OpenMined at support@openmined.org and we will
+                                                    help walk you through the process.
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div tw="my-10 flex items-center space-x-3 p-3 bg-primary-100">
-                                            <FontAwesomeIcon icon={faInfoCircle} tw="" />
-                                            <p tw="text-gray-800 cursor-pointer break-normal">
-                                                If you need to change your data access agreement, please contact OpenMined at support@openmined.org and we will
-                                                help walk you through the process.
-                                            </p>
+                                        :
+                                        <div>
+                                            <div tw="w-2/3 flex justify-between bg-gray-100 text-black my-4 py-1">
+                                                <button tw="mx-2 underline font-bold " type="button" onClick={onDAAClick}>
+                                                    {daa.name}
+                                                </button>
+                                                <button tw="font-bold mx-2" type="button" onClick={onXClick}>
+                                                    <FontAwesomeIcon icon={faTimes} size="sm" tw=""/>
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <button
+                                                    tw="text-primary-500 font-bold py-2 px-4 mr-6 border rounded-lg border-primary-500"
+                                                    type="button"
+                                                    onClick={() => document.getElementById('daa_pdf').click()}
+                                                >
+                                                    <FontAwesomeIcon icon={faPlus} size="sm" tw="mr-2" />
+                                                    Replace File
+                                                </button>
+                                                <input tw="hidden"
+                                                       id="daa_pdf"
+                                                       name="daa_pdf"
+                                                       type='file'
+                                                       {...register("daa_pdf", { onChange: onUploadDaa, required: true })}
+                                                />
+                                            </div>
+                                            <div id="buttons" tw="text-center mt-10 inline-flex content-start whitespace-nowrap">
+                                                <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="button" onClick={sendDaa}>Save Changes</button>
+                                            </div>
                                         </div>
-                                    </div>
+                                    ]
                                     :
                                     <div>
                                         <div>
@@ -473,7 +516,7 @@ function Config(){
                                             />
                                         </div>
                                         <div id="buttons" tw="text-center mt-10 inline-flex content-start whitespace-nowrap">
-                                            <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="submit">Save Changes</button>
+                                            <button tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6" type="button" onClick={sendDaa}>Save Changes</button>
                                         </div>
                                     </div>
                                 }
@@ -519,6 +562,9 @@ function Updates(){
                 const domain = await apiRes.data;
                 setLastUpdated(domain.lastUpdated);
                 setVersion(domain.version);
+                setHash(domain.hash);
+                setRepo(domain.repo);
+                setBranch(domain.branch);
             }
             else{
                 alert("Couldn't fetch the domain version!");
@@ -530,9 +576,8 @@ function Updates(){
     }
 
     async function onUpdate(){
-        /*
         const body =JSON.stringify({
-            repository,
+            repo,
             branch,
             hash
         })
@@ -560,7 +605,6 @@ function Updates(){
         catch (error){
             console.log(error);
         }
-         */
     }
 
 
@@ -617,7 +661,7 @@ function Updates(){
                                 </div>
                             </div >
                             <div id="buttons" tw="text-center mt-10 inline-flex content-start whitespace-nowrap">
-                                <button tw="bg-primary-500 rounded text-white font-bold py-2 px-2 mr-6" type="submit">Update</button>
+                                <button tw="bg-primary-500 rounded text-white font-bold py-2 px-2 mr-6" type="button" onClick={onUpdate}>Update</button>
                             </div>
                         </form>
                     </div>

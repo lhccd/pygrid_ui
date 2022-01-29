@@ -31,7 +31,10 @@ export default async (req, res) => {
             if (apiRes.status === 200){
                 return res.status(200).json({
                     lastUpdated: data.last_updated,
-                    version: data.version_name
+                    version: data.version_name,
+                    repo: data.repository,
+                    branch: data.branch,
+                    hash: data.commit_hash
                 });
             }
             else{
@@ -46,29 +49,31 @@ export default async (req, res) => {
             });
         }
     } else if(req.method == "PUT") {
-
+        const domain_name="d1"
         try {
             const body = {
-                "repository": req.body.repository,
+                "repository": req.body.repo,
                 "branch": req.body.branch,
-                "hash": req.body.hash
+                "commit_hash": req.body.hash
             }
 
-            const apiRes = await axios.put(`${API_URL}/domain/CHANGE_HERE`,
+            const apiRes = await axios.put(`${API_URL}/domain/update-domain-version`,
                 body,
                 {
                     method: 'PUT',
                     headers: {
                         "Accept": "application/json",
                         "Authorization": `Bearer ${access}`
+                    },
+                    params: {
+                        domain_name: domain_name
                     }
                 });
             const data = apiRes.data;
 
             if (apiRes.status === 200) {
                 return res.status(200).json({
-                    lastUpdated: data.lastUpdated,
-                    version: data.version
+                    success: "Version update successful"
                 });
             } else {
                 return res.status(apiRes.status).json({

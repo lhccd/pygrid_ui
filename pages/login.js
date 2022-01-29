@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import DomainConnectionStatus from '../components/DomainConnectionStatus'
 import tw from 'twin.macro'
 import Tag from '../components/Tag'
-import { useState } from 'react'
+import {useEffect, useState} from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import {login} from '../lib/auth'
@@ -20,24 +20,67 @@ const Background = styled.div`
     background-size: auto; 
 `
 
-const DomainBody = [
-    {
-      ID :'ID#449f4f997a96467f90f7af8b396928f1',
-      HostedDatasets : '2',
-      DeployedOn : '09.07.2021',
-      Owner : ['Kyoko Eng', 'United Nations'],
-      Network : '---',
-      SupportContact : 'support@abc.com'
-    }
-  ]
-
 export default function Login() {
+    const [tags, setTags] = useState([]);
+    const [domainName, setDomainName] = useState("");
+    const [description, setDescription] = useState("");
+    const [id, setId] = useState("");
+    const [datasets, setDatasets] = useState(0);
+    const [deployed, setDeployed] = useState("");
+    const [owner, setOwner] = useState("");
+    const [networks, setNetworks] = useState([]);
+    const [supportEmail, setSupportEmail] = useState("");
+
     const { register, handleSubmit, errors, reset } = useForm();
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
     const [variant, setVariant] = useState('primary');
 
     const router = useRouter()
+
+    useEffect (() => {
+        getMetaData();
+    }, [])
+
+    async function getMetaData(){
+        try{
+            const domain_name= "d1"
+            const apiRes = await axios({
+                method: 'GET',
+                url: `api/utils/domain-metadata`,
+                headers: {
+                    "Accept": "application/json"
+                },
+                params: {
+                    domain_name: domain_name
+                }
+            });
+
+            if(apiRes.status === 200){
+                const data = await apiRes.data;
+                console.log(data);
+                setTags(data.tags);
+                setDomainName(data.name);
+                setDescription(data.description);
+                setSupportEmail(data.email);
+                setId(data.id);
+                setDatasets(data.datasets);
+                setDeployed(data.deployed);
+                setOwner(data.owner);
+            }
+            else{
+                alert("Couldn't fetch the metadata!")
+            }
+
+        }
+        catch (e) {
+            console.error(e);
+        }
+    }
+
+    const tagItems = tags.map((tag) =>
+        <Tag>{tag}</Tag>
+    );
 
     const onSubmitForm = async (values) => {
         try {
@@ -85,7 +128,7 @@ export default function Login() {
 
     return(
         <Background>
-            <div id="app" tw="flex flex-col h-screen w-screen py-10">
+            <div id="app" tw="flex flex-col h-screen w-screen py-10 font-roboto">
                 <div id="header" tw="grid grid-cols-12 bg-gray-100 bg-opacity-5 rounded-lg gap-6 py-4">
                     <img tw="col-start-2 col-span-2 object-scale-down h-14 pl-10" src={"/assets/small-logo.png"} alt="py-grid-logo"/>
                     <div tw="col-start-9 col-span-4">
@@ -97,40 +140,36 @@ export default function Login() {
                 </div>
                 <div id="content" tw="grid grid-cols-12 flex-grow text-gray-800 text-left text-lg py-4 rounded-lg gap-6 ">
                 <div id="domain-box" tw="col-start-2 col-end-6 my-10 p-10 text-gray-800">
-                        <div id="tags">
-                        <Tag>Commodities</Tag>
-                        <Tag>Trade</Tag>
-                        <Tag>Canada</Tag>
-                        </div>
-                        <h1 id="domain-name" tw="font-rubik font-bold text-left text-5xl my-4">Canada Domain</h1>
-                        <p tw="text-base my-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis in vulputate enim. Morbi scelerisque, ante eu ultrices semper, ipsum nisl malesuada ligula, non faucibus libero purus et ligula.</p>
+                        {tagItems}
+                        <h1 id="domain-name" tw="font-rubik font-bold text-left text-5xl my-4">{domainName}</h1>
+                        <p tw="text-base my-5">{description}</p>
                         <div tw="divide-y divide-gray-200 divide-solid">
                         <ul id="domain-info" tw="text-left text-sm font-semibold mt-4 mb-8">
-                        <li tw="py-3">
+                        <li tw="py-3" key={id.key}>
                                 <a>ID#: </a>
-                                <a>{DomainBody[0].ID}</a>
+                                <a>{id}</a>
                         </li>
-                        <li tw="py-3">
+                        <li tw="py-3" key={datasets.key}>
                                 <a>Hosted Datasets: </a>
-                                <a>{DomainBody[0].HostedDatasets}</a>
+                                <a>{datasets}</a>
                         </li>
-                        <li tw="py-3">
+                        <li tw="py-3" key={deployed.key}>
                                 <a>Deployed On: </a>
-                                <a>{DomainBody[0].DeployedOn}</a>
+                                <a>{deployed}</a>
                         </li>
-                        <li tw="py-3">
+                        <li tw="py-3" key={owner.key}>
                                 <a>Owner: </a>
-                                <a>{DomainBody[0].Owner}</a>
+                                <a>{owner}</a>
                         </li>
-                        <li tw="py-3">
+                        <li tw="py-3" key={networks.key}>
                                 <a>Network: </a>
-                                <a>{DomainBody[0].Network}</a>
+                                <a>{networks}</a>
                         </li>
                         
                         </ul>
                         <div id="support_contact" tw="text-left text-sm pt-4">
                             <p>For further assistance please email:</p>
-                            <p>{DomainBody[0].SupportContact}</p>
+                            <a href={"mailto:" + supportEmail} tw="text-blue-500 underline">{supportEmail}</a>
                         </div>
                     </div>
                     </div>
@@ -161,7 +200,7 @@ export default function Login() {
                                 {...register("password", { required: "Password required!"})} 
                             />
                             <p tw="col-span-4 text-center text-gray-600 text-sm">Don't have an account yet?
-                                <a href="/signup" tw="col-span-4 text-center text-blue-500"> Apply for an account here</a>
+                                <a href="/signup" tw="ml-1 col-span-4 text-center text-blue-500 underline">Apply for an account here</a>
                             </p> 
                             <button tw="col-start-2 col-end-4 bg-primary-500 rounded text-white text-center mx-6 px-3 py-2" type="submit">Login</button>
                         </form>

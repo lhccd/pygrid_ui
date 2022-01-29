@@ -6,16 +6,54 @@ import {logout} from '../lib/auth'
 import DomainConnectionStatus from '../components/DomainConnectionStatus'
 import useSWR from 'swr'
 import Avatar from './Avatar'
+import axios from "axios";
+import {useEffect, useState} from "react";
 
 const SidebarNav = () => {
+    const [domainName, setDomainName] = useState("");
+    const [id, setId] = useState("");
+
+    useEffect (() => {
+        getMetaData();
+    }, [])
+
+    async function getMetaData(){
+        try{
+            const domain_name= "d1"
+            const apiRes = await axios({
+                method: 'GET',
+                url: `api/utils/domain-metadata`,
+                headers: {
+                    "Accept": "application/json"
+                },
+                params: {
+                    domain_name: domain_name
+                }
+            });
+
+            if(apiRes.status === 200){
+                const data = await apiRes.data;
+                setDomainName(data.name);
+                setId(data.id);
+            }
+            else{
+                alert("Couldn't fetch the metadata!")
+            }
+
+        }
+        catch (e) {
+            console.error(e);
+        }
+    }
+
     return (
         <div tw="sticky flex flex-col justify-between h-screen top-0 bg-gradient-to-r from-black to-gray-900 min-w-max max-w-xs text-gray-200 px-5">
             <header tw="py-10 border-b border-gray-600">
-                <Avatar name={"Hong Kong Domain"} domainid={"ID: 234567898765434567643456743256234"}/>
+                <Avatar name={domainName} domainid={id}/>
             </header>
             <div>
                 <nav tw="text-lg mb-auto">
-                    <ul tw="cursor-pointer">
+                    <div tw="cursor-pointer">
                         {/* <Link href="/dashboard">
                             <div tw="flex items-center space-x-3 px-3 py-4 hover:bg-gray-500">
                                 <div tw="p-2">
@@ -56,7 +94,7 @@ const SidebarNav = () => {
                                 <a>Networks</a>
                             </div>
                         </Link>
-                    </ul>
+                    </div>
                 </nav>
             </div>
             <footer tw="py-10 text-lg border-t border-gray-600">
