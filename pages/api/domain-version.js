@@ -12,9 +12,14 @@ export default async (req, res) => {
             error: 'User is not authorized!'
         })
     }
+    const domain_name = cookies.domain ?? false;
+    if (domain_name === false) {
+        return res.status(401).json({
+            error: 'The Domain does not exist or something wrong with the domain!'
+        })
+    }
     //GET
     if(req.method == "GET"){
-        const domain_name=req.query.domain_name
         try{
             const apiRes = await axios({
                 method: 'GET',
@@ -49,7 +54,6 @@ export default async (req, res) => {
             });
         }
     } else if(req.method == "PUT") {
-        const domain_name="d1"
         try {
             const body = {
                 "repository": req.body.repo,

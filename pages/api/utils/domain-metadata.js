@@ -1,10 +1,18 @@
 import axios from "axios"
+import cookie from "cookie";
 
 const API_URL = "http://localhost/api/v1";
 
 export default async (req, res) => {
+    const cookies =  cookie.parse(req.headers.cookie ?? '');
+    const domain_name = cookies.domain ?? false;
+    console.log({domain_name})
+    if ( domain_name === false){
+        return res.status(401).json({
+            error: 'The Domain does not exist or something wrong with the domain!'
+        })
+    }
     if ( req.method === 'GET') {
-        const domain_name = req.query.domain_name;
         try{
             const apiRes = await axios({
                 method: 'GET',

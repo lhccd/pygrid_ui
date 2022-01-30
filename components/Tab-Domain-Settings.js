@@ -82,16 +82,12 @@ function Profile(){
 
     async function getDomain() {
         try{
-            const domain_name = "d1"
             const apiRes = await axios({
                 method: "GET",
                 url: "api/domain-profile",
                 headers: {
                     "Accept": "application/json",
                     "Content-Type": "application/json",
-                },
-                params: {
-                    domain_name: domain_name
                 }
             });
             if(apiRes.status == 200){
@@ -545,16 +541,12 @@ function Updates(){
 
     async function getVersion() {
         try{
-            const domain_name = "d1"
             const apiRes = await axios({
                 method: "GET",
                 url: "api/domain-version",
                 headers: {
                     "Accept": "application/json",
                     "Content-Type": "application/json",
-                },
-                params: {
-                    domain_name: domain_name
                 }
             });
 

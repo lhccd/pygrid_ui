@@ -12,9 +12,14 @@ export default async (req, res) => {
             error: 'User is not authorized!'
         })
     }
+    const domain_name = cookies.domain ?? false;
+    if (domain_name === false) {
+        return res.status(401).json({
+            error: 'The Domain does not exist or something wrong with the domain!'
+        })
+    }
     //GET
     if(req.method === "GET"){
-        const domain_name=req.query.domain_name
         try{
             const apiRes = await axios({
                 method: 'GET',
@@ -34,6 +39,9 @@ export default async (req, res) => {
                     "Accept": "application/json",
                     "Authorization": `Bearer ${access}`
                 },
+                params: {
+                    domain_name: domain_name
+                }
             });
 
             const data = apiRes.data;
@@ -69,7 +77,6 @@ export default async (req, res) => {
         }
     } else if(req.method === "PUT") {
         try {
-            const domain_name = "d1"
             const body = {
                 "description": req.body.description,
                 "support_email": req.body.email,
@@ -94,19 +101,20 @@ export default async (req, res) => {
 
 
             console.log("tags: ", req.body.tags)
+            const tagBody = JSON.stringify({
+                    domain_name: domain_name,
+                    tags: req.body.tags
+                }
+            )
+
             const apiResTags = await axios.put(`${API_URL}/domain/add-tags`,
-                req.body.tags,
+                tagBody,
                 {
                     method: 'PUT',
                     headers: {
                         "Accept": "application/json",
                         "Authorization": `Bearer ${access}`
-                    },
-                    /*
-                    params: {
-                        domain_name: domain_name
                     }
-                     */
                 });
             const dataTags = apiResTags.data;
 
