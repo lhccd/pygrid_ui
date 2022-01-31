@@ -36,8 +36,20 @@ export default async (req, res) => {
                 }
             });
 
+            const apiOwner = await axios({
+                method: 'GET',
+                url: `${API_URL}/domain/domain-owner`,
+                headers: {
+                    "Accept": "application/json"
+                },
+                params:{
+                    domain_name: domain_name
+                }
+            })
+
             const data = apiRes.data;
             const data_tags = apiTag.data;
+            const owner = apiOwner.data;
 
             let tags = []
             for (let tag of data_tags){
@@ -50,10 +62,11 @@ export default async (req, res) => {
                     id: data.id,
                     datasets:2,
                     deployed: data.deployed_on,
-                    owner: "TO BE FETCHED",
+                    owner: owner.full_name,
                     description: data.description,
                     email: data.support_email,
-                    tags: tags
+                    tags: tags,
+                    require_daa: data.require_daa
                 });
             }
             else{

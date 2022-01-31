@@ -1,5 +1,6 @@
 import cookie from "cookie"
 import axios from "axios"
+import {dom} from "@fortawesome/fontawesome-svg-core";
 
 const API_URL = "http://localhost/api/v1";
 
@@ -13,18 +14,28 @@ export default async (req, res) => {
                 error: 'User is not authorized!'
             })
         }
+        const domain_name = cookies.domain ?? false;
+        if ( domain_name === false){
+            return res.status(401).json({
+                error: 'The Domain does not exist or something wrong with the domain!'
+            })
+        }
 
         try{
-            const apiRes = await axios.get(`${API_URL}/users/accepted-users`,
+            const apiRes = await axios(
                 {
                     method: 'GET',
+                    url: `${API_URL}/users/accepted-users`,
                     headers: {
                         "Accept": "application/json",
                         "Authorization": `Bearer ${access}`
+                    },
+                    params:{
+                        domain_name: domain_name
                     }
                 });
             const data = apiRes.data;
-            //console.log("accepted userlist data from api", data)
+            console.log("accepted userlist data from api", data)
 
             if (apiRes.status === 200){
                 return res.status(200).json(data);
@@ -36,6 +47,7 @@ export default async (req, res) => {
             }
         }
         catch (error){
+            console.log(error)
             return res.status(500).json({
                 error: "Oops! Server Error!"
             });

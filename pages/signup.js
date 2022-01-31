@@ -50,11 +50,22 @@ export default function Signup() {
     formData.append("institution", values.institution)
     formData.append("password", values.password)
     formData.append("website", values.website)
-    formData.append("daa_pdf", values.daa_pdf[0])
-    let config = {
-      method: 'post',
-      url: 'http://localhost/api/v1/users/open-daa',
-      data: formData
+    formData.append("domain_name", domainName)
+    let config = null;
+    if(DAARequired){
+      formData.append("daa_pdf", values.daa_pdf[0]);
+      config = {
+        method: 'post',
+        url: 'http://localhost/api/v1/users/open-daa',
+        data: formData
+      };
+    }
+    else{
+      config = {
+        method: 'post',
+        url: 'http://localhost/api/v1/users/open',
+        data: formData
+      };
     }
     try {
       console.log("config data: ", values)
@@ -143,6 +154,7 @@ export default function Signup() {
         setDatasets(data.datasets);
         setDeployed(data.deployed);
         setOwner(data.owner);
+        setDAARequired(data.require_daa);
       }
       else{
         alert("Couldn't fetch the metadata!")

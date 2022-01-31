@@ -13,14 +13,24 @@ export default async (req, res) => {
                 error: 'User is not authorized!'
             })
         }
+        const domain_name = cookies.domain ?? false;
+        if ( domain_name === false){
+            return res.status(401).json({
+                error: 'The Domain does not exist or something wrong with the domain!'
+            })
+        }
 
         try{
-            const apiRes = await axios.get(`${API_URL}/users/denied-users`,
+            const apiRes = await axios(
                 {
                     method: 'GET',
+                    url: `${API_URL}/users/denied-users`,
                     headers: {
                         "Accept": "application/json",
                         "Authorization": `Bearer ${access}`
+                    },
+                    params:{
+                        domain_name: domain_name
                     }
                 });
             const data = apiRes.data;

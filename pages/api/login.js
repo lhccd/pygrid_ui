@@ -1,14 +1,23 @@
-import {serialize} from "cookie"
+import cookie, {serialize} from "cookie"
 import axios from "axios";
 
 const API_URL = "http://localhost/api/v1"
 
 export default async (req, res) => {
+    const cookies =  cookie.parse(req.headers.cookie ?? '');
+    const domain_name = cookies.domain ?? false;
+    console.log({domain_name})
+    if ( domain_name === false){
+        return res.status(401).json({
+            error: 'The Domain does not exist or something wrong with the domain!'
+        })
+    }
     if ( req.method === 'POST') {
         const {username, password} = req.body;
         let data = {
             username,
-            password
+            password,
+            domain_name
         }
         const apiRes = await axios.post(`${API_URL}/login/get-token`, data);
         if (apiRes.status === 200) {

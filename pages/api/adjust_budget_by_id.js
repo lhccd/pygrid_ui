@@ -19,15 +19,18 @@ export default async (req, res) => {
             const email = req.body.email
             let data = JSON.stringify(req.body.budget)
             console.log("adjust budget by id, req body email",email, " and data", data)
-            const apiRes = await axios({method: 'put', url: `${API_URL}/users/update-budget`, headers: {"Accept": "application/json", "Authorization": `Bearer ${access}`}, params: {user_email: email}, data})
-            // const apiRes = await axios.put(`${API_URL}/users/update-budget`, data,{
-            //     method: 'PUT',
-            //     headers: {
-            //         "Accept": "application/json",
-            //         "Authorization": `Bearer ${access}`
-            //     }, 
-            //     params: {user_email: email}
-            // });
+            const apiRes = await axios({
+                    method: 'put',
+                    url: `${API_URL}/users/update-budget`,
+                    headers: {
+                        "Accept": "application/json",
+                        "Authorization": `Bearer ${access}`
+                    },
+                    params: {
+                        user_email: email
+                    },
+                    data
+            })
             const result = apiRes.data;
             console.log("response adjustbudget by id", result)
             if (apiRes.status === 200){
