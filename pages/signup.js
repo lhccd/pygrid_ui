@@ -11,6 +11,7 @@ import { faFontAwesome } from "@fortawesome/free-brands-svg-icons";
 import {faDownload, faTimes, faPlus, faUserPlus, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import fileSaver from "file-saver";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import moment from "moment";
 
 const Background = styled.div`
     background-image: url("../signup_background_image.png");
@@ -66,8 +67,12 @@ export default function Signup() {
   }
 
   const onUploadDaa = (e) => {
-    setDAAUploaded(true);
     let files = e.target.files;
+    if(!files[0].type.match('application/pdf')) {
+      alert("You can only upload PDF files");
+      return;
+    }
+    setDAAUploaded(true);
     setDaa(files[0]);
   }
 
@@ -81,7 +86,6 @@ export default function Signup() {
   };
 
   async function downloadAgreement() {
-    const domain_name = "d1"
     try{
       const apiRes =await axios({
         method: 'GET',
@@ -90,7 +94,7 @@ export default function Signup() {
           "Accept": "application/json",
         },
         params: {
-          domain_name: domain_name
+          domain_name: domainName
         }
       });
 
@@ -103,7 +107,7 @@ export default function Signup() {
         let a = window.document.createElement('a');
 
         a.href = window.URL.createObjectURL(new Blob([bytes], { type: 'application/octet-stream' }));
-        a.download = "Canada_Domain_Agreement.pdf";
+        a.download = domainName+"_Agreement.pdf";
         document.body.appendChild(a)
         a.click();
         document.body.removeChild(a)
@@ -183,7 +187,7 @@ export default function Signup() {
                 </li>
                 <li tw="py-3" key={deployed.key}>
                   <a>Deployed On: </a>
-                  <a>{deployed}</a>
+                  <a>{moment(deployed).format('YYYY-MMM-DD HH:MM')}</a>
                 </li>
                 <li tw="py-3" key={owner.key}>
                   <a>Owner: </a>
@@ -308,7 +312,7 @@ export default function Signup() {
                           <input tw="hidden"
                             id="daa_pdf_replace"
                             name="daa_pdf_replace"
-                            type='file'
+                            type='file' accept="application/pdf"
                             {...register("daa_pdf", { onChange: onUploadDaa, required: false })}
                           />
 
@@ -331,7 +335,7 @@ export default function Signup() {
                         <input tw="hidden"
                           id="daa_pdf"
                           name="daa_pdf"
-                          type='file'
+                          type='file' accept="application/pdf"
                           {...register("daa_pdf", { onChange: onUploadDaa, required: true })}
                         />
                         <button

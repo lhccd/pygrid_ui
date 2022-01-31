@@ -11,6 +11,7 @@ import Alert from '../components/Alert';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faExclamationCircle, faExclamationTriangle, faExpandAlt, faTimes} from '@fortawesome/free-solid-svg-icons'
 import {getToken} from '../lib/auth'
+import moment from "moment";
 
 const Background = styled.div`
     background-image: url("../signup_background_image.png");
@@ -44,16 +45,12 @@ export default function Login() {
 
     async function getMetaData(){
         try{
-            const domain_name= "d1"
             const apiRes = await axios({
                 method: 'GET',
                 url: `api/utils/domain-metadata`,
                 headers: {
                     "Accept": "application/json"
                 },
-                params: {
-                    domain_name: domain_name
-                }
             });
 
             if(apiRes.status === 200){
@@ -155,7 +152,7 @@ export default function Login() {
                         </li>
                         <li tw="py-3" key={deployed.key}>
                                 <a>Deployed On: </a>
-                                <a>{deployed}</a>
+                                <a>{moment(deployed).format('YYYY-MMM-DD HH:MM')}</a>
                         </li>
                         <li tw="py-3" key={owner.key}>
                                 <a>Owner: </a>

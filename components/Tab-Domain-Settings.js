@@ -21,6 +21,7 @@ import * as fileSaver from "file-saver";
 import axios from "axios";
 import {router} from "next/client";
 import {useRouter} from "next/router";
+import moment from "moment";
 
 // const styles = {
 //     container: ({ hasBg }) => [
@@ -228,7 +229,7 @@ function Profile(){
                                 </li>
                                 <li tw="py-2" key="deployedOn">
                                     <a tw="font-bold text-gray-700">Deployed On: </a>
-                                    <a tw="font-mono">{deployed}</a>
+                                    <a tw="font-mono">{moment(deployed).format('YYYY-MMM-DD HH:MM')}</a>
                                 </li>
                                 <li tw="py-2" key="owner">
                                     <a tw="font-bold text-gray-700">Owner: </a>
@@ -598,7 +599,7 @@ function Updates(){
                             <ul id="domain-info" tw="text-left text-sm mt-4 mb-8">
                                 <li tw="py-2" key="lastUpdated">
                                     <a tw="font-bold text-gray-700">Last Updated: </a>
-                                    <a tw="font-mono">{lastUpdated}</a>
+                                    <a tw="font-mono">{moment(lastUpdated).format('YYYY-MMM-DD HH:MM')}</a>
                                 </li>
                                 <li tw="py-2" key="version">
                                     <a tw="font-bold text-gray-700">Version: </a>

@@ -19,16 +19,12 @@ const SidebarNav = (props) => {
 
     async function getMetaData(){
         try{
-            const domain_name= "d1"
             const apiRes = await axios({
                 method: 'GET',
                 url: `api/utils/domain-metadata`,
                 headers: {
                     "Accept": "application/json"
                 },
-                params: {
-                    domain_name: domain_name
-                }
             });
 
             if(apiRes.status === 200){
