@@ -99,7 +99,7 @@ export default function Permissions() {
   
     // END BERKE
     return(
-        <Layout>
+        <Layout current={"permissions"}>
             <div tw="col-start-2 col-end-12 mt-6 grid grid-cols-12">
                 <div tw="col-span-full flex items-center">
                     <div tw="flex mb-4">

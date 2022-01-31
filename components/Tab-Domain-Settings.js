@@ -19,6 +19,8 @@ import ToggleSwitch from "./ToggleSwitch";
 import {faCheckCircle} from "@fortawesome/free-solid-svg-icons/faCheckCircle";
 import * as fileSaver from "file-saver";
 import axios from "axios";
+import {router} from "next/client";
+import {useRouter} from "next/router";
 
 // const styles = {
 //     container: ({ hasBg }) => [
@@ -46,20 +48,6 @@ const Content = styled.div(({ state }) => [
     (state === 3) && tw`bg-gray-800 block`
 
 ])
-
-const DomainBody = [
-    {
-        Name: 'CANADA DOMAIN',
-        ID: 'ID#449f4f997a96467f90f7af8b396928f1',
-        HostedDatasets: '2',
-        DeployedOn: '09.07.2021',
-        Owner: ['KYOKO ENG'],
-        Network: '---',
-        SupportContact: 'support@abc.com',
-        LastUpdated: '2021-JUL-09 09:45',
-        Version: 'Version Name Here'
-    }
-]
 
 function Profile(){
     const [name, setName] = useState("");
@@ -664,12 +652,28 @@ function Updates(){
 }
 
 export function Tab(){
-
+    const router = useRouter()
     const [toggleState, setToggleState] = useState(1);
+/*
+    useEffect(()=>{
+        console.log("router.query.tab: ", router.query.tab)
+        setToggleState(router.query.tab)
+        console.log("toggleState1: ", toggleState)
+        toggleTab(router.query.tab)
+    }, [])
+
+    useEffect(()=>{
+        console.log("router.query.tab: ", router.query.tab)
+        setToggleState(router.query.tab)
+        console.log("toggleState2: ", toggleState)
+        toggleTab(router.query.tab)
+    }, [router])
+
+ */
 
     const toggleTab = (index) => {
-        console.log(index);
-        console.log(toggleState)
+        console.log("index: ", index);
+        console.log("toggleState3: ", toggleState)
         setToggleState(index);
     };
 
@@ -679,7 +683,10 @@ export function Tab(){
                 <button
                     css={[tw`p-4 bg-white text-center w-1/2 bg-white border-b-2 border-primary-500 `,
                         (toggleState === 1) && tw`border-primary-500 border-b-0 border-t-2 border-r-2 border-l-2 rounded-t-md`]}
-                    onClick={() => toggleTab(1)}
+                    onClick={() => {
+                        //router.push({pathname:"domain-settings", query:{"tab":1}})
+                        toggleTab(1);
+                    }}
                 >
                 <h3 css={[tw`text-center font-bold text-gray-600`, (toggleState === 1) && tw`text-primary-500`]}>
                     Profile
@@ -688,7 +695,10 @@ export function Tab(){
                 <button
                     css={[tw`p-4 bg-white text-center w-1/2 bg-white border-b-2 border-primary-500 `,
                     (toggleState === 2) && tw`border-primary-500 border-b-0 border-t-2 border-r-2 border-l-2 rounded-t-md`]}
-                    onClick={() => toggleTab(2)}
+                    onClick={() => {
+                        //router.push({pathname:"domain-settings", query:{"tab":2}})
+                        toggleTab(2);
+                    }}
                 >
                 <h3 css={[tw`text-center font-bold text-gray-600`, (toggleState === 2) && tw`text-primary-500`]}>
                     Configurations
@@ -697,7 +707,10 @@ export function Tab(){
                 <button
                     css={[tw`p-4 bg-white text-center w-1/2 bg-white border-b-2 border-primary-500 `,
                     (toggleState === 3) && tw`border-primary-500 border-b-0 border-t-2 border-r-2 border-l-2 rounded-t-md`]}
-                    onClick={() => toggleTab(3)}
+                    onClick={() => {
+                        //router.push({pathname:"domain-settings", query:{"tab":3}})
+                        toggleTab(3);
+                    }}
                 >
                 <h3 css={[tw`text-center font-bold text-gray-600`, (toggleState === 3) && tw`text-primary-500`]}>
                     Updates

@@ -9,7 +9,7 @@ import Avatar from './Avatar'
 import axios from "axios";
 import {useEffect, useState} from "react";
 
-const SidebarNav = () => {
+const SidebarNav = (props) => {
     const [domainName, setDomainName] = useState("");
     const [id, setId] = useState("");
 
@@ -47,7 +47,7 @@ const SidebarNav = () => {
     }
 
     return (
-        <div tw="sticky flex flex-col justify-between h-screen top-0 bg-gradient-to-r from-black to-gray-900 min-w-max max-w-xs text-gray-200 px-5">
+        <div tw="sticky flex flex-col justify-between h-screen top-0 bg-gradient-to-r from-black to-gray-900 min-w-max max-w-xs text-gray-200 w-96">
             <header tw="py-10 border-b border-gray-600">
                 <Avatar name={domainName} domainid={id}/>
             </header>
@@ -63,7 +63,9 @@ const SidebarNav = () => {
                             </div>
                         </Link> */}
                         <Link href="/users">
-                            <div tw="flex items-center space-x-3 px-3 py-6 hover:bg-gray-500">
+                            <div
+                                css={[tw`flex items-center space-x-3 px-3 py-4 hover:bg-gray-500`,
+                                    (props.current=="users") && tw`bg-gray-800`]}>
                                 <div tw="p-2">
                                     <FontAwesomeIcon size="sm" icon={faUsers} />
                                 </div>
@@ -71,23 +73,50 @@ const SidebarNav = () => {
                             </div>
                         </Link>
                         <Link href="/permissions">
-                            <div tw="flex items-center space-x-3 px-3 py-6 hover:bg-gray-500">
+                            <div
+                                css={[tw`flex items-center space-x-3 px-3 py-4 hover:bg-gray-500`,
+                                    (props.current=="permissions") && tw`bg-gray-800`]}>
                                 <div tw="p-2">
                                     <FontAwesomeIcon size="sm" icon={faCheck} />
                                 </div>
                                 <a>Permissions</a>
                             </div>
                         </Link>
-                        <Link href="/requests">
-                            <div tw="flex items-center space-x-3 px-3 py-6 hover:bg-gray-500">
-                                <div tw="p-2">
-                                    <FontAwesomeIcon size="sm" icon={faLemon} />
+                        <div
+                            css={[tw``,
+                                (props.current=="data requests" || props.current=="upgrade requests") && tw`pb-2 bg-gray-800`]}>
+                            <Link href="/data-requests">
+                                <div
+                                    css={[tw`flex items-center space-x-3 px-3 py-4 hover:bg-gray-500`]}>
+                                    <div tw="p-2 font-bold">
+                                        ∑
+                                    </div>
+                                    <a>Requests</a>
                                 </div>
-                                <a>Requests</a>
-                            </div>
-                        </Link>
+                            </Link>
+                            <Link href="/data-requests" css={[tw`invisible`,
+                                (props.current=="data requests" || props.current=="upgrade requests") && tw`visible`]}>
+                                <div
+                                    css={[tw`h-0 flex items-center text-sm hover:bg-gray-500 invisible`,
+                                        (props.current=="data requests") && tw`bg-gray-700`,
+                                        (props.current=="data requests" || props.current=="upgrade requests") && tw`h-full space-x-3 px-3 py-2 pl-14 visible`]}>
+                                    <a>Data Requests</a>
+                                </div>
+                            </Link>
+                            <Link href="/upgrade-requests" css={[tw`invisible`,
+                                (props.current=="data requests" || props.current=="upgrade requests") && tw`visible`]}>
+                                <div
+                                    css={[tw`h-0 flex items-center text-sm hover:bg-gray-500 invisible`,
+                                        (props.current=="upgrade requests") && tw`bg-gray-700`,
+                                        (props.current=="data requests" || props.current=="upgrade requests") && tw`h-full space-x-3 px-3 py-2 pl-14 visible`]}>
+                                    <a>Upgrade Requests</a>
+                                </div>
+                            </Link>
+                        </div>
                         <Link href="/networks">
-                            <div tw="flex items-center space-x-3 px-3 py-6 hover:bg-gray-500">
+                            <div
+                                css={[tw`flex items-center space-x-3 px-3 py-4 hover:bg-gray-500`,
+                                    (props.current=="networks") && tw`bg-gray-800`]}>
                                 <div tw="p-2">
                                     <FontAwesomeIcon size="sm" icon={faHandsHelping} />
                                 </div>
@@ -144,7 +173,7 @@ const SidebarNav = () => {
             //                 <div tw="p-2">
             //                     <FontAwesomeIcon size="sm" icon={faLemon} />
             //                 </div>
-            //                 <a>Requests</a>
+            //                 <a>DataRequests</a>
             //             </div>
             //         </Link>
             //         <Link href="/networks">

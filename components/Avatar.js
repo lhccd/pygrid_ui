@@ -5,8 +5,11 @@ import { Menu, Transition } from '@headlessui/react'
 import {faChevronDown} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import avatarphoto from "/public/avatar.jpg"
+import {useRouter} from "next/router";
 
 export default function Avatar({ name, picture, domainid }) {
+    const router = useRouter();
+
     return (
       <div tw="flex items-center px-3">
             <img src="/avatar.jpg" tw="w-20 h-20 rounded-full mr-2" alt={name} />
@@ -41,32 +44,32 @@ export default function Avatar({ name, picture, domainid }) {
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
-                              <a
+                              <button
                               css={[tw`flex rounded-md items-center w-full px-2 py-2 text-sm text-gray-600`, active && tw`bg-primary-200`]}
-                              href="/account-settings"
+                              onClick={()=>router.push({pathname:"domain-settings", query:{"tab":1}})}
                               >
                               Profile
-                              </a>
+                              </button>
                           )}
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
-                              <a
+                              <button
                               css={[tw`flex rounded-md items-center w-full px-2 py-2 text-sm text-gray-600`, active && tw`bg-primary-200`]}
-                              href="/domain-settings"
+                              onClick={()=>router.push({pathname:"domain-settings", query:{"tab":2}})}
                               >
                               Configurations
-                              </a>
+                              </button>
                           )}
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
-                              <a
+                              <button
                               css={[tw`flex rounded-md items-center w-full px-2 py-2 text-sm text-gray-600`, active && tw`bg-primary-200`]}
-                              href="/account-settings"
+                              onClick={()=>router.push({pathname:"domain-settings", query:{"tab":3}})}
                               >
                               Version Updates
-                              </a>
+                              </button>
                           )}
                         </Menu.Item>
                         <Menu.Item>

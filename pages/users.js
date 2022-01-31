@@ -54,7 +54,7 @@ export default function Users() {
 
 
     return(
-        <Layout>
+        <Layout current={"users"}>
             <div tw="col-start-2 col-end-12 mt-6 grid grid-cols-12">
                 <div tw="col-span-full">
                     <div tw="flex items-center">

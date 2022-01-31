@@ -46,7 +46,7 @@ export default function Networks() {
 
     return(
         <div tw="font-roboto">
-            <Layout>
+            <Layout current={"networks"}>
                 <div tw="col-start-2 col-end-12 mt-6">
                     <div tw="flex items-center">
                         <div tw="flex mb-4">
