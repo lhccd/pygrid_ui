@@ -158,10 +158,31 @@ async function acceptUserByID(email) {
     }
 }
 
-async function adjustBudget(email, budget) {
+async function deleteUserByID(id) {
+    try {
+        const body = JSON.stringify({ "id": id })
+        console.log("requesting delete", body)
+        const apiRes = await fetch('/api/delete_user_by_id',
+            {
+                method: "DELETE",
+                headers: {
+                    'Accept': "application/json",
+                    'Content-Type': "application/json"
+                },
+                body: body
+            });
+        const data = await apiRes.json()
+        console.log("DELETE USER BY ID outside returns", data)
+    }
+    catch (error) {
+        console.log("error in deleteuserbyid", error)
+    }
+}
+
+async function adjustBudget(email, allocatedBudget) {
     console.log("adjustBudget Called", { email })
     try {
-        const body = JSON.stringify({ "email": email, "budget": budget })
+        const body = JSON.stringify({ "email": email, "budget": allocatedBudget })
         console.log("requesting put", body)
         const apiRes = await fetch('/api/adjust_budget_by_id',
             {
@@ -182,7 +203,12 @@ async function adjustBudget(email, budget) {
 
 function CreateUserModal({ show, onClose }) {
     const { register, handleSubmit, errors, reset } = useForm();
-    const [budget, setBudget] = useState(0)
+    const [allocatedBudget, setAllocatedBudget] = useState(0);
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertVariant, setAlertVariant] = useState('primary')
+    const [alertMessage, setAlertMessage] = useState('')
+    const [selectedRole, setSelectedRole] = useState(roles[0])
+
     async function onSubmitForm(values) {
         const data = {
             "email": values.email,
@@ -190,7 +216,8 @@ function CreateUserModal({ show, onClose }) {
             "institution": values.institution,
             "password": values.password,
             "website": values.website,
-            "budget": budget
+            "allocated_budget": allocatedBudget,
+            "role": selectedRole, 
         }
 
         let config = {
@@ -201,20 +228,40 @@ function CreateUserModal({ show, onClose }) {
         try {
             console.log("createuser modal form post to backend config data: ", values)
             const response = await axios(config)
+            setAlertVariant('success');
+            setAlertMessage('User successfully created!')
+            setShowAlert(true);
             console.log(response);
             onClose();
         } catch (err) {
             console.error(err);
+            setAlertVariant('error');
+            setAlertMessage('User creation was unsuccessful')
+            setShowAlert(true);
         }
     }
     function incrementBudget() {
-        setBudget(prevCount => prevCount + 1)
+        setAllocatedBudget(prevCount => prevCount + 1)
     }
     function decrementBudget() {
-        setBudget(prevCount => prevCount - 1)
+        if (allocatedBudget > 0){
+            setAllocatedBudget(prevCount => prevCount - 1)
+        }else{
+            setAlertVariant('error');
+            setAlertMessage('Budget cannot be negative!')
+            setShowAlert(true);
+            setAllocatedBudget(0);
+        }
     }
     return (
+        <>
         <Modal tw="p-20" show={show} onClose={onClose}>
+            <div tw="absolute right-0 w-1/2 z-50">
+                <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={alertVariant} autoDelete={true} autoDeleteTime={3000}>
+                    <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                    <p>{alertMessage}</p>
+                </Alert>
+            </div>
             <div tw="col-start-2 col-span-9">
             <form onSubmit={handleSubmit(onSubmitForm)} tw="grid grid-cols-12 text-sm text-center font-bold p-6 rounded-lg gap-4 ">
                 <div tw="col-span-12 my-3 text-left text-gray-800">
@@ -276,52 +323,77 @@ function CreateUserModal({ show, onClose }) {
                 </div>
                 <div tw="col-span-12 block text-left">
                     <label tw="block my-2" htmlFor="website">Role<p tw="pl-1 inline relative bottom-1 text-primary-500">*</p></label>
-                    <input
-                        tw="block p-3 border border-gray-300 rounded-lg w-full
-                                    focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                        name="website"
-                        type="text"
-                        placeholder="This can help a domain owner vett your application"
-                        autoComplete="on"
-                        {...register("website", { required: false })}
-                    />
+                    <Listbox value={selectedRole} onChange={setSelectedRole}>
+                        <Listbox.Button tw="flex w-full p-4 h-10 border border-gray-300 rounded-lg text-left text-sm text-gray-600 justify-between items-center truncate focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800">
+                            <span>{selectedRole.role}</span>
+                            <span tw="ml-2 text-xs">▼</span>
+                        </Listbox.Button>
+                        <Transition
+                            as={Fragment}
+                            enter="transition duration-100 ease-out"
+                            enterFrom="transform scale-95 opacity-0"
+                            enterTo="transform scale-100 opacity-100"
+                            leave="transition duration-75 ease-out"
+                            leaveFrom="transform scale-100 opacity-100"
+                            leaveTo="transform scale-95 opacity-0"
+                        >
+                        <Listbox.Options tw="absolute w-auto z-10 mt-1 overflow-auto text-gray-800 border-2 border-gray-200 rounded-md">
+                        {roles.map((role) => (
+                                <Listbox.Option key={role.id} value={role} tw="absolute bg-white cursor-default select-none relative text-gray-800">
+                                        {({ selected }) => (
+                                            <div css={[tw`py-2 px-6  items-center`, selected && tw`flex justify-between bg-gray-50`]}>
+                                            <span css={[tw`font-normal`, selected && tw`font-medium`]}>{role.role}</span>
+                                            {selected ? (<span tw='items-center'><FontAwesomeIcon icon={faCheck} size="sm"/> </span> ) : null}
+                                            </div>
+                                        )}
+                                    
+                                </Listbox.Option>
+                        ))}
+                        </Listbox.Options>
+                        </Transition>
+                    </Listbox>
                 </div>
                 <div tw="col-span-5">
                     <label tw="col-span-full block my-2 text-left" htmlFor="website">Set Privacy Budget (PB)<p tw="pl-1 inline text-base italic font-normal text-primary-500 ">(optional)</p></label>
                     <div tw="flex">
                         <button tw='px-6 py-4 font-bold text-lg rounded-l-lg border-2 border-gray-200 bg-gray-50' type="button" onClick={decrementBudget}>-</button>
-                        <p tw="px-8 py-4 border-t-2 border-b-2 border-gray-200 text-lg">{budget}</p>
+                        <p tw="px-8 py-4 border-t-2 border-b-2 border-gray-200 text-lg">{allocatedBudget}</p>
                         <button tw='px-6 py-4 font-bold text-lg rounded-r-lg border-2 border-gray-200 bg-gray-50' type="button" onClick={incrementBudget}>+</button>
                     </div>
                 </div>
                 <div tw="col-span-7 text-justify font-normal font-mono my-2">
-                    <p>Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy budget as credits you give to a user to perform computations from. These credits of Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. You can learn more about privacy budgets and how to allocate them at Course.OpenMined.org</p>
+                    <p>Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy allocatedBudget as credits you give to a user to perform computations from. These credits of Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. You can learn more about privacy allocatedBudgets and how to allocate them at Course.OpenMined.org</p>
                 </div>
                 <div tw="col-span-full flex justify-between font-bold text-xl">
-                    <button tw="bg-white rounded text-primary-500 text-center my-6 px-3 py-2 my-5 border-2 border-primary-500 " onClick={onClose}>Cancel</button>
+                    <button tw="bg-white rounded text-primary-500 text-center my-6 px-3 py-2 my-5 border-2 border-primary-500 " type="button" onClick={onClose}>Cancel</button>
                     <button tw="bg-primary-500 rounded text-white text-center my-6 px-3 py-2 my-5" type="submit"><FontAwesomeIcon icon={faPlus} tw="mr-3" />Create</button>
                 </div>
             </form>
             </div>
         </Modal>
+        </>
     )
 }
 
 function UserModal({ show, onClose, data }) {
-    const [showAdjustBudgetModal, setShowAdjustBudgetModal] = useState(false)
+    const [showAdjustBudgetModal, setShowAdjustBudgetModal] = useState(false);
     const [showChangeRoleModal, setShowChangeRoleModal] = useState(false);
-    const [full_name, setFull_name] = useState("")
-    const [budget, setBudget] = useState("")
+    const [full_name, setFull_name] = useState("");
+    const [id, setId] = useState("");
+    const [allocatedBudget, setAllocatedBudget] = useState("");
+    const [budget, setBudget] = useState("");
     const [email, setEmail] = useState("");
     const [institution, setInstitution] = useState("");
     const [website, setWebsite] = useState("");
-    const [added_by, setAdded_by] = useState("")
-    const [daa_pdf, setDaa_pdf] = useState("")
-    const [created_at, setCreated_at] = useState("")
+    const [added_by, setAdded_by] = useState("");
+    const [daa_pdf, setDaa_pdf] = useState("");
+    const [created_at, setCreated_at] = useState("");
     const router = useRouter();
-
+    console.log("USER MODAL", data)
     useEffect(() => {
         setFull_name(data.full_name);
+        setId(data.id);
+        setAllocatedBudget(data.allocated_budget);
         setBudget(data.budget);
         setEmail(data.email);
         setInstitution(data.institution);
@@ -335,10 +407,10 @@ function UserModal({ show, onClose, data }) {
     }, [showAdjustBudgetModal]);
 
     useEffect(() => {
-    }, [budget]);
+    }, [allocatedBudget]);
 
     function handleBudgetInUserModal(value) {
-        setBudget(value)
+        setAllocatedBudget(value)
     };
 
     return (
@@ -351,7 +423,7 @@ function UserModal({ show, onClose, data }) {
                         <h2 tw="font-bold font-rubik text-4xl text-gray-800">{full_name}</h2>
                         <Tag variant={'primary'}>Data Scientist</Tag>
                     </div>
-                    <Button tw="float-right" tw="space-x-3 text-gray-400"><FontAwesomeIcon size="sm" icon={faTrash} />  Delete User</Button>
+                    <Button tw="float-right" tw="space-x-3 text-gray-400" type="button" onClick={()=>deleteUserByID(id)}><FontAwesomeIcon size="sm" icon={faTrash} />  Delete User</Button>
                 </div>
                 <button tw="text-primary-500 underline" onClick={()=>setShowChangeRoleModal(true)}>Change Role</button>
                 <ChangeRoleModal show={showChangeRoleModal} onClose={() => setShowChangeRoleModal(false)}
@@ -363,12 +435,12 @@ function UserModal({ show, onClose, data }) {
                         <p>Current Balance</p>
                     </div>
                     <div>
-                        <p tw="text-gray-800 font-bold">{budget} ɛ</p>
+                        <p tw="text-gray-800 font-bold">{allocatedBudget} ɛ</p>
                         <p>Allocated Budget</p>
                     </div>
                     <Button variant={"primary"} onClick={() => setShowAdjustBudgetModal(true)} isSmall isHollow>Adjust Budget</Button>
                     <AdjustBudgetModal show={showAdjustBudgetModal} onClose={() => setShowAdjustBudgetModal(false)}
-                        email={email} data={budget} handleBudgetInUserModal={handleBudgetInUserModal} />
+                        email={email} budget={budget} aBudget={allocatedBudget} handleBudgetInUserModal={handleBudgetInUserModal} />
                 </div>
                 <h3 tw="font-bold mt-10 text-gray-600">Background</h3>
                 <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
@@ -480,47 +552,63 @@ function ChangeRoleModal({ show, onClose, email, data }) {
         </Modal>
     )
 }
-function AdjustBudgetModal({ show, onClose, email, data, handleBudgetInUserModal }) {
-    console.log("adjustbudgetmodal data", data)
+
+function AdjustBudgetModal({ show, onClose, email, budget, aBudget, handleBudgetInUserModal }) {
+    // console.log("adjustallocatedBudgetmodal data", budget, aBudget)
 
     const [balance, setBalance] = useState(0)
-    const [budget, setBudget] = useState(0)
+    const [allocatedBudget, setAllocatedBudget] = useState(0)
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertVariant, setAlertVariant] = useState('primary')
+    const [alertMessage, setAlertMessage] = useState('')
 
     useEffect(() => {
-        setBalance(data);
-        setBudget(data);
-    }, [data])
-
-    useEffect(() => {
-
-    }, [balance])
+        setBalance(budget);
+        setAllocatedBudget(aBudget);
+    }, [budget, aBudget])
 
     function incrementBudget() {
-        setBudget(prevCount => prevCount + 1)
+        setAllocatedBudget(prevCount => prevCount + 1)
     }
     function decrementBudget() {
-        setBudget(prevCount => prevCount - 1)
+        if (allocatedBudget > 0){
+            setAllocatedBudget(prevCount => prevCount - 1)
+        }else{
+            setAlertVariant('error');
+            setAlertMessage('Budget cannot be negative!')
+            setShowAlert(true);
+            setAllocatedBudget(0);
+        }
     }
 
     const onUpgrade = () => {
-        console.log("budget", budget)
-        setBalance(budget);
-        console.log("balance", balance)
-        adjustBudget(email, budget)
-        handleBudgetInUserModal(budget);
+        // console.log("allocatedBudget", allocatedBudget)
+        setBalance(balance);
+        setAlertVariant('success');
+        setAlertMessage('Allocated budget was successfully adjusted')
+        setShowAlert(true);
+        // console.log("balance", balance)
+        adjustBudget(email, allocatedBudget)
+        handleBudgetInUserModal(allocatedBudget);
         onClose();
-        console.log("onUpgrade", email, balance, budget)
+        // console.log("onUpgrade", email, balance, allocatedBudget)
     }
 
     return (
         <Modal show={show} onClose={onClose}>
+            <div tw="absolute right-0 w-1/2 z-50">
+                <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={alertVariant} autoDelete={true} autoDeleteTime={3000}>
+                    <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                    <p>{alertMessage}</p>
+                </Alert>
+            </div>
             <div tw="col-span-full">
                 <div tw="grid grid-cols-12 text-left p-6 rounded-lg gap-4">
                     <div tw="col-span-full flex-col items-center">
                         <h2 tw="font-bold text-4xl my-6 text-gray-800">∑</h2>
                         <h2 tw="font-bold text-4xl my-6 text-gray-800">Upgrade Budget</h2>
                     </div>
-                    <p tw="col-span-full text-justify my-6">Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy budget as credits you give to a user to perform computations from. These credits of  Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. The more budget the more visibility. By default all users start with 0ɛ and must have their data requests approved manually until upgraded. You can learn more about privacy budgets and how to allocate them at Course.OpenMined.org</p>
+                    <p tw="col-span-full text-justify my-6">Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy allocatedBudget as credits you give to a user to perform computations from. These credits of  Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. The more allocatedBudget the more visibility. By default all users start with 0ɛ and must have their data requests approved manually until upgraded. You can learn more about privacy allocatedBudgets and how to allocate them at Course.OpenMined.org</p>
 
                     <h3 tw="col-span-full font-bold mt-3 text-gray-600">Adjust Privacy Budget</h3>
                     <div tw="col-span-full flex bg-gray-50 items-center justify-between border border-gray-100 rounded p-4 space-x-3 my-6">
@@ -529,12 +617,12 @@ function AdjustBudgetModal({ show, onClose, email, data, handleBudgetInUserModal
                             <p>Current Balance</p>
                         </div>
                         <div>
-                            <p tw="text-gray-800 font-bold">{budget} ɛ</p>
+                            <p tw="text-gray-800 font-bold">{allocatedBudget} ɛ</p>
                             <p>Allocated Budget</p>
                         </div>
                         <div tw="flex">
                             <button tw='px-6 py-4 font-bold text-lg rounded-l-lg border-2 border-gray-200 bg-gray-50' onClick={decrementBudget}>-</button>
-                            <p tw="px-8 py-4 border-t-2 border-b-2 border-gray-200 text-lg">{budget}</p>
+                            <p tw="px-8 py-4 border-t-2 border-b-2 border-gray-200 text-lg">{allocatedBudget}</p>
                             <button tw='px-6 py-4 font-bold text-lg rounded-r-lg border-2 border-gray-200 bg-gray-50' onClick={incrementBudget}>+</button>
                         </div>
                     </div>
@@ -605,7 +693,7 @@ export default function Active() {
             "website": "",
             "status": "",
             "role": null,
-            "budget": 0,
+            "allocatedBudget": 0,
             "created_at": "",
             "added_by": "",
             "daa_pdf": ""
@@ -629,7 +717,7 @@ export default function Active() {
                 }
             );
             const data = await apiRes.json();
-            console.log("userlist from backend", { data })
+            // console.log("userlist from backend", { data })
             setUserlist(data);
         }
         finally {
@@ -657,7 +745,7 @@ export default function Active() {
             if (apiRes.status == 200) {
                 const data = await apiRes.json();
                 setUserData(data)
-                console.log("userData: ", userData)
+                // console.log("userData: ", userData)
             }
             else {
                 alert("Couldn't fetch the user!");
@@ -689,11 +777,13 @@ export default function Active() {
                 Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">Σ Balance</div></div>,
                 accessor: 'budget',
                 Cell: ({ row }) => {
-                    let budgetDiff = row.values.budget - row.values.allocated_budget
-                    console.log("budgetDiff", budgetDiff, "of", row.values.full_name, row.values.budget, row.values.allocate_budget)
+                    // console.log("ROW", row)
+                    let allocatedBudgetDiff = row.values.budget <= row.values.allocated_budget
+                    // console.log("allocatedBudgetDiff", allocatedBudgetDiff, "of", row.values.full_name,"allocated budget", row.values.allocated_budget, "budget/balance", row.values.budget)
                     return(
                         <div tw="flex space-x-2 items-center justify-center">
-                            <Tag variant={'error'} fullColor><p tw="text-white font-bold">{row.values.budget} ε</p></Tag>
+                            {/* {console.log("T ? F", row.values.allocated_budget >= row.values.budget)} */}
+                            <Tag variant={(allocatedBudgetDiff) ? 'gray' : 'error'} fullColor={!allocatedBudgetDiff}><p css={[allocatedBudgetDiff ? tw`text-black font-bold` : tw`text-white font-bold`]}>{row.values.budget} ε</p></Tag>
                         </div>
                     )
                 }
@@ -734,7 +824,23 @@ export default function Active() {
                 id: "Delete",
                 Header: 'Delete',
                 Cell: ({ row }) => (
-                    <Button tw="bg-gray-200 text-white" isSmall variant={'error'} onClick={() => alert('route to deleting: ' + row.values.email)}>Delete</Button>
+                    
+                    <div tw="flex items-center justify-center">
+                        {/* {console.log(row.values)} */}
+                        <Button 
+                            tw="bg-gray-200 text-white" 
+                            isSmall 
+                            variant={'error'} 
+                            onClick={
+                                async () => {
+                                    await deleteUserByID(row.original.id); 
+                                    await fetchUserlist()
+                                    }
+                                }
+                        >
+                            Delete
+                        </Button>
+                    </div>    
                 )
             }
         ])
@@ -749,7 +855,12 @@ export default function Active() {
 
     return (
         <div tw="flex-col justify-center">
-            <Alert show={showAlert} onClose={() => setShowAlert(false)}><div><FontAwesomeIcon icon={faExclamationCircle} size="xl" /><p>Active users are users who you have manually created or users who have had their account applications approved</p></div></Alert>
+            <div tw="my-10">
+                <Alert show={showAlert} onClose={() => setShowAlert(false)} autoDelete={false}>
+                    <FontAwesomeIcon icon={faExclamationCircle} size="xl" />
+                    <p>Active users are users who you have manually created or users who have had their account applications approved</p>
+                </Alert>
+            </div>
             <div tw="flex justify-between items-center">
                 <div tw="inline-flex space-x-4">
                     <div tw="">
@@ -789,7 +900,7 @@ export default function Active() {
                                 return (
                                     <TableRow {...row.getRowProps()} tw="text-sm text-gray-600">
                                         {row.cells.map((cell, idx) => (
-                                            <TableData {...cell.getCellProps()}>
+                                            <TableData {...cell.getCellProps()} css={[cell.column.isSorted && tw`bg-gray-50`]}>
                                                 {cell.render('Cell')}
                                             </TableData>
                                         ))}

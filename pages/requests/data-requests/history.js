@@ -303,7 +303,7 @@ export default function History() {
                             getRequest(row.values.id);
                             setShowRequestModal(true);
                         }}>
-                            >See Details</Button>
+                            See Details</Button>
                     </div>
                 )
             }
@@ -351,7 +351,7 @@ export default function History() {
                                 return (
                                     <TableRow {...row.getRowProps()} tw="text-sm text-gray-600">
                                         {row.cells.map((cell, idx) => (
-                                            <TableData {...cell.getCellProps()}>
+                                            <TableData {...cell.getCellProps()} css={[cell.column.isSorted && tw`bg-gray-50`]}>
                                                 {cell.render('Cell')}
                                             </TableData>
                                         ))}

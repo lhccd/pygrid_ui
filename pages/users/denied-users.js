@@ -7,11 +7,12 @@ import Modal from '../../components/Modal';
 import Alert from '../../components/Alert';
 import Button from '../../components/Button';
 import Spinner from '../../components/Spinner';
-import {faCalendar, faEnvelope, faPlus, faUser, faUserPlus, faInfoCircle, faCheckCircle, faExclamationCircle, faTimesCircle} from '@fortawesome/free-solid-svg-icons'
+import {faCalendar, faEnvelope, faPlus, faUser, faUserPlus, faInfoCircle, faCheckCircle, faExpandAlt, faExclamationCircle, faTimesCircle} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import moment from 'moment'
+import ConfirmationFlowModal from '../../components/ConfirmationFlowModal'
 import { useGlobalFilter, useSortBy, useTable } from 'react-table'
 import { GlobalFilter } from '../../components/GlobalFilter';
 import { Router } from 'next/router';
@@ -67,11 +68,6 @@ async function acceptUserByID(email){
     }
 }
 
-/* 
-    FOR YUSUF, the button sends you the email of the user in the table!!!
-    AS FOR NOW, ONLY A POST REQUEST REACHES THE API MIDDLEWARE, GET REQUEST DOESN'T REACH ANYWHERE
-    If you figured out, how the below function can work with your api middleware, it should be done ;) 
-*/
 async function downloadDAA(email){
     try{
         const apiRes = await axios({
@@ -112,11 +108,103 @@ async function downloadDAA(email){
     }
 }
 
+function DeniedUserModal({ show, onClose, data }) {
+    const [showConfirmationFlowModal, setShowConfirmationFlowModal] = useState(false)
+    const [full_name, setFull_name] = useState("")
+    const [budget, setBudget] = useState("")
+    const [allocatedBudget, setAllocatedBudget] = useState("")
+    const [email, setEmail] = useState("");
+    const [institution, setInstitution] = useState("");
+    const [website, setWebsite] = useState("");
+    const [added_by, setAdded_by] = useState("")
+    const [daa_pdf, setDaa_pdf] = useState("")
+    const [created_at, setCreated_at] = useState("")
+    const router = useRouter();
+
+    useEffect(() => {
+        setFull_name(data.full_name);
+        setBudget(data.budget);
+        setAllocatedBudget(data.allocated_budget);
+        setEmail(data.email);
+        setInstitution(data.institution);
+        setWebsite(data.website);
+        setAdded_by(data.added_by);
+        setDaa_pdf(data.daa_pdf);
+        setCreated_at(data.created_at);
+    }, [data]);
+
+    useEffect(() => {
+    }, [showConfirmationFlowModal]);
+
+    useEffect(() => {
+    }, [budget]);
+
+    function handleBudgetInUserModal(value) {
+        setBudget(value)
+    };
+
+
+    return (
+        <Modal show={show} onClose={onClose}>
+            <div tw="col-span-full">
+                <div tw="w-full m-5"><button tw="items-center font-bold space-x-2" onClick={() => router.push(`/users/${email}`)}><FontAwesomeIcon size="sm" icon={faExpandAlt} />   Expand Page</button></div>
+                <div tw="h-auto px-20 py-10">
+                    <div tw="flex items-center justify-between my-5">
+                        <div tw="flex space-x-3 items-center">
+                            <h2 tw="font-bold font-rubik text-4xl text-gray-800">{full_name}</h2>
+                            <Tag variant={'primary'}>Data Scientist</Tag>
+                        </div>
+                        <div tw="inline-flex p-5 space-x-2">
+                            <button onClick={() => setShowConfirmationFlowModal(true)}>
+                                <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-gray-200" />
+                            </button>
+                        </div>
+                        <ConfirmationFlowModal show={showConfirmationFlowModal} onClose={() => setShowConfirmationFlowModal(false)}
+                         data={data} handleBudgetInUserModal={handleBudgetInUserModal} />
+                    </div>
+
+                    <h3 tw="font-bold mt-10 text-gray-600">Background</h3>
+                    <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
+                        <div tw="flex space-x-3">
+                            <p tw="font-bold text-gray-600">Email:</p>
+                            <p>{email}</p>
+                        </div>
+                        <div tw="flex space-x-3">
+                            <p tw="font-bold text-gray-600">Company/Institution:</p>
+                            <p>{institution}</p>
+                        </div>
+                        <div tw="flex space-x-3">
+                            <p tw="font-bold text-gray-600">Website/profile:</p>
+                            <p>{website}</p>
+                        </div>
+                    </div>
+                    <h3 tw="font-bold mt-10 text-gray-600">System</h3>
+                    <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
+                        <div tw="flex space-x-3">
+                            <p tw="font-bold text-gray-600">Date Added:</p>
+                            <p>{added_by}</p>
+                        </div>
+                        <div tw="flex space-x-3">
+                            <p tw="font-bold text-gray-600">Data Access Agreement:</p>
+                            <p>{daa_pdf}</p>
+                        </div>
+                        <div tw="flex space-x-3">
+                            <p tw="font-bold text-gray-600">Uploaded On:</p>
+                            <p>{created_at}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Modal>
+    );
+}
+
 export default function Denied(){
     const [userlist, setUserlist] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showUserModal, setShowUserModal] = useState(false);
     const [showAlert, setShowAlert] = useState(true);
+    const [showConfirmationFlowModal, setShowConfirmationFlowModal] = useState(false)
 
     const [userData, setUserData] = useState(
         {
@@ -274,10 +362,8 @@ export default function Denied(){
     return(
         <div tw="flex-col justify-center">
             <Alert show={showAlert} onClose={() => setShowAlert(false)}>
-                <div>
-                    <FontAwesomeIcon icon={faExclamationCircle} size="xl" />
-                    <p>Denied users are users who have applied to your domain but who have been denied access to make data requests.</p>
-                </div>
+                <FontAwesomeIcon icon={faExclamationCircle} size="xl" />
+                <p>Denied users are users who have applied to your domain but who have been denied access to make data requests.</p>
             </Alert>
             <div tw="flex justify-between items-center">
                 <div tw="inline-flex space-x-4">
@@ -286,6 +372,8 @@ export default function Denied(){
                     </div>
                 </div>
             </div>
+            <DeniedUserModal show={showUserModal} onClose={() => setShowUserModal(false)} data={userData} />
+            <ConfirmationFlowModal show={showConfirmationFlowModal} onClose={() => setShowConfirmationFlowModal(false)} data={userData}/>
             {loading ?
                 <div tw="my-10 flex w-full justify-center">
                     <Spinner />
@@ -312,7 +400,7 @@ export default function Denied(){
                                 return (
                                     <TableRow {...row.getRowProps()} tw="text-sm text-gray-600">
                                         {row.cells.map((cell, idx) => (
-                                            <TableData {...cell.getCellProps()}>
+                                            <TableData {...cell.getCellProps()} css={[cell.column.isSorted && tw`bg-gray-50`]}>
                                                 {cell.render('Cell')}
                                             </TableData>
                                         ))}

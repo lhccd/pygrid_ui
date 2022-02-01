@@ -308,6 +308,7 @@ export default function Signup() {
                           <input tw="hidden"
                             id="daa_pdf_replace"
                             name="daa_pdf_replace"
+                            accept="application/pdf"
                             type='file'
                             {...register("daa_pdf", { onChange: onUploadDaa, required: false })}
                           />
@@ -331,6 +332,7 @@ export default function Signup() {
                         <input tw="hidden"
                           id="daa_pdf"
                           name="daa_pdf"
+                          accept="application/pdf"
                           type='file'
                           {...register("daa_pdf", { onChange: onUploadDaa, required: true })}
                         />

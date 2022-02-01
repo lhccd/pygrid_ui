@@ -3,12 +3,14 @@ import tw, {styled} from 'twin.macro';
 import { Table } from './Table';
 import { Table2 } from './Table2';
 import Modal from '../components/Modal';
+import Alert from '../components/Alert';
 import {
     faPlus,
     faInfoCircle,
     faCheck,
     faTimes,
     faExclamationTriangle,
+    faExclamationCircle,
     faDownload
 } from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
@@ -64,6 +66,10 @@ function Profile(){
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
     const { register, handleSubmit, errors, reset } = useForm();
 
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertVariant, setAlertVariant] = useState('primary');
+    
     useEffect(() => {
         getDomain();
     }, []);
@@ -101,12 +107,20 @@ function Profile(){
     const onAddTag = () => {
         if (newTag!=""){
             setTags((tags) => ([...tags, newTag]));
+            setAlertVariant('success');
+            setAlertMessage('New tag successfully added')
+            setShowAlert(true);
         }
     }
 
-    const tagItems = tags.map((tag) =>
+    const tagItems = tags.map((tag) => 
         <Tag>{tag} <button
-            onClick={() => setTags(tags.filter(item => item !== tag))}
+            onClick={() => {
+                setTags(tags.filter(item => item !== tag)); 
+                setAlertVariant('warning');
+                setAlertMessage('Tag removed')
+                setShowAlert(true);
+            }}
             type="button"><FontAwesomeIcon icon={faTimes} size="sm" tw=""/></button></Tag>
     );
 
@@ -131,10 +145,16 @@ function Profile(){
 
             if(apiRes.status == 200){
                 const data = await apiRes.json();
+                setAlertVariant('success');
+                setAlertMessage('Domain Profile successfully updated')
+                setShowAlert(true);
                 console.log(data);
             }
             else{
-                alert("Couldn't update the domain profile!");
+                setAlertVariant('error');
+                setAlertMessage("Couldn't update the domain profile!")
+                setShowAlert(true);
+                // alert("Couldn't update the domain profile!");
             }
         }
         catch (error){
@@ -191,9 +211,15 @@ function Profile(){
                 });
             if(apiRes.status == 200){
                 setShowFeedbackModal(false);
+                setAlertVariant('success');
+                setAlertMessage('Feedback successfully submitted')
+                setShowAlert(true);
                 router.push('/signup');
             }
             else{
+                setAlertVariant('error');
+                setAlertMessage('Something went wrong! Please try again!')
+                setShowAlert(true);
                 alert(apiRes.status + " Something went wrong! Please try again!")
             }
         }catch (err) {
@@ -202,12 +228,27 @@ function Profile(){
     }
 
     const onClickSkipFeedback = () => {
+        setAlertVariant('warning');
+        setAlertMessage('Feedback was skipped')
+        setShowAlert(true);
         setShowFeedbackModal(false);
         router.push('/signup');
     }
 
     return (
-        <>
+        <> 
+         {/* <div tw="absolute right-0 w-1/2 overflow-auto z-50">
+                <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={alert.variant}>
+                    <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                    <p>{alert.message}</p>
+                </Alert>
+            </div> */}
+            <div tw="absolute right-0 w-1/2 z-50">
+                <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={alertVariant} autoDelete={true} autoDeleteTime={3000}>
+                    <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                    <p>{alertMessage}</p>
+                </Alert>
+            </div>
             <div id="domain-box" tw="col-start-3 col-end-11 text-gray-800">
                 <div tw="divide-y">
                     <div id="general">
@@ -381,6 +422,9 @@ function Config(){
     const { register, handleSubmit, errors, reset } = useForm();
     const [daa, setDaa] = useState(null);
 
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertVariant, setAlertVariant] = useState('primary');
     useEffect( () => {
 
         }
@@ -405,11 +449,20 @@ function Config(){
 
     const sendDaa = () => {
         setDAASent(true);
+        setAlertVariant('success');
+        setAlertMessage('Changes successfully saved')
+        setShowAlert(true);
     }
 
     return (
         <>
             <div tw="col-start-3 col-end-11 divide-y text-gray-800">
+            <div tw="absolute right-0 w-1/2 z-50">
+                <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={alertVariant} autoDelete={true} autoDeleteTime={3000}>
+                    <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                    <p>{alertMessage}</p>
+                </Alert>
+            </div>
                 <div id="daa-toggle" tw="">
                     <div tw="flex justify-between mt-10">
                         <p tw="text-xl text-left font-bold font-rubik">Require Data Access Agreement</p>
@@ -522,6 +575,10 @@ function Updates(){
     const [branch, setBranch] = useState("");
     const [hash, setHash] = useState("");
     const { register, handleSubmit, errors, reset } = useForm();
+    
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertVariant, setAlertVariant] = useState('primary');
 
     useEffect(() => {
         getVersion();
@@ -576,10 +633,16 @@ function Updates(){
 
             if(apiRes.status == 200){
                 const domain = await apiRes.json();
+                setAlertVariant('success');
+                setAlertMessage('Domain version successfully updated')
+                setShowAlert(true);
                 console.log(domain);
             }
             else{
-                alert("Couldn't update the domain version!");
+                setAlertVariant('error');
+                setAlertMessage("Couldn't update the domain version!")
+                setShowAlert(true);
+                // alert("Couldn't update the domain version!");
             }
         }
         catch (error){
@@ -591,6 +654,12 @@ function Updates(){
     return (
         <>
             <div id="domain-box" tw="col-start-3 col-end-11 text-gray-800">
+                <div tw="absolute right-0 w-1/2 z-50">
+                    <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={alertVariant} autoDelete={true} autoDeleteTime={3000}>
+                        <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                        <p>{alertMessage}</p>
+                    </Alert>
+                </div>
                 <div tw="divide-y">
                     <div id="version">
                         <h1 tw="font-bold text-left text-xl my-4 mt-10 font-rubik">Current Version</h1>

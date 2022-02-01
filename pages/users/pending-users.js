@@ -104,6 +104,7 @@ function PendingUserModal({ show, onClose, data }) {
     const [showConfirmationFlowModal, setShowConfirmationFlowModal] = useState(false)
     const [full_name, setFull_name] = useState("")
     const [budget, setBudget] = useState("")
+    const [allocatedBudget, setAllocatedBudget] = useState("")
     const [email, setEmail] = useState("");
     const [institution, setInstitution] = useState("");
     const [website, setWebsite] = useState("");
@@ -115,6 +116,7 @@ function PendingUserModal({ show, onClose, data }) {
     useEffect(() => {
         setFull_name(data.full_name);
         setBudget(data.budget);
+        setAllocatedBudget(data.allocated_budget);
         setEmail(data.email);
         setInstitution(data.institution);
         setWebsite(data.website);
@@ -157,7 +159,7 @@ function PendingUserModal({ show, onClose, data }) {
                             }><FontAwesomeIcon size="lg" icon={faTimesCircle} title="Decline" tw="text-gray-200" /></button>
                         </div>
                         <ConfirmationFlowModal show={showConfirmationFlowModal} onClose={() => setShowConfirmationFlowModal(false)}
-                        email={email} data={budget} handleBudgetInUserModal={handleBudgetInUserModal} />
+                       data={data} handleBudgetInUserModal={handleBudgetInUserModal} />
                     </div>
 
                     <h3 tw="font-bold mt-10 text-gray-600">Background</h3>
@@ -299,6 +301,7 @@ export default function Pending() {
             "status": "",
             "role": null,
             "budget": 0,
+            "allocated_budget":0,
             "created_at": "",
             "added_by": "",
             "daa_pdf": ""
@@ -306,7 +309,7 @@ export default function Pending() {
 
     useEffect(() => {
         fetchUserlist()
-    }, [showUserModal])
+    }, [showUserModal, showConfirmationFlowModal])
 
     const fetchUserlist = async () => {
         try {
@@ -322,7 +325,7 @@ export default function Pending() {
                 }
             );
             const data = await apiRes.json();
-            console.log("userlist from backend", { data })
+            // console.log("userlist from backend", { data })
             setUserlist(data);
         }
         finally {
@@ -350,7 +353,7 @@ export default function Pending() {
             if (apiRes.status == 200) {
                 const data = await apiRes.json();
                 setUserData(data)
-                console.log("userData: ", userData)
+                // console.log("userData: ", userData)
             }
             else {
                 alert("Couldn't fetch the user!");
@@ -404,23 +407,18 @@ export default function Pending() {
                 id: "action",
                 Header: 'Action',
                 Cell: ({ row }) => (
-                    <div>
-                        <Button onClick={
-                            () => setShowConfirmationFlowModal(true)
-                            // async () => {
-                            //     await acceptUserByID(row.values.email);
-                            //     console.log("DELETING ROW FROM PENDING TABLE ...", { row })
-                            //     // setUserlist(userlist.splice(row.id, 1))
-                            //     await fetchUserlist();
-                            // }
-                        }><FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-gray-200" /></Button>
-                        <Button onClick={async () => {
+                    <div tw="flex items-center justify-center space-x-1">
+                        <button onClick={async () => { await getUser(row.values.email); setShowConfirmationFlowModal(true)}}>
+                            <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-gray-200" />
+                        </button>
+                        <button onClick={async () => {
                             await denyUserByID(row.values.email);
                             console.log("DELETING ROW FROM PENDING TABLE ...", { row })
                             // setUserlist(userlist.splice(row.id, 1));
                             await fetchUserlist();
-                        }
-                        }><FontAwesomeIcon size="lg" icon={faTimesCircle} title="Decline" tw="text-gray-200" /></Button>
+                        }}>
+                            <FontAwesomeIcon size="lg" icon={faTimesCircle} title="Decline" tw="text-gray-200" />
+                        </button>
                     </div>
                 )
             }
@@ -436,10 +434,8 @@ export default function Pending() {
     return (
         <div tw="flex-col justify-center">
             <Alert show={showAlert} onClose={() => setShowAlert(false)}>
-                <div>
-                    <FontAwesomeIcon icon={faExclamationCircle} size="xl" />
-                    <p>Pending users are users who have applied to your domain but who are not yet authorized to perform data requests. You can review their uploaded Data Access Agreements(DAA) below and choose to accept or deny their account applications.</p>
-                </div>
+                <FontAwesomeIcon icon={faExclamationCircle} size="xl" />
+                <p>Pending users are users who have applied to your domain but who are not yet authorized to perform data requests. You can review their uploaded Data Access Agreements(DAA) below and choose to accept or deny their account applications.</p>
             </Alert>
             <div tw="flex justify-between items-center">
                 <div tw="inline-flex space-x-4">
@@ -449,7 +445,7 @@ export default function Pending() {
                 </div>
             </div>
             <PendingUserModal show={showUserModal} onClose={() => setShowUserModal(false)} data={userData} />
-            <ConfirmationFlowModal show={showConfirmationFlowModal} onClose={() => setShowConfirmationFlowModal(false)}/>
+            <ConfirmationFlowModal show={showConfirmationFlowModal} onClose={() => setShowConfirmationFlowModal(false)} data={userData}/>
             {loading ?
                 <div tw="my-10 flex w-full justify-center">
                     <Spinner />
@@ -476,7 +472,7 @@ export default function Pending() {
                                 return (
                                     <TableRow {...row.getRowProps()} tw="text-sm text-gray-600">
                                         {row.cells.map((cell, idx) => (
-                                            <TableData {...cell.getCellProps()}>
+                                            <TableData {...cell.getCellProps()} css={[cell.column.isSorted && tw`bg-gray-50`]}>
                                                 {cell.render('Cell')}
                                             </TableData>
                                         ))}

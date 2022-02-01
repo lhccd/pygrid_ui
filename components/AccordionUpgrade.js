@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faChevronRight, faPlus, faTimes} from "@fortawesome/free-solid-svg-icons";
+import {faChevronRight, faChevronDown, faPlus, faTimes} from "@fortawesome/free-solid-svg-icons";
 import tw from "twin.macro";
 import Tag from "./Tag";
 
@@ -37,12 +37,16 @@ export default function Accordion (props) {
     return(
         <div tw="p-5">
             <Disclosure>
+            {({ open }) => (
+                <>
                 <Disclosure.Button tw="flex w-full justify-between items-center">
                     <div tw="flex items-start items-center">
                         <div tw="box-border appearance-none cursor-pointer focus:outline-none">
-                            <FontAwesomeIcon icon={faChevronRight} size="lg"
-                                                css={[tw`mr-4`,
-                                                    (active) && tw`transform duration-700 ease rotate-90`]}/>
+                            { open ? 
+                                <FontAwesomeIcon icon={faChevronDown} size="lg" css={[tw`mr-4`, (active) && tw`transform duration-700 ease rotate-90`]}/>
+                                : 
+                                <FontAwesomeIcon icon={faChevronRight} size="lg" css={[tw`mr-4`, (active) && tw`transform duration-700 ease rotate-90`]}/>
+                            }
                             <p tw="inline-block text-lg text-gray-800 font-bold">{props.info[0].Name}</p>
                         </div>
                         {props.info[0].Status ?
@@ -110,6 +114,7 @@ export default function Accordion (props) {
                         </div>
                     </div>
                 </Disclosure.Panel>
+                </>)}
             </Disclosure>
         </div>
     )
