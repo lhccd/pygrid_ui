@@ -75,10 +75,4 @@ export default function Networks() {
             </Layout>
         </div>
     )
-    //     }else{
-    //         router.replace('/login')
-    //         return null
-    //     }
-    // }
-    // return null
 }

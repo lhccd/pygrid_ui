@@ -52,7 +52,7 @@ export default function UpgradeRequests() {
                         </div>
                     </div>
                     <div tw="my-10">
-                        <Alert variant={'primary'} show={showAlert} onClose={()=>setShowAlert(false)}><FontAwesomeIcon icon={faExclamationCircle}/><p>Data requests are one-time requests made from Data Scientists on your node to download the results of their computations. Unlike setting privacy budgets data requests must be manually triaged and do not count as ongoing credits. They are individual allowances based off of specific computations on specified data objects.</p></Alert>
+                        <Alert variant={'primary'} show={showAlert} onClose={()=>setShowAlert(false)}><FontAwesomeIcon icon={faExclamationCircle}/><p>Upgrade requests are requests made by Data Scientists on your node to get a larger amount of privacy budget allocated to them. You can think of privacy budget as credits you give to a user to perform computations from. These credits of Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data.</p></Alert>
                     </div>
                     <Tab.Group onChange={(index) => {
                         console.log('Changed selected tab to:', index);

@@ -56,6 +56,48 @@ const TableData = tw.td`
     p-2 border border-gray-200
 `;
 
+const JaneDoe = [
+    {
+        "email": 'jane.doe@gmail.com',
+        "full_name": 'Jane Doe',
+        "status": "Accepted",
+        "id": '21a68e773ba747f0a4b6169bf28e8bed',
+        "updated_on": "2021-JUL-15 10:31",
+        "updated_by": "Kyoko Eng",
+        "datasets": "",
+        "requested_on": '2021-JUL-14 10:31',
+        "current_balance": 10,
+        "allocated_budget": 10,
+        "current_budget": 10,
+        "request_size": 12,
+        "role": 'Data Scientist',
+        "company": 'OpenMined',
+        "website": 'https://www.openmined.org',
+        "reason": 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    }
+]
+
+const Berke = [
+    {
+        "email": 'berke.atropat@gmail.com',
+        "full_name": 'Berke Atropat',
+        "status": "Denied",
+        "id": '21a68es27baf474f0a4h616dbf2gef8be4d',
+        "updated_on": "2021-JUL-17 20:39",
+        "updated_by": "Kyoko Eng",
+        "datasets": "",
+        "requested_on": '2021-JUL-16 20:39',
+        "current_balance": 22,
+        "allocated_budget": 22,
+        "current_budget": 22,
+        "request_size": 18,
+        "role": 'Data Scientist',
+        "company": 'TUM',
+        "website": 'https://www.tum.de',
+        "reason": 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    }
+]
+
 function RequestModal({ show, onClose, data }) {
     //Deal later!
     const [full_name, setFull_name] = useState("")
@@ -167,9 +209,11 @@ export default function History() {
         });
 
     useEffect(() => {
-        fetchRequestlist()
+        setRequestlist([JaneDoe,Berke])
+        //fetchRequestlist()
     }, [showRequestModal])
 
+    /*
     const fetchRequestlist = async () => {
         try {
             setLoading(true);
@@ -192,6 +236,9 @@ export default function History() {
         }
     }
 
+     */
+
+    /*
     async function getRequest(id) {
         const body = JSON.stringify({
             id,
@@ -222,13 +269,14 @@ export default function History() {
             console.log(error);
         }
     }
+     */
 
     const requestsData = useMemo(() => [...requestlist], [requestlist]);
     const requestsColumns = useMemo(
         () => [
             {
                 Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">#ID</div></div>,
-                accessor: 'id',
+                accessor: 'ID',
                 Cell: ({ row }) => (
                     <p tw="text-gray-600">{row.values.id}</p>
                 ),
@@ -283,7 +331,13 @@ export default function History() {
                 accessor: 'requested',
                 Cell: ({ row }) => {
                     {
-                        <p tw="text-gray-600">{row.values.requested}</p>
+                        {if(row.values.status=="Accepted"){
+                            <Tag variant={'success'} fullColor><p tw="text-white font-bold">{row.values.requested} ε</p></Tag>
+                        } else if (row.values.status=="Accepted"){
+                            <Tag variant={'error'} fullColor><p tw="text-white font-bold">{row.values.requested} ε</p></Tag>
+                        }
+
+                        }
                     }
                 }
             },

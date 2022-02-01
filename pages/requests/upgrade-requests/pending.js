@@ -9,36 +9,44 @@ import {useRouter} from 'next/router'
 import AccordionUpgrade from "../../../components/AccordionUpgrade";
 
 
-const UnitedNations = [
+const JaneDoe = [
     {
-        Name: 'United Nations',
-        MemberSince: '2021-JUL-14 10:31',
         ID: '21a68e773ba747f0a4b6169bf28e8bed',
-        URL: 'https://un.openmined.org',
-        Description: 'The UN hosts data related to the commodity and...',
-        HostedDomains: 0,
-        HostedDatasets: 0,
-        Tags: ["Commodities", "Census"],
-        Status: true
+        Name: 'Jane Doe',
+        RequestedOn: '2021-JUL-14 10:31',
+        CurrentBalance: 10,
+        AllocatedBudget: 10,
+        CurrentBudget: 10,
+        BudgetRequest: 12,
+        Role: 'Data Scientist',
+        Email: 'jane.doe@gmail.com',
+        Company: 'OpenMined',
+        Website: 'https://www.openmined.org',
+        Reason: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        Status: 'Pending'
     }
 ]
 
-const WorldHealthOrganization = [
+const Berke = [
     {
-        Name: 'World Health Organization',
-        MemberSince: '',
-        ID: '21a68e773ba747f0a4b6169bf28e8bed',
-        URL: 'https://who.openmined.org',
-        Description: 'The World Health Organization hosts data related to...',
-        HostedDomains: 0,
-        HostedDatasets: 0,
-        Tags: ["Health"],
-        Status: false
+        ID: '21a68es27baf474f0a4h616dbf2gef8be4d',
+        Name: 'Berke Atropat',
+        RequestedOn: '2021-JUL-16 20:39',
+        CurrentBalance: 22,
+        AllocatedBudget: 22,
+        CurrentBudget: 22,
+        BudgetRequest: 18,
+        Role: 'Data Scientist',
+        Email: 'berke.atropat@gmail.com',
+        Company: 'TUM',
+        Website: 'https://www.tum.de',
+        Reason: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        Status: 'Pending'
     }
 ]
 
 export default function Networks() {
-    const [networks, setNetworks] = useState([WorldHealthOrganization, UnitedNations])
+    const [networks, setNetworks] = useState([JaneDoe, Berke])
 
     const networkItems = networks.map((info) =>
         <AccordionUpgrade info={info}/>
