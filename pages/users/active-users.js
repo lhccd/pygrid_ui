@@ -182,7 +182,7 @@ async function adjustBudget(email, budget) {
 
 function CreateUserModal({ show, onClose }) {
     const { register, handleSubmit, errors, reset } = useForm();
-    const [budget, setBudget] = useState(0)
+    const [budget, setBudget] = useState(0.00)
     async function onSubmitForm(values) {
         const data = {
             "email": values.email,
@@ -215,19 +215,19 @@ function CreateUserModal({ show, onClose }) {
     }
     return (
         <Modal tw="p-20" show={show} onClose={onClose}>
-            <div tw="col-start-2 col-span-9">
+            <div tw="col-span-full font-roboto">
             <form onSubmit={handleSubmit(onSubmitForm)} tw="grid grid-cols-12 text-sm text-center font-bold p-6 rounded-lg gap-4 ">
                 <div tw="col-span-12 my-3 text-left text-gray-800">
                     <FontAwesomeIcon icon={faUserPlus} size="2x" tw="my-4" />
-                    <p tw="text-2xl">
+                    <p tw="text-3xl font-rubik text-gray-800">
                         Create a User
                     </p>
-                    <p tw="mt-3 text-sm font-normal">
-                        PyGrid utilizes users and roles to appropriately permission data at a higher level. All users with the permission CAN CREATE USERS are allowd to create users in the domain. Create a user by filling out the fields below.
-                    </p>
+                    <div tw="mt-3 font-normal text-gray-600">
+                        PyGrid utilizes users and roles to appropriately permission data at a higher level. All users with the permission CAN CREATE USERS are allowed to create users in the domain. Create a user by filling out the fields below.
+                    </div>
                 </div>
                 <div tw="col-span-6 text-left ">
-                    <label tw="block my-2" htmlFor="full_name">Full Name<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
+                    <label tw="block my-2 text-sm text-gray-500" htmlFor="full_name">Full Name<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
                     <input
                         tw="block p-3 border border-gray-300 rounded-lg w-full
                                 focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
@@ -239,7 +239,7 @@ function CreateUserModal({ show, onClose }) {
                     />
                 </div>
                 <div tw="col-span-6 text-left">
-                    <label tw="block my-2" htmlFor="email">Email<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
+                    <label tw="block my-2 text-sm text-gray-500" htmlFor="email">Email<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
                     <input
                         tw="block p-3 border border-gray-300 rounded-lg w-full
                                 focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
@@ -251,7 +251,7 @@ function CreateUserModal({ show, onClose }) {
                     />
                 </div>
                 <div tw="col-span-6 block text-left">
-                    <label tw="block my-2" htmlFor="pw">Password<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
+                    <label tw="block my-2 text-sm text-gray-500" htmlFor="pw">Password<p tw="pl-1 inline relative bottom-1 text-primary-500 ">*</p></label>
                     <input
                         tw="block p-3 border border-gray-300 rounded-lg w-full
                                 focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
@@ -263,7 +263,7 @@ function CreateUserModal({ show, onClose }) {
                     />
                 </div>
                 <div tw="col-span-6 inline-block text-left">
-                    <label tw="block my-2" htmlFor="confirmpw">Confirm Password<p tw="pl-1 inline relative bottom-1 text-primary-500">*</p></label>
+                    <label tw="block my-2 text-sm text-gray-500" htmlFor="confirmpw">Confirm Password<p tw="pl-1 inline relative bottom-1 text-primary-500">*</p></label>
                     <input
                         tw="block p-3 border border-gray-300 rounded-lg w-full
                                 focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
@@ -275,31 +275,31 @@ function CreateUserModal({ show, onClose }) {
                     />
                 </div>
                 <div tw="col-span-12 block text-left">
-                    <label tw="block my-2" htmlFor="website">Role<p tw="pl-1 inline relative bottom-1 text-primary-500">*</p></label>
+                    <label tw="block my-2 text-sm text-gray-500" htmlFor="website">Role<p tw="pl-1 inline relative bottom-1 text-primary-500">*</p></label>
                     <input
                         tw="block p-3 border border-gray-300 rounded-lg w-full
                                     focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
-                        name="website"
+                        name="role"
                         type="text"
                         placeholder="This can help a domain owner vett your application"
                         autoComplete="on"
                         {...register("website", { required: false })}
                     />
                 </div>
-                <div tw="col-span-5">
-                    <label tw="col-span-full block my-2 text-left" htmlFor="website">Set Privacy Budget (PB)<p tw="pl-1 inline text-base italic font-normal text-primary-500 ">(optional)</p></label>
+                <div tw="col-span-4">
+                    <label tw="col-span-full block my-2 text-left text-sm text-gray-500" htmlFor="website">Set Privacy Budget (PB)<p tw="pl-1 inline text-base italic text-sm font-normal text-primary-600 ">(optional)</p></label>
                     <div tw="flex">
-                        <button tw='px-6 py-4 font-bold text-lg rounded-l-lg border-2 border-gray-200 bg-gray-50' type="button" onClick={decrementBudget}>-</button>
-                        <p tw="px-8 py-4 border-t-2 border-b-2 border-gray-200 text-lg">{budget}</p>
-                        <button tw='px-6 py-4 font-bold text-lg rounded-r-lg border-2 border-gray-200 bg-gray-50' type="button" onClick={incrementBudget}>+</button>
+                        <button tw='px-3 py-4 font-bold rounded-l border border-gray-200 bg-gray-50' type="button" onClick={decrementBudget}>-</button>
+                        <p tw="px-8 py-4 border-t border-b border-gray-200">{budget} ɛ</p>
+                        <button tw='px-3 py-4 font-bold rounded-r border border-gray-200 bg-gray-50' type="button" onClick={incrementBudget}>+</button>
                     </div>
                 </div>
-                <div tw="col-span-7 text-justify font-normal font-mono my-2">
+                <div tw="col-span-8 text-gray-600 font-normal text-justify my-2">
                     <p>Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy budget as credits you give to a user to perform computations from. These credits of Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. You can learn more about privacy budgets and how to allocate them at Course.OpenMined.org</p>
                 </div>
-                <div tw="col-span-full flex justify-between font-bold text-xl">
-                    <button tw="bg-white rounded text-primary-500 text-center my-6 px-3 py-2 my-5 border-2 border-primary-500 " onClick={onClose}>Cancel</button>
-                    <button tw="bg-primary-500 rounded text-white text-center my-6 px-3 py-2 my-5" type="submit"><FontAwesomeIcon icon={faPlus} tw="mr-3" />Create</button>
+                <div tw="col-span-full flex justify-between">
+                    <button tw="bg-white rounded text-primary-500 text-center my-6 px-3 py-2 my-5 border border-primary-500 font-bold" onClick={onClose}>Cancel</button>
+                    <button tw="bg-primary-500 rounded text-white text-center my-6 px-3 py-2 my-5 font-bold" type="submit"><FontAwesomeIcon icon={faPlus} tw="mr-3" />Create</button>
                 </div>
             </form>
             </div>
@@ -343,61 +343,69 @@ function UserModal({ show, onClose, data }) {
 
     return (
         <Modal show={show} onClose={onClose}>
-            <div tw="col-span-full">
-                <div tw="w-full m-5"><button tw="items-center font-bold space-x-2" onClick={() => router.push(`/users/${email}`)}><FontAwesomeIcon size="sm" icon={faExpandAlt} />   Expand Page</button></div>
-                <div tw="h-auto px-20 py-10">
-                <div tw="flex items-center justify-between my-5">
+            <div tw="col-span-full font-roboto">
+                <div tw="w-full m-2 text-gray-400 text-sm"><button tw="items-center font-bold space-x-2" onClick={() => router.push(`/users/${email}`)}><FontAwesomeIcon size="sm" tw="mr-1" icon={faExpandAlt} />   Expand Page</button></div>
+                <div tw="h-auto grid grid-cols-12">
+                <div tw="col-start-2 col-span-10 flex items-center justify-between mt-5 mb-3">
                     <div tw="flex space-x-3 items-center">
                         <h2 tw="font-bold font-rubik text-4xl text-gray-800">{full_name}</h2>
-                        <Tag variant={'primary'}>Data Scientist</Tag>
+                        <Tag variant={'primary'} tw="font-bold">Data Scientist</Tag>
                     </div>
-                    <Button tw="float-right" tw="space-x-3 text-gray-400"><FontAwesomeIcon size="sm" icon={faTrash} />  Delete User</Button>
+                    <Button tw="float-right" tw="space-x-3 text-gray-400 text-sm"><FontAwesomeIcon size="sm" icon={faTrash} />  Delete User</Button>
                 </div>
-                <button tw="text-primary-500 underline" onClick={()=>setShowChangeRoleModal(true)}>Change Role</button>
+                <button tw="col-start-2 col-span-2 text-primary-500 underline text-left text-sm" onClick={()=>setShowChangeRoleModal(true)}>Change Role</button>
                 <ChangeRoleModal show={showChangeRoleModal} onClose={() => setShowChangeRoleModal(false)}
                         email={email}/>
-                <h3 tw="font-bold mt-10 text-gray-600">Privacy Budget</h3>
-                <div tw="flex bg-gray-50 items-center justify-between border border-gray-100 rounded p-4 space-x-3">
-                    <div>
-                        <p tw="text-error-400 font-bold">{budget} ɛ</p>
-                        <p>Current Balance</p>
-                    </div>
-                    <div>
-                        <p tw="text-gray-800 font-bold">{budget} ɛ</p>
-                        <p>Allocated Budget</p>
-                    </div>
-                    <Button variant={"primary"} onClick={() => setShowAdjustBudgetModal(true)} isSmall isHollow>Adjust Budget</Button>
-                    <AdjustBudgetModal show={showAdjustBudgetModal} onClose={() => setShowAdjustBudgetModal(false)}
-                        email={email} data={budget} handleBudgetInUserModal={handleBudgetInUserModal} />
-                </div>
-                <h3 tw="font-bold mt-10 text-gray-600">Background</h3>
-                <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
-                    <div tw="flex space-x-3">
-                        <p tw="font-bold text-gray-600">Email:</p>
-                        <p>{email}</p>
-                    </div>
-                    <div tw="flex space-x-3">
-                        <p tw="font-bold text-gray-600">Company/Institution:</p>
-                        <p>{institution}</p>
-                    </div>
-                    <div tw="flex space-x-3">
-                        <p tw="font-bold text-gray-600">Website/profile:</p>
-                        <p>{website}</p>
+                <div tw="col-start-2 col-span-7 text-sm">
+                    <h3 tw="font-bold mt-10 text-gray-600 mb-2">Privacy Budget</h3>
+                    <div tw="flex inline-flex bg-gray-50 items-center border border-gray-100 rounded p-4 space-x-3">
+                        <div tw="divide-x divide-gray-200 flex inline-flex">
+                            <div tw="pr-3">
+                                <p tw="text-error-400 font-bold text-lg">{budget} ɛ</p>
+                                <p>Current Balance</p>
+                            </div>
+                            <div tw="pl-3">
+                                <p tw="text-gray-800 font-bold text-lg">{budget} ɛ</p>
+                                <p>Allocated Budget</p>
+                            </div>
+                        </div>
+                        <Button variant={"primary"} onClick={() => setShowAdjustBudgetModal(true)} isSmall isHollow>Adjust Budget</Button>
+                        <AdjustBudgetModal show={showAdjustBudgetModal} onClose={() => setShowAdjustBudgetModal(false)}
+                                           email={email} data={budget} handleBudgetInUserModal={handleBudgetInUserModal} />
                     </div>
                 </div>
-                <h3 tw="font-bold mt-10 text-gray-600">System</h3>
-                <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
-                    <div tw="flex space-x-3">
-                        <p tw="font-bold text-gray-600">Date Added:</p>
-                        <p>{added_by}</p>
+                <div tw="col-start-2 col-span-10 text-sm">
+                    <h3 tw="font-bold mt-10 text-gray-600 mb-2">Background</h3>
+                    <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
+                        <div tw="flex space-x-3">
+                            <p tw="font-bold text-gray-600">Email:</p>
+                            <p>{email}</p>
+                        </div>
+                        <div tw="flex space-x-3">
+                            <p tw="font-bold text-gray-600">Company/Institution:</p>
+                            <p>{institution}</p>
+                        </div>
+                        <div tw="flex space-x-3">
+                            <p tw="font-bold text-gray-600">Website/profile:</p>
+                            <p>{website}</p>
+                        </div>
                     </div>
-                    <div tw="flex space-x-3">
-                        <p tw="font-bold text-gray-600">Data Access Agreement:</p>
-                        <p>{daa_pdf}</p>
-                    </div>
-                    <div tw="flex space-x-3">
-                        <p tw="font-bold text-gray-600">Uploaded On:</p>
-                        <p>{created_at}</p>
+                </div>
+                <div tw="col-start-2 col-span-10 mb-5 text-sm">
+                    <h3 tw="font-bold mt-10 text-gray-600 mb-2">System</h3>
+                    <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
+                        <div tw="flex space-x-3">
+                            <p tw="font-bold text-gray-600">Date Added:</p>
+                            <p>{added_by}</p>
+                        </div>
+                        <div tw="flex space-x-3">
+                            <p tw="font-bold text-gray-600">Data Access Agreement:</p>
+                            <p>{daa_pdf}</p>
+                        </div>
+                        <div tw="flex space-x-3">
+                            <p tw="font-bold text-gray-600">Uploaded On:</p>
+                            <p>{moment(created_at).format('YYYY-MMM-DD HH:MM')}</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -413,15 +421,15 @@ function ChangeRoleModal({ show, onClose, email, data }) {
     return (
         <Modal show={show} onClose={onClose}>
             <div tw="col-span-full">
-            <div tw="grid grid-cols-12 text-left p-6 rounded-lg gap-4  text-gray-600">
+            <div tw="grid grid-cols-12 text-left p-6 rounded-lg text-gray-600">
                 <div tw="col-span-full flex-col items-center">
                     <h2 tw="font-bold text-4xl my-6 text-gray-800"><FontAwesomeIcon size="xl" icon={faCheck} tw="mr-3" /></h2>
                     <h2 tw="font-bold text-4xl my-6 text-gray-800">Change Roles</h2>
                 </div>
-                <p tw="col-span-full text-justify my-6">Permissions for a user are set by their assigned role. These permissions are used for managing the domain. To review and customize the default set of roles visit the Permissions page.</p>
+                <p tw="col-span-full text-justify">Permissions for a user are set by their assigned role. These permissions are used for managing the domain. To review and customize the default set of roles visit the Permissions page.</p>
 
-                <h3 tw="col-span-full font-bold mt-3 text-gray-600">Change Role</h3>
                 <SearchContainer>
+                    <h3 tw="col-span-full font-bold mt-3 text-gray-600 mb-2">Change Role</h3>
                     <Listbox value={selectedRole} onChange={setSelectedRole}>
                         <Listbox.Button tw="flex w-full p-4 h-10 border-2 border-gray-200 rounded-lg text-left text-sm text-gray-600 justify-between items-center truncate">
                             <span>{selectedRole.role}</span>
@@ -452,9 +460,9 @@ function ChangeRoleModal({ show, onClose, email, data }) {
                         </Transition>
                     </Listbox>
                 </SearchContainer>
-                <div tw="col-span-full flex-col bg-gray-50 items-center border border-gray-100 rounded p-6 space-x-3 my-6 overflow-auto">
+                <div tw="col-span-full flex-col bg-gray-50 items-center border border-gray-100 rounded p-6 space-x-3 text-sm overflow-auto">
                     <div>
-                        <p>{selectedRole.description}</p>
+                        <p tw="mb-3">{selectedRole.description}</p>
                     </div>
                         {Object.keys(selectedRole.permissions).map((key, idx)=>(
                             <div tw="flex py-2 space-x-10 items-center">
@@ -466,9 +474,9 @@ function ChangeRoleModal({ show, onClose, email, data }) {
                             </div>
                         ))}
                 </div>
-                <div tw="col-span-full mb-5">
+                <div tw="col-span-full my-5">
                     <Link href="/permissions">
-                        <a tw="text-primary-600 font-medium cursor-pointer p-2">Edit Role Permissions</a>
+                        <a tw="text-primary-600 font-medium font-bold cursor-pointer text-sm p-2">Edit Role Permissions</a>
                     </Link>
                 </div>
                 <div tw="col-span-full flex justify-between">
@@ -520,22 +528,21 @@ function AdjustBudgetModal({ show, onClose, email, data, handleBudgetInUserModal
                         <h2 tw="font-bold text-4xl my-6 text-gray-800">∑</h2>
                         <h2 tw="font-bold text-4xl my-6 text-gray-800">Upgrade Budget</h2>
                     </div>
-                    <p tw="col-span-full text-justify my-6">Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy budget as credits you give to a user to perform computations from. These credits of  Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. The more budget the more visibility. By default all users start with 0ɛ and must have their data requests approved manually until upgraded. You can learn more about privacy budgets and how to allocate them at Course.OpenMined.org</p>
+                    <p tw="col-span-full text-justify my-6 text-gray-600">Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy budget as credits you give to a user to perform computations from. These credits of  Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. The more budget the more visibility. By default all users start with 0ɛ and must have their data requests approved manually until upgraded. You can learn more about privacy budgets and how to allocate them at Course.OpenMined.org</p>
 
                     <h3 tw="col-span-full font-bold mt-3 text-gray-600">Adjust Privacy Budget</h3>
-                    <div tw="col-span-full flex bg-gray-50 items-center justify-between border border-gray-100 rounded p-4 space-x-3 my-6">
-                        <div>
-                            <p tw="text-error-400 font-bold">{balance} ɛ</p>
-                            <p>Current Balance</p>
+                    <div tw="col-span-full flex items-end rounded my-6 divide-x divide-gray-200">
+                        <div tw="pr-3">
+                            <p tw="text-error-400 font-bold text-lg mb-4">{balance} ɛ</p>
+                            <p tw="text-sm text-gray-600 mt-1">Current Balance</p>
                         </div>
-                        <div>
-                            <p tw="text-gray-800 font-bold">{budget} ɛ</p>
-                            <p>Allocated Budget</p>
-                        </div>
-                        <div tw="flex">
-                            <button tw='px-6 py-4 font-bold text-lg rounded-l-lg border-2 border-gray-200 bg-gray-50' onClick={decrementBudget}>-</button>
-                            <p tw="px-8 py-4 border-t-2 border-b-2 border-gray-200 text-lg">{budget}</p>
-                            <button tw='px-6 py-4 font-bold text-lg rounded-r-lg border-2 border-gray-200 bg-gray-50' onClick={incrementBudget}>+</button>
+                        <div tw="pl-3">
+                            <div tw="flex">
+                                <button tw='px-3 py-4 font-bold rounded-l border border-gray-200 bg-gray-50' onClick={decrementBudget}>-</button>
+                                <p tw="px-8 py-4 border-t border-b border-gray-200">{budget} ε</p>
+                                <button tw='px-3 py-4 font-bold rounded-r border border-gray-200 bg-gray-50' onClick={incrementBudget}>+</button>
+                            </div>
+                            <p tw="text-sm text-gray-600 mt-1">Allocated Budget</p>
                         </div>
                     </div>
                     <div tw="col-span-full flex justify-between">
@@ -667,7 +674,6 @@ export default function Active() {
             console.log(error);
         }
     }
-
 
     const usersData = useMemo(() => [...userlist], [userlist]);
     const usersColumns = useMemo(

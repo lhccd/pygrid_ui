@@ -46,7 +46,7 @@ export default function Avatar({ name, picture, domainid }) {
                           {({ active }) => (
                               <button
                               css={[tw`flex rounded-md items-center w-full px-2 py-2 text-sm text-gray-600`, active && tw`bg-primary-200`]}
-                              onClick={()=>router.push({pathname:"domain-settings", query:{"tab":1}})}
+                              onClick={()=>router.push({pathname:"domain-settings", query:{"tab":0}})}
                               >
                               Profile
                               </button>
@@ -56,7 +56,7 @@ export default function Avatar({ name, picture, domainid }) {
                           {({ active }) => (
                               <button
                               css={[tw`flex rounded-md items-center w-full px-2 py-2 text-sm text-gray-600`, active && tw`bg-primary-200`]}
-                              onClick={()=>router.push({pathname:"domain-settings", query:{"tab":2}})}
+                              onClick={()=>router.push({pathname:"domain-settings", query:{"tab":1}})}
                               >
                               Configurations
                               </button>
@@ -66,7 +66,7 @@ export default function Avatar({ name, picture, domainid }) {
                           {({ active }) => (
                               <button
                               css={[tw`flex rounded-md items-center w-full px-2 py-2 text-sm text-gray-600`, active && tw`bg-primary-200`]}
-                              onClick={()=>router.push({pathname:"domain-settings", query:{"tab":3}})}
+                              onClick={()=>router.push({pathname:"domain-settings", query:{"tab":2}})}
                               >
                               Version Updates
                               </button>

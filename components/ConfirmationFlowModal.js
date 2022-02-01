@@ -126,18 +126,18 @@ export default function ConfirmationFlowModal({ show, onClose, email, data, hand
                                 <div tw="bg-gray-200 w-1/3 h-1 rounded"></div>
                             </div>
                             <div>
-                                <p tw="text-gray-600">Before you accept this application your domain requires a Data Access Agreement to be signed and uploaded by the user. Has the document been...</p>
+                                <p tw="text-gray-600 mb-6">Before you accept this application your domain requires a Data Access Agreement to be signed and uploaded by the user. Has the document been...</p>
                             </div>
-                            <div tw="flex p-4 space-x-4 items-center">
+                            <div tw="flex space-x-4 items-center">
                                 <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-success-500" />
                                 <div tw="block">
-                                    <p tw="font-bold text-black">Signed by the appropriate parties</p>
+                                    <p tw="text-gray-600">Signed by the appropriate parties</p>
                                 </div>
                             </div>
-                            <div tw="flex p-4 space-x-4 items-center">
+                            <div tw="flex space-x-4 items-center">
                                 <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-success-500" />
                                 <div tw="block">
-                                    <p tw="font-bold text-black">Dated within appropriate date range</p>
+                                    <p tw="text-gray-600">Dated within appropriate date range</p>
                                 </div>
                             </div>
                             <div tw="col-span-full flex justify-between py-5">
@@ -203,13 +203,14 @@ export default function ConfirmationFlowModal({ show, onClose, email, data, hand
                                 <div tw="bg-primary-500 w-1/3 h-1 rounded"></div>
                             </div>
                             <div>
-                                <p tw="text-gray-600">Congratulations! You have just added new user(s) to your domain.
-                                    Pro Tip(s): If you would like to speed up this workflow in the future you can download Data Access Agreements directly from the table view. 
+                                <p tw="text-gray-600 mb-4">Congratulations! You have just added new user(s) to your domain.</p>
+                                <p tw="text-gray-600 mt-4">
+                                    Pro Tip(s): If you would like to speed up this workflow in the future you can download Data Access Agreements directly from the table view.
                                     You can also select multiple users in the users table and then batch Accept or Deny their requests.
                                 </p>
                             </div>       
                             <div tw="col-span-full flex justify-end py-5">
-                                <Button variant={'primary'} isHollow onClick={onClose} tw="border-2">Close</Button>
+                                <Button variant={'primary'} isHollow onClick={onClose} tw="border-none">Close</Button>
                             </div>  
                         </div>
                     </div>

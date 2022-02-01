@@ -25,7 +25,7 @@ export default function Modal({show, onClose, children}){
                         <button onClick={handleClose} tw="absolute top-0 right-0 m-5 w-6 h-6 text-center" aria-label="Close">
                                 <FontAwesomeIcon icon={faTimes} title="Close" tw="cursor-pointer text-sm text-gray-500" />
                         </button>
-                        <div tw="grid grid-cols-12 px-6 py-4 shadow-md rounded mx-auto">
+                        <div tw="grid grid-cols-12 px-6 py-4 shadow-md rounded mx-auto font-roboto">
                             {children}
                         </div>
                         {/* <div tw="col-span-full flex space-x-3 justify-between text-gray-400">
