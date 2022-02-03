@@ -114,14 +114,19 @@ function Profile(){
     }
 
     const tagItems = tags.map((tag) => 
-        <Tag>{tag} <button
-            onClick={() => {
-                setTags(tags.filter(item => item !== tag)); 
-                setAlertVariant('warning');
-                setAlertMessage('Tag removed')
-                setShowAlert(true);
-            }}
-            type="button"><FontAwesomeIcon icon={faTimes} size="sm" tw=""/></button></Tag>
+        <Tag tw="m-1">{tag}
+            <button
+                onClick={() => {
+                    setTags(tags.filter(item => item !== tag)); 
+                    setAlertVariant('warning');
+                    setAlertMessage('Tag removed')
+                    setShowAlert(true);
+                }}
+                type="button"
+            >
+                <FontAwesomeIcon icon={faTimes} size="sm" tw="mx-1"/>
+            </button>
+        </Tag>
     );
 
     async function onSubmitProfile(){

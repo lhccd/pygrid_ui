@@ -14,7 +14,7 @@ mt-6
 
 const roles = [
     { id: 0, role: 'Role' },
-    { id: 1, role: 'lorenz.dang@gmail.com' },
+    // { id: 1, role: 'lorenz.dang@gmail.com' },
     { id: 2, role: 'Owner' },
     { id: 3, role: 'Admin' },
     { id: 4, role: 'Compliance Officer' },

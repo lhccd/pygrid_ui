@@ -338,14 +338,21 @@ export default function Denied(){
                 id: "Edit", 
                 Header: 'Edit',
                 Cell: ({ row }) => (
-                    <button onClick={ async () => 
-                        {
-                            await acceptUserByID(row.values.email);
-                            console.log("DELETING ROW FROM PENDING TABLE ...", {row})
-                            // setUserlist(userlist.splice(row.id, 1))
-                            await fetchUserlist();
-                        }
-                    }><FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-success-500" /></button>
+                    <div tw="flex items-center justify-center space-x-1">
+                        <button onClick={async () => { await getUser(row.values.email); setShowConfirmationFlowModal(true)}}>
+                            <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-gray-200" />
+                        </button>
+                        {/* <button onClick={ async () => 
+                            {
+                                await acceptUserByID(row.values.email);
+                                console.log("DELETING ROW FROM PENDING TABLE ...", {row})
+                                // setUserlist(userlist.splice(row.id, 1))
+                                await fetchUserlist();
+                            }
+                        }>
+                            <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-gray-200" />
+                        </button> */}
+                    </div>
                 )
             }
         ])
