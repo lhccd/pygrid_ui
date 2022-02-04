@@ -36,20 +36,28 @@ export default async (req, res) => {
                 }
             });
 
-            const apiOwner = await axios({
-                method: 'GET',
-                url: `${API_URL}/domain/domain-owner`,
-                headers: {
-                    "Accept": "application/json"
-                },
-                params:{
-                    domain_name: domain_name
-                }
-            })
+            let owner = {full_name: "No Owner Yet"};
+            try{
+                const apiOwner = await axios({
+                    method: 'GET',
+                    url: `${API_URL}/domain/domain-owner`,
+                    headers: {
+                        "Accept": "application/json"
+                    },
+                    params:{
+                        domain_name: domain_name
+                    }
+                });
+                owner = apiOwner.data;
+            }
+            catch (e) {
+                console.error(e);
+            }
+
 
             const data = apiRes.data;
             const data_tags = apiTag.data;
-            const owner = apiOwner.data;
+
 
             let tags = []
             for (let tag of data_tags){

@@ -98,6 +98,7 @@ export default function Signup() {
 
   async function downloadAgreement() {
     try{
+      console.log(domainName)
       const apiRes =await axios({
         method: 'GET',
         url: "http://localhost/api/v1/domain/domain-pdf",
