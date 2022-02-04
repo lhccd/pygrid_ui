@@ -15,12 +15,37 @@ import Updates from "./domain-settings/updates"
 export default function DomainSettings(props) {
     const router = useRouter();
     const [toggleTab, setToggleTab] = useState(1)
+    const [url, setUrl] = useState("");
 
     useEffect(()=>{
+        getDomain()
         const tab = new URL(location.href).searchParams.get('tab')
         setToggleTab(tab)
         console.log("Tab opened:", toggleTab)
     },[])
+
+    async function getDomain() {
+        try{
+            const apiRes = await axios({
+                method: "GET",
+                url: "api/domain-profile",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                }
+            });
+            if(apiRes.status == 200){
+                const domain = await apiRes.data;
+                setUrl(domain.domain_url)
+            }
+            else{
+                alert("Couldn't fetch the domain profile!");
+            }
+        }
+        catch (error){
+            console.error(error);
+        }
+    }
 
     return(
         <div tw="font-roboto">
@@ -33,8 +58,8 @@ export default function DomainSettings(props) {
                     </div>
                     <p tw="mb-4">Provide contextual information for the Canada Domain node and set structural configurations.</p>
                     <div tw="mb-12 inline-flex">
-                        <input tw="p-2 border border-gray-300 rounded-l text-black w-96" id="url" name="url" type="url" placeholder="domain-specific-url.com"/>
-                        <button tw="border border-gray-300 bg-gray-100 rounded-r text-gray-800 p-2 whitespace-nowrap" type="button">Copy URL</button>
+                        <input tw="p-2 border border-gray-300 rounded-l text-black w-96" id="url" name="url" type="url" readOnly value={url} placeholder="domain-specific-url.com"/>
+                        <button tw="border border-gray-300 bg-gray-100 rounded-r text-gray-800 p-2 whitespace-nowrap active:bg-gray-200" type="button" onClick={() => {navigator.clipboard.writeText(url)}}>Copy URL</button>
                     </div>
                     <Tab.Group
                         defaultIndex={toggleTab}
