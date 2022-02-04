@@ -14,11 +14,17 @@ import axios from "axios";
 
 export default function Config(){
     const router = useRouter();
+    const [domainName, setDomainName] = useState("");
     const [DAARequired, setDAARequired] = useState(false);
     const [DAAUploaded, setDAAUploaded] = useState(false);
     const [DAASent, setDAASent] = useState(false);
     const { register, handleSubmit, errors, reset } = useForm();
     const [daa, setDaa] = useState(null);
+
+    useEffect( () => {
+        getDomain()
+        }
+        ,[])
 
     async function getDomain() {
         try{
@@ -32,7 +38,12 @@ export default function Config(){
             });
             if(apiRes.status == 200){
                 const domain = await apiRes.data;
-                setDAARequired(domain.require_daa)
+                if(domain.require_daa){
+                    setDAARequired(domain.require_daa)
+                    setDAAUploaded(true)
+                    setDAASent(true)
+                }
+                setDomainName(domain.name)
             }
             else{
                 alert("Couldn't fetch the domain profile!");
@@ -48,6 +59,12 @@ export default function Config(){
         }
         ,[DAARequired])
 
+    const disabled = DAASent;
+
+    useEffect( () => {
+        console.log("disabled: ", disabled)
+        }
+        ,[DAASent])
 
     const onUploadDaa = (e) => {
         setDAAUploaded(true);
@@ -60,13 +77,93 @@ export default function Config(){
         setDAAUploaded(false);
         setDaa(null);
     }
+    const onDAAClick = async () => {
+        if(DAASent){
+            try{
+                const apiRes =await axios({
+                    method: 'GET',
+                    url: "http://localhost/api/v1/domain/domain-pdf",
+                    headers: {
+                        "Accept": "application/json",
+                    },
+                    params: {
+                        domain_name: domainName
+                    }
+                });
 
-    const onDAAClick = () => {
-        fileSaver.saveAs(daa);
+                if(apiRes.status === 200){
+                    const data = await apiRes.data;
+                    let decodedStringAtoB = atob(data);
+                    let bytes = new Uint8Array(decodedStringAtoB.length);
+                    for (let i=0; i<decodedStringAtoB.length; i++)
+                        bytes[i] = decodedStringAtoB.charCodeAt(i);
+                    let a = window.document.createElement('a');
+
+                    a.href = window.URL.createObjectURL(new Blob([bytes], { type: 'application/octet-stream' }));
+                    a.download = domainName+"_Agreement.pdf";
+                    document.body.appendChild(a)
+                    a.click();
+                    document.body.removeChild(a)
+                }
+                else{
+                    alert("Couldn't find any agreement file in the domain");
+                }
+            }
+            catch (error){
+                console.log(error);
+            }
+        } else {
+            fileSaver.saveAs(daa, domainName+"_Agreement.pdf");
+        }
     };
 
-    const sendDaa = () => {
-        setDAASent(true);
+    const sendDaa = async () => {
+        const formData = new FormData
+        formData.append("daa_pdf", daa)
+        let config = {
+            method: 'put',
+            url: 'http://localhost/api/v1/domain/add-pdf',
+            data: formData
+        };
+        try {
+            const response = await axios(config)
+            const daa_id = response.data.id
+
+            const body =JSON.stringify({
+                daa_id
+            });
+            try{
+                console.log(body);
+                const apiRes = await fetch(
+                    "api/domain-config",
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Accept": "application/json",
+                            "Content-Type": "application/json"
+                        },
+                        body: body
+                    }
+                );
+
+                if(apiRes.status === 200){
+                    const response = await apiRes.json();
+                    console.log("DAA sent");
+                }
+                else{
+                    const error = await apiRes.json();
+                    console.log(error);
+                }
+            }
+            catch (error){
+                console.log(error);
+            }
+
+            console.log(response);
+            setDAASent(true);
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     return (
@@ -75,7 +172,8 @@ export default function Config(){
                 <div id="daa-toggle" tw="">
                     <div tw="flex justify-between mt-10">
                         <p tw="text-xl text-left font-bold font-rubik">Require Data Access Agreement</p>
-                        <ToggleSwitch onToggle={() => setDAARequired(!DAARequired)}/>
+                        <ToggleSwitch toggleProp={DAARequired} onToggle={() => setDAARequired(!DAARequired)}
+                                      disabled={disabled}/>
                     </div>
                     <div tw="text-gray-500 text-sm py-6 rounded-lg gap-2">
                         <p tw="text-sm mr-5">
@@ -88,7 +186,7 @@ export default function Config(){
                     {DAARequired
                         ? [
                             <div tw="">
-                                <p tw="text-xl text-left font-bold font-rubik mt-10">Data Access Agreement<div tw="pl-2 inline relative bottom-1 text-primary-500 font-bold">*</div></p>
+                                <p tw="text-xl text-left font-bold font-rubik mt-10">Data Access Agreement<p tw="pl-2 inline relative bottom-1 text-primary-500 font-bold">*</p></p>
                                 <div tw="text-gray-500 text-sm py-6 rounded-lg gap-2">
                                     <p tw="text-sm mr-5">
                                         A Data Access Agreement (DAA) is a... Please upload the legal agreement you would like to require for your domain users.
@@ -101,7 +199,7 @@ export default function Config(){
                                         <div>
                                             <div tw="w-2/3 flex justify-between bg-gray-100 text-black my-4 py-1">
                                                 <button tw="mx-2 underline font-bold " type="button" onClick={onDAAClick}>
-                                                    {daa.name}
+                                                    {domainName+"_Agreement.pdf"}
                                                 </button>
                                             </div>
                                             <div tw="my-10 flex items-center space-x-3 p-3 bg-primary-100">
@@ -116,7 +214,7 @@ export default function Config(){
                                         <div>
                                             <div tw="w-2/3 flex justify-between bg-gray-100 text-black my-4 py-1">
                                                 <button tw="mx-2 underline font-bold " type="button" onClick={onDAAClick}>
-                                                    {daa.name}
+                                                    {domainName+"_Agreement.pdf"}
                                                 </button>
                                                 <button tw="font-bold mx-2" type="button" onClick={onXClick}>
                                                     <FontAwesomeIcon icon={faTimes} size="sm" tw=""/>
