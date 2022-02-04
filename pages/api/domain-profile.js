@@ -73,6 +73,7 @@ export default async (req, res) => {
                     owner: owner.full_name,
                     description: data.description,
                     email: data.support_email,
+                    require_daa: data.require_daa,
                     tags: tags
                 });
             }

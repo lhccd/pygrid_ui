@@ -10,6 +10,7 @@ import {useForm} from "react-hook-form";
 import ToggleSwitch from "/components/ToggleSwitch";
 import * as fileSaver from "file-saver";
 import {useRouter} from "next/router";
+import axios from "axios";
 
 export default function Config(){
     const router = useRouter();
@@ -18,6 +19,29 @@ export default function Config(){
     const [DAASent, setDAASent] = useState(false);
     const { register, handleSubmit, errors, reset } = useForm();
     const [daa, setDaa] = useState(null);
+
+    async function getDomain() {
+        try{
+            const apiRes = await axios({
+                method: "GET",
+                url: "api/domain-profile",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                }
+            });
+            if(apiRes.status == 200){
+                const domain = await apiRes.data;
+                setDAARequired(domain.require_daa)
+            }
+            else{
+                alert("Couldn't fetch the domain profile!");
+            }
+        }
+        catch (error){
+            console.error(error);
+        }
+    }
 
     useEffect( () => {
 
