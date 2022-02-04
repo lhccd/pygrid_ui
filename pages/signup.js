@@ -12,6 +12,7 @@ import {faDownload, faTimes, faPlus, faUserPlus, faInfoCircle} from '@fortawesom
 import fileSaver from "file-saver";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import moment from "moment";
+import {json} from "formidable/src/plugins";
 
 const Background = styled.div`
     background-image: url("../signup_background_image.png");
@@ -44,32 +45,40 @@ export default function Signup() {
   }, [])
 
   async function onSubmitForm(values) {
-    const formData = new FormData
-    formData.append("email", values.email)
-    formData.append("full_name", values.full_name)
-    formData.append("institution", values.institution)
-    formData.append("password", values.password)
-    formData.append("website", values.website)
-    formData.append("domain_name", domainName)
     let config = null;
+    let response = null;
     if(DAARequired){
+      const formData = new FormData
+      formData.append("email", values.email)
+      formData.append("full_name", values.full_name)
+      formData.append("institution", values.institution)
+      formData.append("password", values.password)
+      formData.append("website", values.website)
+      formData.append("domain_name", domainName)
       formData.append("daa_pdf", values.daa_pdf[0]);
       config = {
         method: 'post',
         url: 'http://localhost/api/v1/users/open-daa',
         data: formData
       };
+
+      console.log("config data: ", values)
+      response = await axios(config)
     }
     else{
-      config = {
-        method: 'post',
-        url: 'http://localhost/api/v1/users/open',
-        data: formData
-      };
+      let data = JSON.stringify({
+        "email": values.email,
+        "full_name": values.full_name,
+        "institution": values.institution,
+        "password": values.password,
+        "website": values.website,
+        "domain_name": domainName,
+        "allocated_budget": 0,
+
+      })
+      response = axios.post('http://localhost/api/v1/users/open', data)
     }
     try {
-      console.log("config data: ", values)
-      const response = await axios(config)
       router.push('/login')
       console.log(response);
     } catch (err) {
