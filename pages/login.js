@@ -106,7 +106,7 @@ export default function Login() {
             else if(apiRes.status == 400) {
                 console.error(err)
                 setVariant('error');
-                setAlertMessage('YOUR APPLICATION IS STILL PENDING! THE DAA IS BEING REVIEWED!');
+                setAlertMessage('Your application is still pending!');
                 setShowAlert(true);
             }
             else{
@@ -118,7 +118,7 @@ export default function Login() {
         }catch (err) {
             console.error(err)
             setVariant('error');
-            setAlertMessage('YOUR APPLICATION IS STILL PENDING! THE DAA IS BEING REVIEWED!');
+            setAlertMessage('This user either does not exist or the application is still pending!');
             setShowAlert(true);
         }
     }

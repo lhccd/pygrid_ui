@@ -57,11 +57,34 @@ export default function IndexPage() {
         });
 
     if(apiRes.status === 200){
-      setAlertVariant('success');
-      setAlertMessage("Domain Login to " + domainName + " was successful!")
-      setShowAlert(true);
-      // alert("Domain Login to " + domainName + " is successful!")
-      router.push("/signup");
+        try{
+            const apiRes2 = await axios({
+                method: 'GET',
+                url: `api/utils/domain-metadata`,
+                headers: {
+                    "Accept": "application/json"
+                },
+            });
+
+            if(apiRes2.data.name === domainName){
+                setAlertVariant('success');
+                setAlertMessage("Domain Login to " + domainName + " was successful!")
+                setShowAlert(true);
+                // alert("Domain Login to " + domainName + " is successful!")
+                router.push("/signup");
+            }
+            else{
+                setAlertVariant('error');
+                setAlertMessage("Domain doesn't exist!")
+                setShowAlert(true);
+            }
+
+        }
+        catch (e) {
+            setAlertVariant('error');
+            setAlertMessage("Domain Login to " + domainName + " was unsuccessful!")
+            setShowAlert(true);
+        }
     }else{
       setAlertVariant('error');
       setAlertMessage("Domain Login to " + domainName + " was unsuccessful!")
