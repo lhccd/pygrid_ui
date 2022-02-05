@@ -2,8 +2,13 @@ import React, {useEffect, useState} from 'react';
 import tw, {styled} from 'twin.macro';
 import Modal from '/components/Modal';
 import {
+    faPlus,
+    faInfoCircle,
+    faCheck,
     faTimes,
     faExclamationTriangle,
+    faExclamationCircle,
+    faDownload
 } from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import Tag from "/components/Tag";
@@ -29,6 +34,10 @@ export default function Profile(){
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
     const { register, handleSubmit, errors, reset } = useForm();
 
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertVariant, setAlertVariant] = useState('primary');
+    
     useEffect(() => {
         getDomain();
     }, []);
@@ -66,12 +75,22 @@ export default function Profile(){
     const onAddTag = () => {
         if (newTag!=""){
             setTags((tags) => ([...tags, newTag]));
+            setAlertVariant('success');
+            setAlertMessage('New tag successfully added')
+            setShowAlert(true);
         }
     }
 
     const tagItems = tags.map((tag) =>
         <Tag>{tag} <button
-            onClick={() => setTags(tags.filter(item => item !== tag))}
+            onClick={
+                () => {
+                    setTags(tags.filter(item => item !== tag))
+                    setAlertVariant('warning');
+                    setAlertMessage('Tag removed')
+                    setShowAlert(true);
+                }
+            }
             type="button"><FontAwesomeIcon icon={faTimes} size="sm" tw=""/></button></Tag>
     );
 
@@ -96,10 +115,16 @@ export default function Profile(){
 
             if(apiRes.status == 200){
                 const data = await apiRes.json();
+                setAlertVariant('success');
+                setAlertMessage('Domain Profile successfully updated')
+                setShowAlert(true);
                 console.log(data);
             }
             else{
-                alert("Couldn't update the domain profile!");
+                setAlertVariant('error');
+                setAlertMessage("Couldn't update the domain profile!")
+                setShowAlert(true);
+                // alert("Couldn't update the domain profile!");
             }
         }
         catch (error){
@@ -156,10 +181,16 @@ export default function Profile(){
                 });
             if(apiRes.status == 200){
                 setShowFeedbackModal(false);
+                setAlertVariant('success');
+                setAlertMessage('Feedback successfully submitted')
+                setShowAlert(true);
                 router.push('/signup');
             }
             else{
-                alert(apiRes.status + " Something went wrong! Please try again!")
+                setAlertVariant('error');
+                setAlertMessage('Something went wrong! Please try again!')
+                setShowAlert(true);
+                // alert(apiRes.status + " Something went wrong! Please try again!")
             }
         }catch (err) {
             console.error(err)
@@ -167,12 +198,21 @@ export default function Profile(){
     }
 
     const onClickSkipFeedback = () => {
+        setAlertVariant('warning');
+        setAlertMessage('Feedback was skipped')
+        setShowAlert(true);
         setShowFeedbackModal(false);
         router.push('/signup');
     }
 
     return (
         <>
+            <div tw="absolute right-0 w-1/2 z-50">
+                <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={alertVariant} autoDelete={true} autoDeleteTime={3000}>
+                    <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                    <p>{alertMessage}</p>
+                </Alert>
+            </div>
             <div id="domain-box" tw="col-start-3 col-end-11 text-gray-800">
                 <div tw="divide-y">
                     <div id="general">

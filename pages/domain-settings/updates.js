@@ -14,6 +14,10 @@ export default function Updates(){
     const [hash, setHash] = useState("");
     const { register, handleSubmit, errors, reset } = useForm();
 
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertVariant, setAlertVariant] = useState('primary');
+
     useEffect(() => {
         getVersion();
     }, []);
@@ -67,10 +71,16 @@ export default function Updates(){
 
             if(apiRes.status == 200){
                 const domain = await apiRes.json();
+                setAlertVariant('success');
+                setAlertMessage('Domain version successfully updated')
+                setShowAlert(true);
                 console.log(domain);
             }
             else{
-                alert("Couldn't update the domain version!");
+                setAlertVariant('error');
+                setAlertMessage("Couldn't update the domain version!")
+                setShowAlert(true);
+                // alert("Couldn't update the domain version!");
             }
         }
         catch (error){
@@ -82,6 +92,12 @@ export default function Updates(){
     return (
         <>
             <div id="domain-box" tw="col-start-3 col-end-11 text-gray-800">
+                <div tw="absolute right-0 w-1/2 z-50">
+                    <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={alertVariant} autoDelete={true} autoDeleteTime={3000}>
+                        <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                        <p>{alertMessage}</p>
+                    </Alert>
+                </div>
                 <div tw="divide-y">
                     <div id="version">
                         <h1 tw="font-bold text-left text-xl my-4 mt-10 font-rubik">Current Version</h1>

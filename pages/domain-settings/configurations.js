@@ -4,6 +4,7 @@ import {
     faPlus,
     faInfoCircle,
     faTimes,
+    faExclamationCircle,
 } from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {useForm} from "react-hook-form";
@@ -20,6 +21,10 @@ export default function Config(){
     const [DAASent, setDAASent] = useState(false);
     const { register, handleSubmit, errors, reset } = useForm();
     const [daa, setDaa] = useState(null);
+
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertVariant, setAlertVariant] = useState('primary');
 
     useEffect( () => {
         getDomain()
@@ -104,9 +109,16 @@ export default function Config(){
                     document.body.appendChild(a)
                     a.click();
                     document.body.removeChild(a)
+
+                    setAlertVariant('warning');
+                    setAlertMessage('DAA is being download starts soon...')
+                    setShowAlert(true);
                 }
                 else{
-                    alert("Couldn't find any agreement file in the domain");
+                    setAlertVariant('error');
+                    setAlertMessage("Couldn't find any agreement file in the domain")
+                    setShowAlert(true);
+                    // alert("Couldn't find any agreement file in the domain");
                 }
             }
             catch (error){
@@ -149,10 +161,16 @@ export default function Config(){
                 if(apiRes.status === 200){
                     const response = await apiRes.json();
                     console.log("DAA sent");
+                    setAlertVariant('success');
+                    setAlertMessage('Changes successfully saved')
+                    setShowAlert(true);
                 }
                 else{
                     const error = await apiRes.json();
                     console.log(error);
+                    setAlertVariant('error');
+                    setAlertMessage('An error occured during the change of settings!')
+                    setShowAlert(true);
                 }
             }
             catch (error){
@@ -161,14 +179,26 @@ export default function Config(){
 
             console.log(response);
             setDAASent(true);
+            setAlertVariant('success');
+            setAlertMessage('Changes successfully saved')
+            setShowAlert(true);
         } catch (err) {
             console.error(err);
+            setAlertVariant('error');
+            setAlertMessage('An error occured during the change of settings!')
+            setShowAlert(true);
         }
     }
 
     return (
         <>
             <div tw="col-start-3 col-end-11 divide-y text-gray-800">
+            <div tw="absolute right-0 w-1/2 z-50">
+                <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={alertVariant} autoDelete={true} autoDeleteTime={3000}>
+                    <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                    <p>{alertMessage}</p>
+                </Alert>
+            </div>
                 <div id="daa-toggle" tw="">
                     <div tw="flex justify-between mt-10">
                         <p tw="text-xl text-left font-bold font-rubik">Require Data Access Agreement</p>

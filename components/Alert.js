@@ -13,12 +13,22 @@ const Toast = styled.div(({ variant, isSmall}) => [
     isSmall ? tw`col-span-6` : tw`col-span-full`,
 ])
 
-export default function Alert({variant, show, onClose, children}){
-
+export default function Alert({variant, show, onClose, children, autoDelete, autoDeleteTime}){
+    
     const handleClose = (e) => {
         e.preventDefault();
         onClose();
     }
+
+    useEffect(() => {
+        console.log("Autodelete", autoDelete, autoDeleteTime, show, variant, children)
+        const timer = setTimeout(() => {
+            if (autoDelete) {
+                onClose();
+            }
+        }, autoDeleteTime);
+        return () => clearTimeout(timer);
+    }, [show, autoDelete]);
 
     const Alert = show ? (
         <Toast variant={variant}>

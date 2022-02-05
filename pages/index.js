@@ -5,6 +5,17 @@ import Link from 'next/link'
 import {getToken} from '../lib/auth'
 import {useRouter} from 'next/router'
 import axios from "axios";
+import Alert from "../components/Alert"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faPlus,
+  faInfoCircle,
+  faCheck,
+  faTimes,
+  faExclamationTriangle,
+  faExclamationCircle,
+  faDownload
+} from '@fortawesome/free-solid-svg-icons'
 
 const styles = {
   // Move long class sets out of jsx to keep it scannable
@@ -18,6 +29,10 @@ export default function IndexPage() {
     const router = useRouter()
     const [domainName, setDomainName] = useState("");
 
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertVariant, setAlertVariant] = useState('primary');
+    
   // if (typeof window !== 'undefined'){
   //   if (isAuthenticated){
   //     router.replace('/users')
@@ -42,14 +57,29 @@ export default function IndexPage() {
         });
 
     if(apiRes.status === 200){
-      alert("Domain Login to " + domainName + " is successful!")
+      setAlertVariant('success');
+      setAlertMessage("Domain Login to " + domainName + " was successful!")
+      setShowAlert(true);
+      // alert("Domain Login to " + domainName + " is successful!")
       router.push("/signup");
+    }else{
+      setAlertVariant('error');
+      setAlertMessage("Domain Login to " + domainName + " was unsuccessful!")
+      setShowAlert(true);
+      console.log("Domain Login on index page unsuccessful", apiRes)
     }
 
   }
 
   return (
+    
       <div css={styles.container({ hasBackground: true })}>
+      <div tw="absolute right-0 top-20 w-1/2 z-50">
+        <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={alertVariant} autoDelete={true} autoDeleteTime={3000}>
+            <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+            <p>{alertMessage}</p>
+        </Alert>
+      </div>
       <div tw="flex flex-col justify-center h-full gap-y-5">
           <input
               tw="col-span-4 text-left p-3 border border-gray-300 rounded-lg
