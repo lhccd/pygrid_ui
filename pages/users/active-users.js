@@ -379,12 +379,14 @@ function UserModal({ show, onClose, data }) {
     const [added_by, setAdded_by] = useState("");
     const [daa_pdf, setDaa_pdf] = useState("");
     const [created_at, setCreated_at] = useState("");
+    const [role, setRole] = useState("");
+
     const router = useRouter();
     console.log("USER MODAL", data)
     useEffect(() => {
         setFull_name(data.full_name);
         setId(data.id);
-        setAllocatedBudget(data.allocated_budget);
+        setAllocatedBudget(data.allocatedBudget);
         setBudget(data.budget);
         setEmail(data.email);
         setInstitution(data.institution);
@@ -392,6 +394,7 @@ function UserModal({ show, onClose, data }) {
         setAdded_by(data.added_by);
         setDaa_pdf(data.daa_pdf);
         setCreated_at(data.created_at);
+        setRole(data.role);
     }, [data]);
 
     useEffect(() => {
@@ -412,7 +415,7 @@ function UserModal({ show, onClose, data }) {
                 <div tw="col-start-2 col-span-10 flex items-center justify-between mt-5 mb-3">
                     <div tw="flex space-x-3 items-center">
                         <h2 tw="font-bold font-rubik text-4xl text-gray-800">{full_name}</h2>
-                        <Tag variant={'primary'} tw="font-bold">Data Scientist</Tag>
+                        <Tag variant={'primary'} tw="font-bold">{role}</Tag>
                     </div>
                     <Button tw="float-right" tw="space-x-3 text-gray-400" type="button" onClick={()=>deleteUserByID(id)}><FontAwesomeIcon size="sm" icon={faTrash} />  Delete User</Button>
                 </div>
@@ -740,7 +743,6 @@ export default function Active() {
             if (apiRes.status == 200) {
                 const data = await apiRes.json();
                 setUserData(data)
-                // console.log("userData: ", userData)
             }
             else {
                 alert("Couldn't fetch the user!");

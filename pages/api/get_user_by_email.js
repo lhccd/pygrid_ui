@@ -34,9 +34,35 @@ export default async (req, res) => {
                     user_email: email
                 }
             })
+            const roleRes = await axios({
+                method: 'GET',
+                url: `${API_URL}/domain/role-by-user`,
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": `Bearer ${access}`
+                },
+                params:{
+                    user_email: email,
+                    domain_name: domain_name
+                }
+            })
             const data = apiRes.data;
+            const roleData = roleRes.data;
             if (apiRes.status === 200){
-                return res.status(200).json(data);
+                return res.status(200).json({
+                    email: data.email,
+                    full_name: data.full_name,
+                    id: data.id,
+                    institution: data.institution,
+                    website: data.website,
+                    status: data.status,
+                    role: roleData.name,
+                    budget: data.budget,
+                    allocatedBudget: data.allocated_budget,
+                    created_at: data.created_at,
+                    added_by: data.created_at,
+                    daa_pdf: data.daa_pdf
+                })
             }
             else{
                 return res.status(apiRes.status).json({
