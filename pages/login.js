@@ -129,7 +129,7 @@ export default function Login() {
                 <div id="header" tw="grid grid-cols-12 bg-gray-100 bg-opacity-5 rounded-lg gap-6 py-4">
                     <img tw="col-start-2 col-span-2 object-scale-down h-14 pl-10" src={"/assets/small-logo.png"} alt="py-grid-logo"/>
                     <div tw="col-start-9 col-span-4">
-                        <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={variant}>
+                        <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={variant} autoDelete={true} autoDeleteTime={3000}>
                             <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
                             <p>{alertMessage}</p>
                         </Alert>

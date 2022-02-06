@@ -9,6 +9,7 @@ import {
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {useForm} from "react-hook-form";
 import ToggleSwitch from "/components/ToggleSwitch";
+import Alert from "/components/Alert";
 import * as fileSaver from "file-saver";
 import {useRouter} from "next/router";
 import axios from "axios";

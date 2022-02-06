@@ -4,6 +4,14 @@ import {useForm} from "react-hook-form";
 import axios from "axios";
 import moment from "moment";
 import {useRouter} from "next/router";
+import Alert from "/components/Alert";
+import {
+    faPlus,
+    faInfoCircle,
+    faTimes,
+    faExclamationCircle,
+} from '@fortawesome/free-solid-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 
 export default function Updates(){
     const router = useRouter();

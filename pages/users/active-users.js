@@ -361,7 +361,7 @@ function CreateUserModal({ show, onClose }) {
                         <button tw='px-6 py-4 font-bold text-lg rounded-r-lg border-2 border-gray-200 bg-gray-50' type="button" onClick={incrementBudget}>+</button>
                     </div>
                 </div>
-                <div tw="col-span-7 text-justify font-normal font-mono my-2">
+                <div tw="col-start-6 col-span-7 text-justify font-normal font-mono my-2">
                     <p>Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy allocatedBudget as credits you give to a user to perform computations from. These credits of Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. You can learn more about privacy allocatedBudgets and how to allocate them at Course.OpenMined.org</p>
                 </div>
                 <div tw="col-span-full flex justify-between font-bold text-xl">
