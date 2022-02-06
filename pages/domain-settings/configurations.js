@@ -13,7 +13,6 @@ import Alert from "/components/Alert";
 import * as fileSaver from "file-saver";
 import {useRouter} from "next/router";
 import axios from "axios";
-import {Alert} from "../../components";
 
 export default function Config(){
     const router = useRouter();

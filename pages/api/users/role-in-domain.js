@@ -1,19 +1,17 @@
-import cookie from "cookie"
-import axios from "axios"
+import cookie from "cookie";
+import axios from "axios";
 
 const API_URL = "http://localhost/api/v1";
 
 export default async (req, res) => {
-    if(req.method == "POST"){
+    if(req.method === "GET"){
         const cookies =  cookie.parse(req.headers.cookie ?? '');
         const access = cookies.access ?? false;
-        console.log({access})
         if ( access === false){
             return res.status(401).json({
                 error: 'User is not authorized!'
             })
         }
-
         const domain_name = cookies.domain ?? false;
         if ( domain_name === false){
             return res.status(401).json({
@@ -22,21 +20,22 @@ export default async (req, res) => {
         }
 
         try{
-            const email = req.body.email
+            const email = req.query.email;
             const apiRes = await axios({
-                method: 'get',
-                url: `${API_URL}/users/user-detail`,
+                method: 'GET',
+                url: `${API_URL}/domain/role-by-user`,
                 headers: {
                     "Accept": "application/json",
                     "Authorization": `Bearer ${access}`
                 },
-                params: {
-                    user_email: email
+                params:{
+                    user_email: email,
+                    domain_name: domain_name
                 }
             })
             const data = apiRes.data;
             if (apiRes.status === 200){
-                return res.status(200).json(data);
+                return res.status(200).json({role: data.name});
             }
             else{
                 return res.status(apiRes.status).json({
@@ -51,7 +50,7 @@ export default async (req, res) => {
         }
     }
     else{
-        res.setHeader('Allow', ['GET']);
+        res.setHeader('Allow', ['POST']);
         return res.status(405).json({error: `Method ${req.method} not allowed`});
     }
 };

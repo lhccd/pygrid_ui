@@ -137,7 +137,6 @@ const roles = [
 ]
 
 async function acceptUserByID(email) {
-    console.log("acceptUserByID Called", { email })
     try {
         const body = JSON.stringify(email)
         console.log("requesting put", body)
@@ -151,7 +150,6 @@ async function acceptUserByID(email) {
                 body: body
             });
         const data = await apiRes.json()
-        console.log("ACCEPT USER BY ID outside returns", data)
     }
     catch (error) {
         console.log("error in updateUserByID", error)
@@ -161,7 +159,6 @@ async function acceptUserByID(email) {
 async function deleteUserByID(id) {
     try {
         const body = JSON.stringify({ "id": id })
-        console.log("requesting delete", body)
         const apiRes = await fetch('/api/delete_user_by_id',
             {
                 method: "DELETE",
@@ -172,7 +169,6 @@ async function deleteUserByID(id) {
                 body: body
             });
         const data = await apiRes.json()
-        console.log("DELETE USER BY ID outside returns", data)
     }
     catch (error) {
         console.log("error in deleteuserbyid", error)
@@ -180,10 +176,8 @@ async function deleteUserByID(id) {
 }
 
 async function adjustBudget(email, allocatedBudget) {
-    console.log("adjustBudget Called", { email })
     try {
         const body = JSON.stringify({ "email": email, "budget": allocatedBudget })
-        console.log("requesting put", body)
         const apiRes = await fetch('/api/adjust_budget_by_id',
             {
                 method: "PUT",
@@ -194,7 +188,6 @@ async function adjustBudget(email, allocatedBudget) {
                 body: body
             });
         const data = await apiRes.json()
-        console.log("ADJUST BUDGET BY ID outside returns", data)
     }
     catch (error) {
         console.log("error in updateUserByID", error)
@@ -226,12 +219,10 @@ function CreateUserModal({ show, onClose }) {
             data
         }
         try {
-            console.log("createuser modal form post to backend config data: ", values)
             const response = await axios(config)
             setAlertVariant('success');
             setAlertMessage('User successfully created!')
             setShowAlert(true);
-            console.log(response);
             onClose();
         } catch (err) {
             console.error(err);
@@ -721,7 +712,6 @@ export default function Active() {
                 }
             );
             const data = await apiRes.json();
-            // console.log("userlist from backend", { data })
             setUserlist(data);
         }
         finally {
@@ -729,13 +719,14 @@ export default function Active() {
         }
     }
 
+
     async function getUser(email) {
         const body = JSON.stringify({
             email,
         })
         try {
             const apiRes = await fetch(
-                "api/get_user_by_id",
+                "api/get_user_by_email",
                 {
                     method: "POST",
                     headers: {
@@ -772,7 +763,7 @@ export default function Active() {
                         setShowUserModal(true);
                     }}>
                         <p tw="text-gray-600">{row.values.full_name}</p>
-                        <Tag><p tw="text-xs text-primary-600 font-medium">{row.values.email}</p></Tag>
+                        <Tag><p tw="text-xs text-primary-600 font-medium">{row.original.role}</p></Tag>
                     </button>
                 ),
             },
