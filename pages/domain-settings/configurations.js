@@ -13,6 +13,7 @@ import Alert from "/components/Alert";
 import * as fileSaver from "file-saver";
 import {useRouter} from "next/router";
 import axios from "axios";
+import {Alert} from "../../components";
 
 export default function Config(){
     const router = useRouter();
@@ -163,14 +164,14 @@ export default function Config(){
                     const response = await apiRes.json();
                     console.log("DAA sent");
                     setAlertVariant('success');
-                    setAlertMessage('Changes successfully saved')
+                    setAlertMessage("Data access agreement uploaded")
                     setShowAlert(true);
                 }
                 else{
                     const error = await apiRes.json();
                     console.log(error);
                     setAlertVariant('error');
-                    setAlertMessage('An error occured during the change of settings!')
+                    setAlertMessage("Couldn't upload the data access agreement")
                     setShowAlert(true);
                 }
             }
@@ -181,12 +182,12 @@ export default function Config(){
             console.log(response);
             setDAASent(true);
             setAlertVariant('success');
-            setAlertMessage('Changes successfully saved')
+            setAlertMessage("Data access agreement uploaded")
             setShowAlert(true);
         } catch (err) {
             console.error(err);
             setAlertVariant('error');
-            setAlertMessage('An error occured during the change of settings!')
+            setAlertMessage("Couldn't upload the data access agreement")
             setShowAlert(true);
         }
     }

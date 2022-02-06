@@ -4,11 +4,18 @@ import tw, { styled } from 'twin.macro'
 import { useForm } from "react-hook-form"
 import React, { useEffect, useState } from "react";
 import Tag from '../components/Tag'
-import Alert from '../components'
+import Alert from '../components/Alert';
 import Textfield from '../components/Textfield'
 import axios from "axios"
 import { faFontAwesome } from "@fortawesome/free-brands-svg-icons";
-import {faDownload, faTimes, faPlus, faUserPlus, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
+import {
+  faDownload,
+  faTimes,
+  faPlus,
+  faUserPlus,
+  faInfoCircle,
+  faExclamationCircle
+} from '@fortawesome/free-solid-svg-icons'
 import fileSaver from "file-saver";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import moment from "moment";
@@ -39,6 +46,8 @@ export default function Signup() {
   const [DAAUploaded, setDAAUploaded] = useState(false);
   const [daa, setDaa] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [variant, setVariant] = useState('primary');
 
   useEffect (() => {
     getMetaData();
@@ -47,42 +56,63 @@ export default function Signup() {
   async function onSubmitForm(values) {
     let config = null;
     let response = null;
-    if(DAARequired){
-      const formData = new FormData
-      formData.append("email", values.email)
-      formData.append("full_name", values.full_name)
-      formData.append("institution", values.institution)
-      formData.append("password", values.password)
-      formData.append("website", values.website)
-      formData.append("domain_name", domainName)
-      formData.append("daa_pdf", values.daa_pdf[0]);
-      config = {
-        method: 'post',
-        url: 'http://localhost/api/v1/users/open-daa',
-        data: formData
-      };
-
-      console.log("config data: ", values)
-      response = await axios(config)
-    }
-    else{
-      let data = JSON.stringify({
-        "email": values.email,
-        "full_name": values.full_name,
-        "institution": values.institution,
-        "password": values.password,
-        "website": values.website,
-        "domain_name": domainName,
-        "allocated_budget": 0,
-
-      })
-      response = axios.post('http://localhost/api/v1/users/open', data)
-    }
     try {
-      router.push('/login')
+      if(DAARequired){
+        const formData = new FormData
+        formData.append("email", values.email)
+        formData.append("full_name", values.full_name)
+        formData.append("institution", values.institution)
+        formData.append("password", values.password)
+        formData.append("website", values.website)
+        formData.append("domain_name", domainName)
+        formData.append("daa_pdf", values.daa_pdf[0]);
+        config = {
+          method: 'post',
+          url: 'http://localhost/api/v1/users/open-daa',
+          data: formData
+        };
+
+        console.log("config data: ", values)
+        response = await axios(config)
+      }
+      else{
+        let data = JSON.stringify({
+          "email": values.email,
+          "full_name": values.full_name,
+          "institution": values.institution,
+          "password": values.password,
+          "website": values.website,
+          "domain_name": domainName,
+          "allocated_budget": 0,
+
+        })
+        response = axios.post('http://localhost/api/v1/users/open', data)
+      }
+
       console.log(response);
+      router.push('/login')
+
+      if(response.status == 200){
+        setVariant('success');
+        setAlertMessage('Your application is successful! Please wait for the review of your account')
+        setShowAlert(true);
+      }
+      else if(response.status == 400) {
+        setVariant('error');
+        setAlertMessage('There was something wrong with your application!');
+        setShowAlert(true);
+      }
+      else{
+        setVariant('error');
+        setAlertMessage('There was something wrong with your application!');
+        setShowAlert(true);
+      }
+
     } catch (err) {
-      console.error(err);
+      console.error(err)
+      setVariant('error');
+      setAlertMessage('There was something wrong with your application!');
+      setShowAlert(true);
     }
   }
 
@@ -186,10 +216,10 @@ export default function Signup() {
         <div id="header" tw="grid grid-cols-12 bg-gray-100 bg-opacity-5 rounded-lg gap-6 py-4">
           <img tw="col-start-2 col-span-2 object-scale-down h-14 pl-10" src={"/assets/small-logo.png"} alt="py-grid-logo" />
           <div tw="col-start-9 col-span-4">
-            {/* <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={variant}>
-                <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
-                {variant==='error' ? <p>Your credentials are incorrect!</p> : <p>Your credentials are correct!</p>}
-            </Alert> */}
+            <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={variant}>
+              <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+              <p>{alertMessage}</p>
+            </Alert>
           </div>
         </div>
         <div id="content" tw="grid grid-cols-12 flex-grow text-gray-600 text-left text-lg rounded-lg gap-6 ">

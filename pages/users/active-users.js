@@ -830,8 +830,7 @@ export default function Active() {
                     
                     <div tw="flex items-center justify-center">
                         {/* {console.log(row.values)} */}
-                        <Button 
-                            tw="bg-gray-200 text-white" 
+                        <button
                             isSmall 
                             variant={'error'} 
                             onClick={
@@ -841,8 +840,8 @@ export default function Active() {
                                     }
                                 }
                         >
-                            Delete
-                        </Button>
+                            <FontAwesomeIcon icon={faTrash} size="lg" tw="text-error-500"/>
+                        </button>
                     </div>    
                 )
             }

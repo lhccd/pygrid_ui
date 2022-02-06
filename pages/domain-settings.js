@@ -1,7 +1,7 @@
 import { Layout } from '../components/Layout'
 import { Tab } from "@headlessui/react"
 import tw, {styled} from 'twin.macro'
-import {faUsers} from '@fortawesome/free-solid-svg-icons'
+import {faExclamationCircle, faUsers} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import Modal from '../components/Modal'
 import React, {useState, useEffect, Fragment} from 'react';
@@ -11,11 +11,16 @@ import {useRouter} from 'next/router'
 import Configurations from "./domain-settings/configurations"
 import Profile from "./domain-settings/profile"
 import Updates from "./domain-settings/updates"
+import Alert from "../components/Alert";
 
 export default function DomainSettings(props) {
     const router = useRouter();
     const [toggleTab, setToggleTab] = useState(1)
     const [url, setUrl] = useState("");
+
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertVariant, setAlertVariant] = useState('primary');
 
     useEffect(()=>{
         getDomain()
@@ -47,6 +52,13 @@ export default function DomainSettings(props) {
         }
     }
 
+    const copyUrl =  () => {
+        navigator.clipboard.writeText(url)
+        setAlertVariant('success');
+        setAlertMessage('URL copied to the clipbard')
+        setShowAlert(true);
+    }
+
     return(
         <div tw="font-roboto">
             <Layout>
@@ -59,7 +71,13 @@ export default function DomainSettings(props) {
                     <p tw="mb-4">Provide contextual information for the Canada Domain node and set structural configurations.</p>
                     <div tw="mb-12 inline-flex">
                         <input tw="p-2 border border-gray-300 rounded-l text-black w-96" id="url" name="url" type="url" readOnly value={url} placeholder="domain-specific-url.com"/>
-                        <button tw="border border-gray-300 bg-gray-100 rounded-r text-gray-800 p-2 whitespace-nowrap active:bg-gray-200" type="button" onClick={() => {navigator.clipboard.writeText(url)}}>Copy URL</button>
+                        <button tw="border border-gray-300 bg-gray-100 rounded-r text-gray-800 p-2 whitespace-nowrap active:bg-gray-200" type="button" onClick={copyUrl}>Copy URL</button>
+                    </div>
+                    <div tw="col-start-9 col-span-4">
+                        <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={alertVariant}>
+                            <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                            <p>{alertMessage}</p>
+                        </Alert>
                     </div>
                     <Tab.Group
                         defaultIndex={toggleTab}

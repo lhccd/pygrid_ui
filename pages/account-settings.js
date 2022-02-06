@@ -5,10 +5,11 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { Layout } from "../components/Layout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faExclamationTriangle, faInfoCircle} from "@fortawesome/free-solid-svg-icons";
+import {faExclamationCircle, faExclamationTriangle, faInfoCircle} from "@fortawesome/free-solid-svg-icons";
 import Modal from "../components/Modal"
 import {getToken} from "../lib/auth";
 import {faCheckCircle} from "@fortawesome/free-solid-svg-icons/faCheckCircle";
+import Alert from "../components/Alert";
 
 
 export default function AccountSettings() {
@@ -27,6 +28,9 @@ export default function AccountSettings() {
     const [password, setPassword] = useState("");
 
     const [isDomainOwner, setIsDomainOwner] = useState(false);
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [variant, setVariant] = useState('primary');
 
     useEffect(() => {
         getUser();
@@ -53,11 +57,15 @@ export default function AccountSettings() {
                 setWebsite(user.website);
             }
             else{
-                alert("Couldn't fetch the user profile!");
+                setVariant('error');
+                setAlertMessage("Couldn't fetch the user profile")
+                setShowAlert(true);
             }
         }
         catch (error){
-            console.log(error);
+            setVariant('error');
+            setAlertMessage("Couldn't fetch the user profiler")
+            setShowAlert(true);
         }
     }
 
@@ -84,13 +92,22 @@ export default function AccountSettings() {
             if(apiRes.status == 200){
                 const user = await apiRes.json();
                 console.log(user);
+
+                setVariant('success');
+                setAlertMessage('User profile information successfully changed')
+                setShowAlert(true);
             }
             else{
-                alert("Couldn't update the user profile!");
+                setVariant('error');
+                setAlertMessage("Couldn't update the user profile")
+                setShowAlert(true);
             }
         }
         catch (error){
             console.log(error);
+            setVariant('error');
+            setAlertMessage("Couldn't update the user profile")
+            setShowAlert(true);
         }
     }
 
@@ -114,15 +131,25 @@ export default function AccountSettings() {
             );
 
             if(apiRes.status === 200){
-                const user = await apiRes.json();
-                console.log("Password changed");
+                setVariant('success');
+                setAlertMessage("Password successfully changed")
+                setShowAlert(true);
+                console.log(showAlert)
             }
             else{
                 const error = await apiRes.json();
                 console.log(error);
+                setVariant('error');
+                setAlertMessage("Couldn't update the password")
+                setShowAlert(true);
+                console.log(showAlert)
             }
         }
         catch (error){
+            setVariant('error');
+            setAlertMessage("Couldn't update the password")
+            setShowAlert(true);
+            console.log(showAlert)
             console.log(error);
         }
     }
@@ -147,11 +174,17 @@ export default function AccountSettings() {
                 console.log(response);
             }
             else{
-                alert("Couldn't delete the user profile!");
+                console.log(error);
+                setVariant('error');
+                setAlertMessage("Couldn't delete the user")
+                setShowAlert(true);
             }
         }
         catch (error){
             console.log(error);
+            setVariant('error');
+            setAlertMessage("Couldn't delete the user")
+            setShowAlert(true);
         }
     }
 
@@ -174,13 +207,21 @@ export default function AccountSettings() {
                 });
             if(apiRes.status == 200){
                 setShowFeedbackModal(false);
+                setAlertVariant('success');
+                setAlertMessage('Feedback successfully submitted')
+                setShowAlert(true);
                 router.push('/signup');
             }
             else{
-                alert(apiRes.status + " Something went wrong! Please try again!")
+                setAlertVariant('error');
+                setAlertMessage('Something went wrong! Please try again!')
+                setShowAlert(true);
             }
         }catch (err) {
             console.error(err)
+            setAlertVariant('error');
+            setAlertMessage('Something went wrong! Please try again!')
+            setShowAlert(true);
         }
     }
 
@@ -192,6 +233,12 @@ export default function AccountSettings() {
     return (
         <div tw="font-roboto">
             <Layout >
+                <div tw="col-start-9 col-span-4">
+                    <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={variant}>
+                        <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                        <p>{alertMessage}</p>
+                    </Alert>
+                </div>
                 <div tw="col-span-9 my-10 mx-3 flex items-center space-x-3 p-3 bg-primary-100 border-t-4 border-primary-500">
                     <FontAwesomeIcon icon={faInfoCircle} tw="" />
                     <p tw="text-gray-800 cursor-pointer">Your profile information is public-facing information that other users and node owners can see.</p>

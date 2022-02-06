@@ -18,6 +18,7 @@ import {faCheckCircle} from "@fortawesome/free-solid-svg-icons/faCheckCircle";
 import axios from "axios";
 import moment from "moment";
 import {useRouter} from "next/router";
+import {Alert} from "../../components";
 
 export default function Profile(){
     const router = useRouter();
@@ -76,9 +77,6 @@ export default function Profile(){
     const onAddTag = () => {
         if (newTag!=""){
             setTags((tags) => ([...tags, newTag]));
-            setAlertVariant('success');
-            setAlertMessage('New tag successfully added')
-            setShowAlert(true);
         }
     }
 
@@ -87,9 +85,6 @@ export default function Profile(){
             onClick={
                 () => {
                     setTags(tags.filter(item => item !== tag))
-                    setAlertVariant('warning');
-                    setAlertMessage('Tag removed')
-                    setShowAlert(true);
                 }
             }
             type="button"><FontAwesomeIcon icon={faTimes} size="sm" tw=""/></button></Tag>

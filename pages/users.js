@@ -50,8 +50,6 @@ export default function Users() {
         fetchUserlist('denied_userlist')
         console.log("LIST LENGTHS", acceptedUsersLength, deniedUsersLength, pendingUsersLength)
     }, [toggleTab])
- 
-
 
     return(
         <Layout current={"users"}>
