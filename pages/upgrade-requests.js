@@ -10,14 +10,16 @@ import Pending from './requests/upgrade-requests/pending'
 import History from './requests/upgrade-requests/history'
 
 export default function UpgradeRequests() {
-    const [pendingRequestsLength, setPendingRequestsLength] = useState("")
+    const [pendingRequestList, setPendingRequestsList] = useState([])
+    const [historyRequestList, setHistoryRequestsList] = useState([])
+    const [pendingRequestsLength, setPendingRequestsLength] = useState(0)
     const [toggleTab, setToggleTab] = useState("")
     const [showAlert, setShowAlert ] =useState(true)
 
-    const fetchRequestlist = async (list_type) => {
-        try{
+    const fetchPendingRequestList = async () => {
+        try {
             const apiRes = await fetch(
-                `/api/${list_type}`,
+                '/api/pending_u_request_list',
                 {
                     method: "GET",
                     headers: {
@@ -27,19 +29,43 @@ export default function UpgradeRequests() {
                 }
             );
             const data = await apiRes.json();
-            const list_size = Object.keys(data).length
-            if(list_type === 'pending_requestlist'){
-                setPendingRequestsLength(list_size);}
+            setPendingRequestsLength(data.length);
+            setPendingRequestsList(data)
         }
-        catch(error) {
-            console.log("data fetching on user side failed", error);
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    const fetchHistoryRequestList = async () => {
+        try {
+            const apiRes = await fetch(
+                '/api/history_u_request_list',
+                {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
+            const data = await apiRes.json();
+            setHistoryRequestsList(data)
+        }
+        catch(error){
+            console.log(error);
         }
     }
 
     useEffect(() => {
-        fetchRequestlist('pending_requestlist')
-        console.log("LIST LENGTHS", pendingRequestsLength)
+        fetchPendingRequestList()
+        fetchHistoryRequestList()
     }, [toggleTab])
+
+    useEffect(() => {
+        fetchPendingRequestList()
+        fetchHistoryRequestList()
+    }, [])
 
     return(
         <Layout current={"upgrade requests"}>
@@ -75,8 +101,8 @@ export default function UpgradeRequests() {
                             </Tab>
                         </Tab.List>
                         <Tab.Panels>
-                            <Tab.Panel><Pending/></Tab.Panel>
-                            <Tab.Panel><History/></Tab.Panel>
+                            <Tab.Panel><Pending list={pendingRequestList}/></Tab.Panel>
+                            <Tab.Panel><History list={historyRequestList}/></Tab.Panel>
                         </Tab.Panels>
                     </Tab.Group>
                 </div>

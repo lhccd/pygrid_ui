@@ -10,7 +10,12 @@ const TagBox = styled.div(({ variant, rounded, fullColor}) => [
     variant === 'warning' && tw`bg-warning-100 text-warning-600 `,
     variant === 'gray' && tw`bg-gray-100 text-black`,
     rounded && tw`rounded-xl`,
-    fullColor && tw`bg-error-500 text-error-600`
+    fullColor && tw`bg-error-500 text-error-600`,
+    variant === 'primary-bg' && tw`bg-primary-500 text-white `,
+    variant === 'error-bg' && tw`bg-error-500 text-white `,
+    variant === 'success-bg' && tw`bg-success-500 text-white `,
+    variant === 'warning-bg' && tw`bg-warning-500 text-white `,
+    variant === 'gray-bg' && tw`bg-gray-500 text-white`,
 ])
 
 export default function Tag({children, variant, rounded, fullColor}){

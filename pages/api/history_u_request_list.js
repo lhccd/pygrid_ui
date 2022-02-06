@@ -4,7 +4,7 @@ import axios from "axios"
 const API_URL = "http://localhost/api/v1";
 
 export default async (req, res) => {
-    if(req.method == "POST"){
+    if(req.method == "GET"){
         const cookies =  cookie.parse(req.headers.cookie ?? '');
         const access = cookies.access ?? false;
 
@@ -13,15 +13,28 @@ export default async (req, res) => {
                 error: 'User is not authorized!'
             })
         }
+        const domain_name = cookies.domain ?? false;
+        if ( domain_name === false){
+            return res.status(401).json({
+                error: 'The domain does not exist or something wrong with the domain!'
+            })
+        }
 
         try{
-            const id = req.body.id
-            const apiRes = await axios({
-                method: 'get',
-                url: `${API_URL}/users/get-by-id`,
-                headers: {"Accept": "application/json", "Authorization": `Bearer ${access}`},
-                params: {user_id: id}})
+            const apiRes = await axios(
+                {
+                    method: 'GET',
+                    url: `${API_URL}/upgrade-requests/history`,
+                    headers: {
+                        "Accept": "application/json",
+                        "Authorization": `Bearer ${access}`
+                    },
+                    params: {
+                        domain_name: domain_name
+                    }
+                });
             const data = apiRes.data;
+
             if (apiRes.status === 200){
                 return res.status(200).json(data);
             }
@@ -41,4 +54,5 @@ export default async (req, res) => {
         res.setHeader('Allow', ['GET']);
         return res.status(405).json({error: `Method ${req.method} not allowed`});
     }
+
 };

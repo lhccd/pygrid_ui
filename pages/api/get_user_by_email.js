@@ -7,7 +7,7 @@ export default async (req, res) => {
     if(req.method == "POST"){
         const cookies =  cookie.parse(req.headers.cookie ?? '');
         const access = cookies.access ?? false;
-
+        console.log({access})
         if ( access === false){
             return res.status(401).json({
                 error: 'User is not authorized!'
@@ -15,12 +15,15 @@ export default async (req, res) => {
         }
 
         try{
-            const id = req.body.id
-            const apiRes = await axios({
-                method: 'get',
-                url: `${API_URL}/users/get-by-id`,
-                headers: {"Accept": "application/json", "Authorization": `Bearer ${access}`},
-                params: {user_id: id}})
+            const email = req.body.email
+            const apiRes = await axios({method: 'get', url: `${API_URL}/users/user-detail`, headers: {"Accept": "application/json", "Authorization": `Bearer ${access}`}, params: {user_email: email}})
+            // {
+            //     method: 'GET',
+            //     headers: {
+            //         "Accept": "application/json",
+            //         "Authorization": `Bearer ${access}`
+            //     },
+            // });
             const data = apiRes.data;
             if (apiRes.status === 200){
                 return res.status(200).json(data);

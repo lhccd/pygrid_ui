@@ -16,7 +16,7 @@ import {
     faTimesCircle,
     faExclamationCircle,
     faExpandAlt,
-    faTrash, faLink, faUsers, faUserCircle,
+    faTrash, faLink, faUsers, faUserCircle, faChevronRight, faCaretUp,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useRouter } from 'next/router'
@@ -56,132 +56,161 @@ const TableData = tw.td`
     p-2 border border-gray-200
 `;
 
-const JaneDoe = [
-    {
-        "email": 'jane.doe@gmail.com',
-        "full_name": 'Jane Doe',
-        "status": "Accepted",
-        "id": '21a68e773ba747f0a4b6169bf28e8bed',
-        "updated_on": "2021-JUL-15 10:31",
-        "updated_by": "Kyoko Eng",
-        "datasets": "",
-        "requested_on": '2021-JUL-14 10:31',
-        "current_balance": 10,
-        "allocated_budget": 10,
-        "current_budget": 10,
-        "request_size": 12,
-        "role": 'Data Scientist',
-        "company": 'OpenMined',
-        "website": 'https://www.openmined.org',
-        "reason": 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    }
-]
-
-const Berke = [
-    {
-        "email": 'berke.atropat@gmail.com',
-        "full_name": 'Berke Atropat',
-        "status": "Denied",
-        "id": '21a68es27baf474f0a4h616dbf2gef8be4d',
-        "updated_on": "2021-JUL-17 20:39",
-        "updated_by": "Kyoko Eng",
-        "datasets": "",
-        "requested_on": '2021-JUL-16 20:39',
-        "current_balance": 22,
-        "allocated_budget": 22,
-        "current_budget": 22,
-        "request_size": 18,
-        "role": 'Data Scientist',
-        "company": 'TUM',
-        "website": 'https://www.tum.de',
-        "reason": 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    }
-]
-
-function RequestModal({ show, onClose, data }) {
-    //Deal later!
+function RequestModal({ show, onClose, requestData, userData }) {
+    const [currentBudget, setCurrentBudget] = useState(0)
+    const [requestedBudget, setRequestedBudget] = useState(0)
+    const [reason, setReason] = useState("")
+    const [status, setStatus] = useState("")
+    const [id, setId] = useState("")
+    const [requestDate, setRequestDate] = useState("")
+    const [updatedOn, setUpdatedOn] = useState("")
+    const [updatedBy, setUpdatedBy] = useState("")
+    const [comment, setComment] = useState("")
     const [full_name, setFull_name] = useState("")
-    const [budget, setBudget] = useState("")
     const [email, setEmail] = useState("");
     const [institution, setInstitution] = useState("");
     const [website, setWebsite] = useState("");
-    const [added_by, setAdded_by] = useState("")
-    const [daa_pdf, setDaa_pdf] = useState("")
-    const [created_at, setCreated_at] = useState("")
+    const [role, setRole] = useState("")
+    const [statusVariant, setStatusVariant] = useState('');
     const router = useRouter();
 
     useEffect(() => {
-        setFull_name(data.full_name);
-        setBudget(data.budget);
-        setEmail(data.email);
-        setInstitution(data.institution);
-        setWebsite(data.website);
-        setAdded_by(data.added_by);
-        setDaa_pdf(data.daa_pdf);
-        setCreated_at(data.created_at);
-    }, [data]);
+        console.log("requestData: ", requestData)
+        setCurrentBudget(requestData.current_budget);
+        setRequestedBudget(requestData.requested_budget);
+        setReason(requestData.reason);
+        setStatus(requestData.status);
+        setId(requestData.id);
+        setRequestDate(requestData.request_date);
+        setUpdatedOn(requestData.updated_on);
+        setUpdatedBy(requestData.updated_by);
+        setComment(requestData.reviewer_comments);
+    }, [requestData]);
 
     useEffect(() => {
-    }, [budget]);
+        if(status=="accepted") {
+            setStatusVariant('success-bg')
+        } else if(status=="rejected") {
+            setStatusVariant('error-bg')
+        }
+    }, [status])
 
-    function handleBudgetInUserModal(value) {
-        setBudget(value)
-    };
-
+    useEffect(() => {
+        console.log("userData: ", userData)
+        setFull_name(userData.full_name);
+        setEmail(userData.email);
+        setInstitution(userData.institution);
+        setWebsite(userData.website);
+        setRole("Data Scientist");
+    }, [userData]);
 
     return (
         <Modal show={show} onClose={onClose}>
             <div tw="col-span-full">
-                <div tw="w-full m-5"><button tw="items-center font-bold space-x-2" onClick={() => router.push(`/users/${email}`)}><FontAwesomeIcon size="sm" icon={faExpandAlt} />   Expand Page</button></div>
-                <div tw="h-auto px-20 py-10">
+                <div tw="h-auto w-auto p-4 text-sm">
+                    <div tw="flex inline-flex">
+                        <p tw="font-bold text-gray-600 mr-2">Request ID:</p>
+                        <Tag variant={'gray'}><p tw="font-bold text-gray-800">{id}</p></Tag>
+                    </div>
                     <div tw="flex items-center justify-between my-5">
                         <div tw="flex space-x-3 items-center">
-                            <h2 tw="font-bold font-rubik text-4xl text-gray-800">{full_name}</h2>
-                            <Tag variant={'primary'}>Data Scientist</Tag>
+                            <h2 tw="font-bold font-rubik text-4xl text-gray-800">full_name</h2>
                         </div>
-                        <div tw="inline-flex p-5 space-x-2">
-                            <button>
-                                <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-gray-200" />
-                            </button>
-                            <button onClick={async () => {
-                                await denyUserByID(email);
-                                console.log("DELETING ROW FROM PENDING TABLE ...", email)
-                                // setUserlist(userlist.splice(row.id, 1));
-                                onClose();
-                            }
-                            }><FontAwesomeIcon size="lg" icon={faTimesCircle} title="Decline" tw="text-gray-200" /></button>
+                        <div>
+                            <Tag variant={statusVariant}><p tw="font-bold">{status}</p></Tag>
                         </div>
-                        email={email} data={budget} handleBudgetInUserModal={handleBudgetInUserModal} />
                     </div>
 
-                    <h3 tw="font-bold mt-10 text-gray-600">Background</h3>
-                    <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Email:</p>
-                            <p>{email}</p>
+                    <div tw="divide-y divide-gray-200 w-auto">
+                        <div tw="flex inline-flex justify-start mb-10 w-full">
+                            <div tw="flex inline-flex whitespace-nowrap mr-8">
+                                <div tw="bg-gray-50 border border-gray-100 p-4 rounded">
+                                    <div tw="flex items-center justify-center">
+                                        <div tw="pr-4">
+                                            <div tw="flex inline-flex items-center">
+                                                <p tw="text-gray-800 text-lg font-bold">{currentBudget} ɛ</p>
+                                                <p tw="text-primary-600 text-lg font-bold ml-2">+</p>
+                                                <Tag variant={"primary"} tw="">
+                                                    <div tw="font-bold">{requestedBudget} ɛ</div>
+                                                </Tag>
+                                            </div>
+                                            <p tw="text-gray-600 text-sm">Current Budget</p>
+                                        </div>
+                                        <div tw="px-4">
+                                            <FontAwesomeIcon icon={faChevronRight} size="lg" tw="text-gray-400"/>
+                                        </div>
+
+                                        <div tw="px-4">
+                                            <div tw="flex inline-flex items-center">
+                                                <p tw="text-gray-800 text-lg font-bold mr-2">{requestedBudget+currentBudget} ɛ</p>
+                                                <Tag variant={"primary"} tw="">
+                                                    <div tw="font-bold">{requestedBudget} <FontAwesomeIcon icon={faCaretUp}/></div>
+                                                </Tag>
+                                            </div>
+                                            <p tw="text-gray-600 text-sm">Requested Budget</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div tw="">
+                                <div tw="flex space-x-3">
+                                    <p tw="font-bold text-gray-600">Reason:</p>
+                                    <p>{reason}</p>
+                                </div>
+                            </div>
                         </div>
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Company/Institution:</p>
-                            <p>{institution}</p>
-                        </div>
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Website/profile:</p>
-                            <p>{website}</p>
-                        </div>
-                    </div>
-                    <h3 tw="font-bold mt-10 text-gray-600">System</h3>
-                    <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Date Added:</p>
-                            <p>{added_by}</p>
-                        </div>
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Data Access Agreement:</p>
-                            <p>{daa_pdf}</p>
-                        </div>
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Uploaded On:</p>
-                            <p>{created_at}</p>
+
+                        <div tw="flex inline-flex">
+                            <div tw="mr-10">
+                                <h3 tw="font-bold mt-10 text-gray-600 mb-2">User Details</h3>
+                                <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
+                                    <div tw="flex space-x-3">
+                                        <p tw="font-bold text-gray-600">Role:</p>
+                                        <Tag variant={'primary-bg'}><p tw="font-bold text-white">{role}</p></Tag>
+                                    </div>
+                                    <div tw="flex space-x-3">
+                                        <p tw="font-bold text-gray-600">Email:</p>
+                                        <a tw="text-gray-600 underline" href={"emailto:"+email}>{email}</a>
+                                    </div>
+                                    <div tw="flex space-x-3">
+                                        <p tw="font-bold text-gray-600">Company/Institution:</p>
+                                        <p tw="text-gray-600">{institution}</p>
+                                    </div>
+                                    <div tw="flex space-x-3">
+                                        <p tw="font-bold text-gray-600">Website/profile:</p>
+                                        <a tw="text-gray-600 underline" href={website}>{website}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 tw="font-bold mt-10 text-gray-600 mb-2">System Details</h3>
+                                <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
+                                    <div tw="flex space-x-3">
+                                        <p tw="font-bold text-gray-600">Request ID:</p>
+                                        <Tag variant={'gray'}><p tw="font-bold text-gray-800">{id}</p></Tag>
+                                    </div>
+                                    <div tw="flex space-x-3">
+                                        <p tw="font-bold text-gray-600">Status:</p>
+                                        <Tag variant={statusVariant}><p tw="font-bold">{status}</p></Tag>
+                                    </div>
+                                    <div tw="flex space-x-3">
+                                        <p tw="font-bold text-gray-600">Updated By:</p>
+                                        <p tw="text-gray-600">{updatedBy}</p>
+                                    </div>
+                                    <div tw="flex space-x-3">
+                                        <p tw="font-bold text-gray-600">Updated On:</p>
+                                        <p tw="text-gray-600">{updatedOn}</p>
+                                    </div>
+                                    <div tw="flex space-x-3">
+                                        <p tw="font-bold text-gray-600">Request Date:</p>
+                                        <p tw="text-gray-600">{requestDate}</p>
+                                    </div>
+                                    <div tw="flex space-x-3">
+                                        <p tw="font-bold text-gray-600">Reviewer Comment:</p>
+                                        <p tw="text-gray-600">{comment}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -190,110 +219,105 @@ function RequestModal({ show, onClose, data }) {
     );
 }
 
-export default function History() {
-    const [requestlist, setRequestlist] = useState([]);
-    const [loading, setLoading] = useState(true);
+export default function History(props) {
+    const [requestList, setRequestList] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [showRequestModal, setShowRequestModal] = useState(false);
     const [showAlert, setShowAlert] = useState(true);
 
     const [requestData, setRequestData] = useState(
         {
-            "email": "",
-            "full_name": "",
             "status": "",
-            "id": 0,
-            "request_size": 0,
+            "id": "",
+            "request_date": "",
             "updated_on": "",
             "updated_by": "",
-            "datasets": ""
-        });
+            "comments": "",
+            "current_budget": "",
+            "requested_budget": "",
+            "reason": "",
+        }
+        );
+    const [userData, setUserData] = useState(
+        {
+            "email": "",
+            "full_name": "",
+            "institution": "",
+            "website": "",
+            "role": "Data Scientist",
+        }
+    );
+
+    useEffect(async () => {
+        await setRequestList(props.list)
+    }, [])
+
+    useEffect(async () => {
+        await setRequestList(props.list)
+    }, [props.list])
 
     useEffect(() => {
-        setRequestlist([JaneDoe,Berke])
-        //fetchRequestlist()
     }, [showRequestModal])
 
-    /*
-    const fetchRequestlist = async () => {
-        try {
-            setLoading(true);
+    async function getUser(e) {
+        try{
             const apiRes = await fetch(
-                '/api/CHANGE_THIS',
-                {
-                    method: "GET",
-                    headers: {
-                        "Accept": "application/json",
-                        "Content-Type": "application/json"
-                    }
-                }
-            );
-            const data = await apiRes.json();
-            console.log("request list: ", { data })
-            setRequestlist(data);
-        }
-        finally {
-            setLoading(false);
-        }
-    }
-
-     */
-
-    /*
-    async function getRequest(id) {
-        const body = JSON.stringify({
-            id,
-        })
-        try {
-            const apiRes = await fetch(
-                "api/CHANGE_THIS",
+                "api/get_user_by_id",
                 {
                     method: "POST",
                     headers: {
                         "Accept": "application/json",
                         "Content-Type": "application/json"
                     },
-                    body
+                    body: JSON.stringify({
+                        id: e
+                    })
                 }
             );
 
-            if (apiRes.status == 200) {
-                const data = await apiRes.json();
-                setRequestData(data)
-                console.log("requestData: ", requestData)
-            }
-            else {
-                alert("Couldn't fetch the request!");
+            if(apiRes.status == 200){
+                const user = await apiRes.json();
+                setUserData(user)
             }
         }
-        catch (error) {
-            console.log(error);
+        catch (error){
+            console.log(error)
         }
     }
-     */
 
-    const requestsData = useMemo(() => [...requestlist], [requestlist]);
+    const requestsData = useMemo(() => [...requestList], [requestList]);
     const requestsColumns = useMemo(
         () => [
             {
                 Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">#ID</div></div>,
-                accessor: 'ID',
-                Cell: ({ row }) => (
-                    <p tw="text-gray-600">{row.values.id}</p>
-                ),
+                accessor: 'id',
+                Cell: ({ row }) => {{
+                    return(
+                        <p tw="text-gray-600">{row.values.id}</p>)
+                }}
             },
             {
                 Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">Name</div></div>,
                 accessor: 'full_name',
-                Cell: ({ row }) => (
-                    <p tw="text-gray-600">{row.values.full_name}</p>
-                ),
+                Cell: ({ row }) => (<p tw="text-gray-600">{row.values.request_owner}</p>),
             },
             {
                 Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">Status</div></div>,
                 accessor: 'status',
-                Cell: ({ row }) => (
-                    <p tw="text-gray-600">{row.values.status}</p>
-                ),
+                Cell: ({ row }) => {{
+                    var variant = '';
+                    const status = row.values.status
+                    if(status=="accepted"){
+                        variant = 'success-bg'
+                    } else if(status=="rejected") {
+                        variant = 'error-bg'
+                    } else {
+                        variant = 'gray-bg'
+                    }
+
+                    return(
+                        <Tag variant={variant}><p tw="text-white font-bold">{row.values.status}</p></Tag>)
+                }}
             },
             {
                 Header: () =>
@@ -302,9 +326,9 @@ export default function History() {
                         <div tw="font-roboto capitalize">Updated On</div>
                     </div>,
                 accessor: 'updated_on',
-                Cell: ({ cell: { value } }) => {
+                Cell: ({row}) => {
                     {
-                        var d = moment(value).format('YYYY-MMM-DD HH:MM')
+                        var d = moment(row.values.updated_on).format('YYYY-MMM-DD HH:MM')
                         return d;
                     }
                 }
@@ -316,11 +340,7 @@ export default function History() {
                         <div tw="font-roboto capitalize">Updated By</div>
                     </div>,
                 accessor: 'updated_by',
-                Cell: ({ row }) => {
-                    {
-                        <p tw="text-gray-600">{row.values.updated_by}</p>
-                    }
-                }
+                Cell: ({ row }) =>( <p tw="text-gray-600">{row.values.updated_by}</p>)
             },
             {
                 Header: () =>
@@ -328,16 +348,20 @@ export default function History() {
                         <div tw="font-bold">∑</div>
                         <div tw="font-roboto capitalize">Requested</div>
                     </div>,
-                accessor: 'requested',
+                accessor: 'requested_budget',
                 Cell: ({ row }) => {
                     {
-                        {if(row.values.status=="Accepted"){
-                            <Tag variant={'success'} fullColor><p tw="text-white font-bold">{row.values.requested} ε</p></Tag>
-                        } else if (row.values.status=="Accepted"){
-                            <Tag variant={'error'} fullColor><p tw="text-white font-bold">{row.values.requested} ε</p></Tag>
+                        var variant = '';
+                        const status = row.values.status
+                        if(status=="accepted"){
+                            variant = 'success-bg'
+                        } else if(status=="rejected") {
+                            variant = 'error-bg'
+                        } else {
+                            variant = 'gray-bg'
                         }
 
-                        }
+                        return (<Tag variant={variant}><p tw="text-white font-bold">{row.values.requested_budget} ε</p></Tag>)
                     }
                 }
             },
@@ -347,12 +371,8 @@ export default function History() {
                         <div tw="font-bold">∑</div>
                         <div tw="font-roboto capitalize">New Budget</div>
                     </div>,
-                accessor: 'new',
-                Cell: ({ row }) => {
-                    {
-                        <p tw="text-gray-600">{row.values.new}</p>
-                    }
-                }
+                accessor: 'current_budget',
+                Cell: ({ row }) => (<p tw="text-gray-600">{row.values.requested_budget+row.values.current_budget}</p>)
             },
         ], []
     );
@@ -364,13 +384,15 @@ export default function History() {
             {
                 id: "action",
                 Header: 'Action',
-                Cell: ({ row }) => (
+                Cell: ({row}) => (
                     <div>
-                        <Button tw="flex space-x-2 items-center" onClick={() => {
-                            getRequest(row.values.id);
+                        <button tw="flex space-x-2 items-center" onClick={() => {
+                            setRequestData(row.original)
+                            getUser(row.original.request_owner);
                             setShowRequestModal(true);
                         }}>
-                            >See Details</Button>
+                            See Details
+                        </button>
                     </div>
                 )
             }
@@ -378,10 +400,6 @@ export default function History() {
     }
     const tableInstance = useTable({ columns: requestsColumns, data: requestsData }, useGlobalFilter, tableHooks, useSortBy);
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, preGlobalFilteredRows, setGlobalFilter, state } = tableInstance;
-
-    useEffect(() => {
-        fetchRequestlist();
-    }, [])
 
     return (
         <div tw="flex-col justify-center">
@@ -391,7 +409,7 @@ export default function History() {
                     <GlobalFilterStatus preGlobalFilteredRows={preGlobalFilteredRows} setGlobalFilter={setGlobalFilter} globalFilter={state.globalFilter} />
                 </div>
             </div>
-            <RequestModal show={showRequestModal} onClose={() => setShowRequestModal(false)} data={requestData} />
+            <RequestModal show={showRequestModal} onClose={() => setShowRequestModal(false)} requestData={requestData} userData={userData} />
             {loading ?
                 <div tw="my-10 flex w-full justify-center">
                     <Spinner />
