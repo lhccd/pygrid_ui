@@ -411,7 +411,7 @@ function UserModal({ show, onClose, data }) {
     const [role, setRole] = useState("");
 
     const router = useRouter();
-    console.log("USER MODAL", data)
+    // console.log("USER MODAL", data)
     useEffect(() => {
         setFull_name(data.full_name);
         setId(data.id);
@@ -446,7 +446,7 @@ function UserModal({ show, onClose, data }) {
                         <h2 tw="font-bold font-rubik text-4xl text-gray-800">{full_name}</h2>
                         <Tag variant={'primary'} tw="font-bold">{role}</Tag>
                     </div>
-                    <Button tw="float-right" tw="space-x-3 text-gray-400" type="button" onClick={()=>deleteUserByID(id)}><FontAwesomeIcon size="sm" icon={faTrash} />  Delete User</Button>
+                    <Button tw="float-right" tw="space-x-3 text-gray-400" type="button" onClick={()=>{deleteUserByID(id); onClose()}}><FontAwesomeIcon size="sm" icon={faTrash} />  Delete User</Button>
                 </div>
                 <button tw="col-start-2 col-span-2 text-primary-500 underline text-left text-sm" onClick={()=>setShowChangeRoleModal(true)}>Change Role</button>
                 <ChangeRoleModal show={showChangeRoleModal} onClose={() => setShowChangeRoleModal(false)}
@@ -810,6 +810,19 @@ export default function Active() {
                 ),
             },
             {
+                Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">Role</div></div>,
+                accessor: 'role',
+                Cell: ({ row }) => (
+                    <button tw="flex space-x-2 items-center" onClick={() => {
+                        getUser(row.values.email);
+                        setShowUserModal(true);
+                    }}>
+                        <p tw="text-gray-600">{row.original.role}</p>
+                        {/* <Tag><p tw="text-xs text-primary-600 font-medium">{row.original.role}</p></Tag> */}
+                    </button>
+                ),
+            },
+            {
                 Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">Σ Balance</div></div>,
                 accessor: 'budget',
                 Cell: ({ row }) => {
@@ -868,6 +881,7 @@ export default function Active() {
                             variant={'error'} 
                             onClick={
                                 async () => {
+                                    console.log("row details from deletion", row)
                                     await deleteUserByID(row.original.id); 
                                     await fetchUserlist()
                                     }

@@ -15,8 +15,8 @@ mt-6
 const roles = [
     { id: 0, role: 'Role' },
     // { id: 1, role: 'lorenz.dang@gmail.com' },
-    { id: 2, role: 'Owner' },
-    { id: 3, role: 'Admin' },
+    { id: 2, role: 'Domain Owner' },
+    { id: 3, role: 'Administrator' },
     { id: 4, role: 'Compliance Officer' },
     { id: 5, role: 'Data Scientist' },
   ]
@@ -40,9 +40,9 @@ export function GlobalFilterRoles({
       onChange(undefined);
     }
     else{
-      // console.log("in useeffect else")
-        setValue(selectedRole.role);
-        onChange(selectedRole.role);
+      console.log("in useeffect else")
+      setValue(selectedRole.role);
+      onChange(selectedRole.role);
     }
 }, [selectedRole])
 

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import tw, {styled} from 'twin.macro';
-import Modal from '/components/Modal';
+import Modal from '../../components/Modal';
 import {
     faPlus,
     faInfoCircle,
@@ -11,8 +11,8 @@ import {
     faDownload
 } from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import Tag from "/components/Tag";
-import Alert from "/components/Alert";
+import Tag from "../../components/Tag";
+import Alert from "../../components/Alert";
 import {useForm} from "react-hook-form";
 import {faCheckCircle} from "@fortawesome/free-solid-svg-icons/faCheckCircle";
 import axios from "axios";
@@ -76,6 +76,9 @@ export default function Profile(){
     const onAddTag = () => {
         if (newTag!=""){
             setTags((tags) => ([...tags, newTag]));
+            setAlertVariant('success');
+            setAlertMessage('Tag added')
+            setShowAlert(true);
         }
     }
 
@@ -84,6 +87,9 @@ export default function Profile(){
             onClick={
                 () => {
                     setTags(tags.filter(item => item !== tag))
+                    setAlertVariant('warning');
+                    setAlertMessage('Tag removed')
+                    setShowAlert(true);
                 }
             }
             type="button"><FontAwesomeIcon icon={faTimes} size="sm" tw=""/></button></Tag>

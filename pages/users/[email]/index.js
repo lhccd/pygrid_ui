@@ -17,9 +17,53 @@ const API_URL = "http://localhost/api/v1/users/user-detail?user_email="
 import cookie from "cookie"
 
 // WORKING getServerSideProps!!!! 
+// export async function getServerSideProps({ query }){
+//     const access = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDMyMDg1MTEsInN1YiI6IjExNmMwOWZhLWYwYWMtNDhmMC04YTEyLTBhNGZkNjcwYTUyOSJ9.ZTVQuKhYcK-kzAsRYG_H_Yu0z3J1teUpOGIPRzkdSYw'
+//     const { email } = query;
+//     const res = await fetch(`${API_URL}${email}`, { 
+//         method: 'get', 
+//         headers: {
+//             "Accept": "application/json", "Authorization": `Bearer ${access}`
+//         }
+//     })
+//     const data = await res.json();
+//     console.log("res", res, "data", data)
+//     return{
+//         props: {
+//             data
+//         }
+//     }
+// }
 export async function getServerSideProps({ query }){
     const access = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDMyMDg1MTEsInN1YiI6IjExNmMwOWZhLWYwYWMtNDhmMC04YTEyLTBhNGZkNjcwYTUyOSJ9.ZTVQuKhYcK-kzAsRYG_H_Yu0z3J1teUpOGIPRzkdSYw'
     const { email } = query;
+    const body = JSON.stringify({
+        email,
+    })
+    try {
+        const apiRes = await fetch(
+            "/api/get_user_by_email",
+            {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body
+            }
+        );
+
+        if (apiRes.status == 200) {
+            const data = await apiRes.json();
+            setUserData(data)
+        }
+        else {
+            alert("Couldn't fetch the user!");
+        }
+    }
+    catch (error) {
+        console.log(error);
+    }
     const res = await fetch(`${API_URL}${email}`, { 
         method: 'get', 
         headers: {

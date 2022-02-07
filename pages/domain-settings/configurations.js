@@ -193,13 +193,14 @@ export default function Config(){
 
     return (
         <>
+        <div tw="absolute right-0 w-1/2 z-50">
+            <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={alertVariant} autoDelete={true} autoDeleteTime={3000}>
+                <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                <p>{alertMessage}</p>
+            </Alert>
+        </div>
             <div tw="col-start-3 col-end-11 divide-y text-gray-800">
-            <div tw="absolute right-0 w-1/2 z-50">
-                <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={alertVariant} autoDelete={true} autoDeleteTime={3000}>
-                    <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
-                    <p>{alertMessage}</p>
-                </Alert>
-            </div>
+            
                 <div id="daa-toggle" tw="">
                     <div tw="flex justify-between mt-10">
                         <p tw="text-xl text-left font-bold font-rubik">Require Data Access Agreement</p>
