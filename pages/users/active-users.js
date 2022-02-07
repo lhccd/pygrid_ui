@@ -914,8 +914,8 @@ export default function Active() {
                 accessor: 'budget',
                 Cell: ({ row }) => {
                     // console.log("ROW", row)
-                    let allocatedBudgetDiff = row.values.budget <= row.values.allocated_budget
-                    // console.log("allocatedBudgetDiff", allocatedBudgetDiff, "of", row.values.full_name,"allocated budget", row.values.allocated_budget, "budget/balance", row.values.budget)
+                    let allocatedBudgetDiff = row.values.budget < row.values.allocated_budget
+                    console.log("allocatedBudgetDiff", allocatedBudgetDiff, "of", row.values.full_name,"allocated budget", row.values.allocated_budget, "budget/balance", row.values.budget)
                     return(
                         <div tw="flex space-x-2 items-center justify-center">
                             {/* {console.log("T ? F", row.values.allocated_budget >= row.values.budget)} */}

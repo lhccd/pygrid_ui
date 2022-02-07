@@ -8,6 +8,7 @@ import { Tab } from "@headlessui/react"
 import { Fragment } from 'react'
 import Pending from './requests/upgrade-requests/pending'
 import History from './requests/upgrade-requests/history'
+import Spinner from '../components/Spinner';
 
 export default function UpgradeRequests() {
     const [pendingRequestList, setPendingRequestsList] = useState([])
@@ -15,9 +16,11 @@ export default function UpgradeRequests() {
     const [pendingRequestsLength, setPendingRequestsLength] = useState(0)
     const [toggleTab, setToggleTab] = useState("")
     const [showAlert, setShowAlert ] =useState(true)
+    const [loading, setLoading] = useState(true);
 
     const fetchPendingRequestList = async () => {
         try {
+            setLoading(true);
             const apiRes = await fetch(
                 '/api/pending_u_request_list',
                 {
@@ -31,6 +34,8 @@ export default function UpgradeRequests() {
             const data = await apiRes.json();
             setPendingRequestsLength(data.length);
             setPendingRequestsList(data)
+
+            setLoading(false)
         }
         catch(error){
             console.log(error);
@@ -39,6 +44,7 @@ export default function UpgradeRequests() {
 
     const fetchHistoryRequestList = async () => {
         try {
+            setLoading(true);
             const apiRes = await fetch(
                 '/api/history_u_request_list',
                 {
@@ -51,6 +57,8 @@ export default function UpgradeRequests() {
             );
             const data = await apiRes.json();
             setHistoryRequestsList(data)
+
+            setLoading(false)
         }
         catch(error){
             console.log(error);
@@ -101,8 +109,19 @@ export default function UpgradeRequests() {
                             </Tab>
                         </Tab.List>
                         <Tab.Panels>
-                            <Tab.Panel><Pending list={pendingRequestList}/></Tab.Panel>
-                            <Tab.Panel><History list={historyRequestList}/></Tab.Panel>
+                            <Tab.Panel>  
+                                {loading ?
+                                    <div tw="my-10 flex w-full justify-center">
+                                        <Spinner />
+                                    </div> : <Pending list={pendingRequestList}/>
+                                }
+                                </Tab.Panel>
+                            <Tab.Panel>
+                                {loading ?
+                                        <div tw="my-10 flex w-full justify-center">
+                                            <Spinner />
+                                        </div> : <History list={historyRequestList}/>
+                                }</Tab.Panel>
                         </Tab.Panels>
                     </Tab.Group>
                 </div>

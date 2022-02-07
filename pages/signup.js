@@ -46,7 +46,7 @@ export default function Signup() {
   const [DAAUploaded, setDAAUploaded] = useState(false);
   const [daa, setDaa] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
   const [variant, setVariant] = useState('primary');
 
   useEffect (() => {
@@ -86,12 +86,12 @@ export default function Signup() {
           "allocated_budget": 0,
 
         })
-        response = axios.post('http://localhost/api/v1/users/open', data)
+        response = await axios.post('http://localhost/api/v1/users/open', data)
       }
 
-      console.log(response);
+      console.log("SIGNUP", response.status, response.data);
       router.push('/login')
-
+  
       if(response.status == 200){
         setVariant('success');
         setAlertMessage('Your application is successful! Please wait for the review of your account')

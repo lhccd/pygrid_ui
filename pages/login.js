@@ -1,7 +1,6 @@
-import styled from 'styled-components'
 import { useForm } from "react-hook-form"
 import DomainConnectionStatus from '../components/DomainConnectionStatus'
-import tw from 'twin.macro'
+import tw, { styled } from 'twin.macro'
 import Tag from '../components/Tag'
 import {useEffect, useState} from 'react'
 import axios from 'axios'
