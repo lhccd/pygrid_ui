@@ -17,7 +17,7 @@ export default function DomainConnectionStatus() {
 
       if(apiRes.status === 200){
         const data = await apiRes.data;
-        console.log(data);
+        // console.log(data);
         setOnline(true);
       }
       else{

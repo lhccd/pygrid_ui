@@ -34,7 +34,7 @@ export default function Login() {
 
     const { register, handleSubmit, errors, reset } = useForm();
     const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("");
+    const [alertMessage, setAlertMessage] = useState("");
     const [variant, setVariant] = useState('primary');
 
     const router = useRouter()

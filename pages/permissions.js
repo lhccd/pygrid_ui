@@ -1,10 +1,12 @@
 import { Layout } from '../components/Layout'
 import tw, {styled, css} from 'twin.macro'
-import {faCheck, faChevronRight} from '@fortawesome/free-solid-svg-icons'
+import {faCheck, faChevronRight, faChevronDown} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 
 import { Listbox, Transition, Disclosure} from '@headlessui/react'
-import Accordion from "../components/Accordion";
+import Tag from "../components/Tag";
+import Button from "../components/Button";
+import ToggleSwitch from "../components/ToggleSwitch";
 import {useState, useEffect, Fragment} from 'react'
 import { Tab } from "@headlessui/react"
 import Active from './users/active-users'
@@ -89,19 +91,30 @@ const roles = [
 ]
 
 export default function Permissions() {
+    const [DOPermissions, setDOPermissions] = useState({
+        "MakeDataRequests": false,
+        "EditRoles": false,
+        "TriageDataRequests": false,
+        "UploadData": false,
+        "ManagePrivacyBudgets": false,
+        "UploadLegalDocuments": false,
+        "ManageUsers": false,
+        "EditDomainSettings": false,
+        "CreateUsers": false,
+        "ManageInfrastructure": false,
+    });
+    const [DSPermissions, setDSPermissions] = useState([]);
+    const [AdminPermissions, setAdminPermissions] = useState([]);
+    const [COPermissions, setCOPermissions] = useState([]);
+
     useEffect (() => {
         getRoles("Domain Owner");
-    }, [])
-
+        getRoles("Administrator");
+        getRoles("Compliance Officer");
+        getRoles("Data Scientist");
+    },[])
 
     const [selectedRole, setSelectedRole] = useState(roles[0])
-
-    // FROM BERKE
-
-    const RoleItems = roles.map((info) =>
-        <AccordionRoles info={info}/>
-    );
-
 
     const getRoles = async (role_name) => {
         try{
@@ -119,17 +132,27 @@ export default function Permissions() {
             if(apiRes.status === 200)
             {
                 const data = await apiRes.data;
-                console.log(data)
+                if (role_name === "Domain Owner"){
+                    setDOPermissions(data)
+                }
+                if (role_name === "Administrator"){
+                    setAdminPermissions(data)
+                }
+                if (role_name === "Data Scientist"){
+                    setDSPermissions(data)
+                }
+                if (role_name === "Compliance Officer"){
+                    setCOPermissions(data)
+                }
             }
 
         }
         catch (e) {
-            alert("Couldn't fetch the role");
+            console.log("Couldn't fetch the role");
         }
 
     };
   
-    // END BERKE
     return(
         <Layout current={"permissions"}>
             <div tw="col-start-2 col-end-12 mt-6 grid grid-cols-12">
@@ -200,8 +223,15 @@ export default function Permissions() {
                     </Transition>
                 </Listbox> */}
                 <h3 tw="col-span-full mt-8 mb-4 text-2xl font-medium">Roles</h3>
-                <div tw="col-span-full border border-gray-200 rounded-lg divide-y divide-gray-200">{RoleItems}</div>
+                {/* <div tw="col-span-full border border-gray-200 rounded-lg divide-y divide-gray-200">{RoleItems}</div> */}
+                <div tw="col-span-full border border-gray-200 rounded-lg divide-y divide-gray-200">
+                    <AccordionRoles role={"Domain Owner"} description={roles[0].description} permissions={DOPermissions}/>
+                    <AccordionRoles role={"Administrator"} description={roles[1].description} permissions={AdminPermissions}/>
+                    <AccordionRoles role={"Compliance Officer"} description={roles[2].description} permissions={COPermissions}/>
+                    <AccordionRoles role={"Data Scientist"} description={roles[3].description} permissions={DSPermissions}/>
+                </div>
             </div>
+           
         </Layout>
     )
 }

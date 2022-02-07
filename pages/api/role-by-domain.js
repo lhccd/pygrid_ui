@@ -59,6 +59,7 @@ export default async (req, res) => {
                     }
                 });
             const data = apiRes.data;
+            console.log("MIDDLEWARE API GET", apiRes.data)
 
             if (apiRes.status === 200){
                 return res.status(200).json({
@@ -87,6 +88,7 @@ export default async (req, res) => {
         }
     }
     else if(req.method === "PUT"){
+        console.log("MIDDLEWARE API", req.body)
         /**
          * This function is the put function and it needs in the body:
          * role_name: str
@@ -115,7 +117,7 @@ export default async (req, res) => {
                         domain_name : domain_name,
                         role_name : req.body.role_name
                     },
-                    body:{
+                    data:{
                         can_make_data_requests: req.body.MakeDataRequests,
                         can_edit_roles: req.body.EditRoles,
                         can_triage_data_requests: req.body.TriageDataRequests,
@@ -129,7 +131,7 @@ export default async (req, res) => {
                     }
                 });
             const data = apiRes.data;
-
+            console.log("RESPONSE from BACKEND", apiRes.status, apiRes.data)
             if (apiRes.status === 200){
                 return res.status(200).json(data);
             }

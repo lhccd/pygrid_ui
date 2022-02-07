@@ -21,7 +21,7 @@ export default function Alert({variant, show, onClose, children, autoDelete, aut
     }
 
     useEffect(() => {
-        console.log("Autodelete", autoDelete, autoDeleteTime, show, variant, children)
+        // console.log("Autodelete", autoDelete, autoDeleteTime, show, variant, children)
         const timer = setTimeout(() => {
             if (autoDelete) {
                 onClose();

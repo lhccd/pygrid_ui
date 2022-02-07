@@ -29,7 +29,7 @@ export default function AccountSettings() {
 
     const [isDomainOwner, setIsDomainOwner] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("");
+    const [alertMessage, setAlertMessage] = useState("");
     const [variant, setVariant] = useState('primary');
 
     useEffect(() => {
