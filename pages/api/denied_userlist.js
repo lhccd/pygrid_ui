@@ -59,7 +59,8 @@ export default async (req, res) => {
                     role: roleData.name,
                     allocated_budget: row.allocated_budget,
                     created_at: row.created_at,
-                    added_by: row.added_by
+                    added_by: row.added_by,
+                    institution: row.institution
                 })
             }
 

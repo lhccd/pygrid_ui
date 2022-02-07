@@ -100,6 +100,45 @@ async function denyUserByID(email) {
     }
 }
 
+async function downloadDAA(email){
+    try{
+        const apiRes = await axios({
+            method: 'GET',
+            url: '/api/user-daa-pdf',
+            headers: {
+                "Accept": "application/json",
+            },
+            params: {
+                user_email: email
+            }
+        });
+        if(apiRes.status === 200){
+            try {
+                const data = await apiRes.data.data;
+                let decodedStringAtoB = atob(data);
+                let bytes = new Uint8Array(decodedStringAtoB.length);
+                for (let i = 0; i < decodedStringAtoB.length; i++)
+                    bytes[i] = decodedStringAtoB.charCodeAt(i);
+                let a = window.document.createElement('a');
+
+                a.href = window.URL.createObjectURL(new Blob([bytes], {type: 'application/octet-stream'}));
+                a.download = email + "_agreement" + ".pdf";
+                document.body.appendChild(a)
+                a.click();
+                document.body.removeChild(a)
+            }
+            catch (e) {
+                alert("Wrong file format has been uploaded! DAA is invalid!");
+            }
+        }
+        else{
+            alert("Couldn't find any agreement file in the domain");
+        }
+    }
+    catch(error) {
+        console.error(error)
+    }
+}
 function PendingUserModal({ show, onClose, data }) {
     console.log("userData: ", data)
     const [showConfirmationFlowModal, setShowConfirmationFlowModal] = useState(false)
@@ -395,8 +434,24 @@ export default function Pending() {
                     }
                 }
             },
-            { Header: () => <div tw="flex font-normal space-x-2 items-center"><div tw="font-roboto capitalize">DAA</div></div>, accessor: 'daa' },
-            { Header: () => <div tw="flex font-normal space-x-2 items-center"><div tw="font-roboto capitalize">Institution</div></div>, accessor: 'added_by' },
+            { 
+                Header: () => <div tw="flex font-normal space-x-2 items-center"><div tw="font-roboto capitalize">DAA</div></div>, 
+                accessor: 'daa',
+                Cell: ({ row }) => (
+                    <button tw="flex space-x-2 items-center bg-gray-100 px-2 py-1" 
+                        onClick={
+                            async () => 
+                                {
+                                    await downloadDAA(row.values.email);
+                                    console.log("DOWNLOADING DAA FROM PENDING TABLE ...", {row})
+                                    // setUserlist(userlist.splice(row.id, 1))
+                                }
+                        }>
+                            <p tw="text-black underline text-xs">Download DAA</p>
+                    </button>
+                ),
+            },
+            { Header: () => <div tw="flex font-normal space-x-2 items-center"><div tw="font-roboto capitalize">Institution</div></div>, accessor: 'institution' },
             { Header: () => <div tw="flex font-normal space-x-2 items-center"><FontAwesomeIcon icon={faEnvelope} size="sm" /><div tw="font-roboto capitalize">Email</div></div>, accessor: 'email' }], []
     );
 
