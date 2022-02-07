@@ -78,7 +78,7 @@ export default function Accordion (props) {
                         </div>
                         <div tw="flex inline-flex ml-4">
                             <Tag variant={"gray"} tw="">
-                                <div tw="font-bold">{} ɛ</div>
+                                <div tw="font-bold">{props.info.initial_budget} ɛ</div>
                             </Tag>
                             <p tw="text-gray-600 text-sm mr-2">+</p>
                             <Tag variant={"primary"} tw="">
@@ -109,7 +109,7 @@ export default function Accordion (props) {
                                 <div tw="flex items-center justify-center pt-4">
                                     <div tw="pr-4">
                                         <div tw="flex inline-flex items-center">
-                                            <p tw="text-gray-800 text-lg font-bold">{} ɛ</p>
+                                            <p tw="text-gray-800 text-lg font-bold">{props.info.initial_budget} ɛ</p>
                                             <p tw="text-primary-600 text-lg font-bold ml-2">+</p>
                                             <Tag variant={"primary"} tw="">
                                                 <div tw="font-bold">{props.info.requested_budget} ɛ</div>
@@ -123,7 +123,7 @@ export default function Accordion (props) {
 
                                     <div tw="px-4">
                                         <div tw="flex inline-flex items-center">
-                                            <p tw="text-gray-800 text-lg font-bold mr-2">{props.info.requested_budget+0} ɛ</p>
+                                            <p tw="text-gray-800 text-lg font-bold mr-2">{props.info.requested_budget+props.info.initial_budget} ɛ</p>
                                             <Tag variant={"primary"} tw="">
                                                 <div tw="font-bold">{props.info.requested_budget} <FontAwesomeIcon icon={faCaretUp}/></div>
                                             </Tag>

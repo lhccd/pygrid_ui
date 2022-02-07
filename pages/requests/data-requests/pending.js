@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import tw, { styled, css } from 'twin.macro';
 import Tag from '../../../components/Tag'
 import Modal from '../../../components/Modal';
@@ -16,7 +16,7 @@ import {
     faTimesCircle,
     faExclamationCircle,
     faExpandAlt,
-    faTrash, faLink,
+    faTrash, faLink, faUsers, faUserCircle, faChevronRight, faCaretUp, faComment, faTimes,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useRouter } from 'next/router'
@@ -27,6 +27,7 @@ import { GlobalFilter } from '../../../components/GlobalFilter';
 import { Router } from 'next/router';
 import { Tab } from "@headlessui/react"
 import { Fragment } from 'react'
+import {GlobalFilterStatus} from "../../../components/GlobalFilterStatus";
 
 const Table = tw.table`
     min-w-full
@@ -55,129 +56,178 @@ const TableData = tw.td`
     p-2 border border-gray-200
 `;
 
-async function acceptRequest(id) {
-    try {
-        const body = JSON.stringify(id)
-        const apiRes = await fetch('/api/CHANGE_HERE',
-            {
-                method: "PUT",
-                headers: {
-                    'Accept': "application/json",
-                    'Content-Type': "application/json"
-                },
-                body: body
-            });
-        const data = await apiRes.json()
-        console.log(data)
-    }
-    catch (error) {
-        console.log("Cannot accept request: ", error)
-    }
-}
-
-async function denyRequest(id) {
-    try {
-        const body = JSON.stringify(id)
-        const apiRes = await fetch('/api/CHANGE_HERE',
-            {
-                method: "PUT",
-                headers: {
-                    'Accept': "application/json",
-                    'Content-Type': "application/json"
-                },
-                body: body
-            });
-        const data = await apiRes.json()
-    }
-    catch (error) {
-        console.log("Cannot deny request: ", error)
-    }
-}
-
-function RequestModal({ show, onClose, data }) {
-    //Deal later!
+function RequestModal({ show, onClose, requestData, userData }) {
+    const [requestSize, setRequestSize] = useState(0)
+    const [dataSubjects, setDataSubjects] = useState(0)
+    const [linkedDatasets, setLinkedDatasets] = useState([])
+    const [tags, setTags] = useState([])
+    const [numVals, setNumVals] = useState(0)
+    const [reason, setReason] = useState("")
+    const [status, setStatus] = useState("")
+    const [id, setId] = useState("")
+    const [resultId, setResultId] = useState("")
+    const [requestDate, setRequestDate] = useState("")
     const [full_name, setFull_name] = useState("")
-    const [budget, setBudget] = useState("")
     const [email, setEmail] = useState("");
     const [institution, setInstitution] = useState("");
     const [website, setWebsite] = useState("");
-    const [added_by, setAdded_by] = useState("")
-    const [daa_pdf, setDaa_pdf] = useState("")
-    const [created_at, setCreated_at] = useState("")
+    const [role, setRole] = useState("")
+    const [budget, setBudget] = useState(0)
+    const [allocatedBudget, setAllocatedBudget] = useState(0)
+    const [budgetVariant, setBudgetVariant] = useState("")
     const router = useRouter();
 
     useEffect(() => {
-        setFull_name(data.full_name);
-        setBudget(data.budget);
-        setEmail(data.email);
-        setInstitution(data.institution);
-        setWebsite(data.website);
-        setAdded_by(data.added_by);
-        setDaa_pdf(data.daa_pdf);
-        setCreated_at(data.created_at);
-    }, [data]);
+        console.log("requestData: ", requestData)
+        setRequestSize(requestData.request_size);
+        setDataSubjects(requestData.data_subjects);
+        let sets_array = requestData.linked_datasets?.split(', ')
+        setLinkedDatasets(sets_array)
+        setReason(requestData.reason);
+        setStatus(requestData.status);
+        setId(requestData.id);
+        setRequestDate(requestData.request_date);
+        let tags_array = requestData.tags?.split(', ')
+        setTags(tags_array)
+        setNumVals(requestData.num_of_values)
+        setResultId(requestData.result_id)
+    }, [requestData]);
+
+
+    const sets = linkedDatasets?.map((set) =>
+        <Tag variant="gray"><p tw="font-bold">{set}</p></Tag>
+    )
+
+    const tags2 = tags?.map((tag) =>
+        <Tag variant="primary"><p tw="font-bold">#{tag}</p></Tag>
+    )
 
     useEffect(() => {
-    }, [budget]);
+        console.log("userData: ", userData)
+        setFull_name(userData.full_name);
+        setEmail(userData.email);
+        setInstitution(userData.institution);
+        setWebsite(userData.website);
+        setRole("Data Scientist");
+        setBudget(userData.budget)
+        setAllocatedBudget(userData.allocated_budget)
+    }, [userData]);
 
-    function handleBudgetInUserModal(value) {
-        setBudget(value)
-    };
-
+    useEffect(() => {
+        if (budget<allocatedBudget){
+            setBudgetVariant('gray')
+        } else {
+            setBudgetVariant('error-bg')
+        }
+    }, [budget])
 
     return (
         <Modal show={show} onClose={onClose}>
             <div tw="col-span-full">
-                <div tw="w-full m-5"><button tw="items-center font-bold space-x-2" onClick={() => router.push(`/users/${email}`)}><FontAwesomeIcon size="sm" icon={faExpandAlt} />   Expand Page</button></div>
-                <div tw="h-auto px-20 py-10">
+                <div tw="h-auto w-auto p-4 text-sm">
+                    <div tw="flex inline-flex">
+                        <p tw="font-bold text-gray-600 mr-2">Request ID:</p>
+                        <Tag variant={'gray'}><p tw="font-bold text-gray-800">{id}</p></Tag>
+                    </div>
                     <div tw="flex items-center justify-between my-5">
                         <div tw="flex space-x-3 items-center">
                             <h2 tw="font-bold font-rubik text-4xl text-gray-800">{full_name}</h2>
-                            <Tag variant={'primary'}>Data Scientist</Tag>
                         </div>
-                        <div tw="inline-flex p-5 space-x-2">
-                            <button>
-                                <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-gray-200" />
-                            </button>
-                            <button onClick={async () => {
-                                await denyUserByID(email);
-                                console.log("DELETING ROW FROM PENDING TABLE ...", email)
-                                // setUserlist(userlist.splice(row.id, 1));
-                                onClose();
-                            }
-                            }><FontAwesomeIcon size="lg" icon={faTimesCircle} title="Decline" tw="text-gray-200" /></button>
+                        <div>
+                            <Tag variant={'primary-bg'}><p tw="font-bold">{status}</p></Tag>
                         </div>
-                        email={email} data={budget} handleBudgetInUserModal={handleBudgetInUserModal} />
                     </div>
 
-                    <h3 tw="font-bold mt-10 text-gray-600">Background</h3>
-                    <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Email:</p>
-                            <p>{email}</p>
+                    <div tw="divide-y divide-gray-200 w-auto">
+                        <div tw="flex inline-flex justify-start mb-10 w-full">
+                            <div tw="flex inline-flex whitespace-nowrap mr-8">
+                                <div tw="bg-gray-50 border border-gray-100 p-4 rounded">
+                                    <div tw="divide-y divide-gray-200">
+                                        <div tw="flex items-center justify-center divide-x divide-gray-200 mb-2">
+                                            <div tw="pr-4">
+                                                <div tw="flex inline-flex items-center">
+                                                    <p tw="text-gray-800 text-lg font-bold">{requestSize} ɛ</p>
+                                                </div>
+                                                <p tw="text-gray-600 text-sm">Request Size</p>
+                                            </div>
+                                            <div tw="px-4">
+                                                <div tw="flex inline-flex items-center">
+                                                    <p tw="text-gray-800 text-lg font-bold mr-2">{dataSubjects}</p>
+                                                </div>
+                                                <p tw="text-gray-600 text-sm">Data Subjects</p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div tw="flex space-x-3 mt-2">
+                                                <p tw="font-bold text-gray-600">Linked Datasets:</p>
+                                            </div>
+                                            <div tw="flex space-x-3 mt-2">
+                                                {sets}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
+                                    <div tw="flex space-x-3 items-center">
+                                        <p tw="font-bold text-gray-600">Role:</p>
+                                        <Tag variant={'primary'}><p tw="font-bold">{role}</p></Tag>
+                                    </div>
+                                    <div tw="flex space-x-3 items-center">
+                                        <p tw="font-bold text-gray-600">Privacy Budget:</p>
+                                        <Tag variant={budgetVariant}><p tw="font-bold">{budget} ɛ</p></Tag><p tw="text-xs text-gray-600"> used of </p><Tag variant={'gray'}><p tw="font-bold">{allocatedBudget} ɛ</p></Tag>
+                                    </div>
+                                    <div tw="flex space-x-3 items-center">
+                                        <p tw="font-bold text-gray-600">Email:</p>
+                                        <a tw="text-gray-600 underline" href={"emailto:"+email}>{email}</a>
+                                    </div>
+                                    <div tw="flex space-x-3 items-center">
+                                        <p tw="font-bold text-gray-600">Company/Institution:</p>
+                                        <p tw="text-gray-600">{institution}</p>
+                                    </div>
+                                    <div tw="flex space-x-3 items-center">
+                                        <p tw="font-bold text-gray-600">Website/profile:</p>
+                                        <a tw="text-gray-600 underline" href={website}>{website}</a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Company/Institution:</p>
-                            <p>{institution}</p>
-                        </div>
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Website/profile:</p>
-                            <p>{website}</p>
-                        </div>
-                    </div>
-                    <h3 tw="font-bold mt-10 text-gray-600">System</h3>
-                    <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Date Added:</p>
-                            <p>{added_by}</p>
-                        </div>
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Data Access Agreement:</p>
-                            <p>{daa_pdf}</p>
-                        </div>
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Uploaded On:</p>
-                            <p>{created_at}</p>
+
+                        <div tw="">
+                            <div>
+                                <h3 tw="font-bold mt-6 text-gray-800 mb-2 text-lg">Request Details</h3>
+                                <div tw="border border-gray-100 divide-y divide-gray-200">
+                                    <div tw="flex-col rounded p-4 space-y-3">
+                                        <div tw="flex space-x-3">
+                                            <p tw="font-bold text-gray-600">Request ID:</p>
+                                            <Tag variant={'gray'}><p tw="font-bold text-gray-800">{id}</p></Tag>
+                                        </div>
+                                        <div tw="flex space-x-3">
+                                            <p tw="font-bold text-gray-600">Request Date:</p>
+                                            <p tw="text-gray-600">{moment(requestDate).format('YYYY-MMM-DD HH:MM')}</p>
+                                        </div>
+                                        <div tw="flex space-x-3">
+                                            <p tw="font-bold text-gray-600">Tags:</p>
+                                            {tags2}
+                                        </div>
+                                        <div tw="flex space-x-3">
+                                            <p tw="font-bold text-gray-600">Result ID:</p>
+                                            <Tag variant={'gray'}><p tw="font-bold text-gray-800">{resultId}</p></Tag>
+                                        </div>
+                                        <div tw="flex space-x-3">
+                                            <p tw="font-bold text-gray-600"># of Values:</p>
+                                            <p tw="text-gray-600">{numVals}</p>
+                                        </div>
+                                    </div>
+                                    <div tw="p-4">
+                                        <div tw="bg-gray-50 rounded p-2">
+                                            <p tw="font-bold text-gray-600">Reason:</p>
+                                            <p tw="text-gray-600">{reason}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -186,95 +236,178 @@ function RequestModal({ show, onClose, data }) {
     );
 }
 
-export default function Pending() {
-    const [requestlist, setRequestlist] = useState([]);
-    const [loading, setLoading] = useState(true);
+export default function Pending(props) {
+    const [requestList, setRequestList] = useState([]);
+    const [id, setId] = useState("")
+    const [comment, setComment] = useState("")
+    const [update, setUpdate] = useState("")
+    const [loading, setLoading] = useState(false);
+    const [showCommentModal, setShowCommentModal] = useState(false)
     const [showRequestModal, setShowRequestModal] = useState(false);
-    const [showAlert, setShowAlert] = useState(true);
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [variant, setVariant] = useState('primary');
 
     const [requestData, setRequestData] = useState(
         {
+            "status": "",
+            "id": "",
+            "request_date": "",
+            "updated_on": "",
+            "updated_by": "",
+            "comments": "",
+            "initial_budget": "",
+            "requested_budget": "",
+            "reason": "",
+        }
+    );
+    const [userData, setUserData] = useState(
+        {
             "email": "",
             "full_name": "",
-            "id": 0,
-            "request_size": 0,
-            "created_at": "",
-            "datasets": ""
-        });
+            "institution": "",
+            "website": "",
+            "role": "Data Scientist",
+        }
+    );
+
+    useEffect(async () => {
+        await setRequestList(props.list)
+    }, [])
+
+    useEffect(async () => {
+        await setRequestList(props.list)
+    }, [props.list])
 
     useEffect(() => {
-        fetchRequestlist()
+        console.log("data request list", requestList)
     }, [showRequestModal])
 
-    const fetchRequestlist = async () => {
-        try {
-            setLoading(true);
+    async function getUser(e) {
+        try{
             const apiRes = await fetch(
-                '/api/CHANGE_THIS',
-                {
-                    method: "GET",
-                    headers: {
-                        "Accept": "application/json",
-                        "Content-Type": "application/json"
-                    }
-                }
-            );
-            const data = await apiRes.json();
-            console.log("request list: ", { data })
-            setRequestlist(data);
-        }
-        finally {
-            setLoading(false);
-        }
-    }
-
-    async function getRequest(id) {
-        const body = JSON.stringify({
-            id,
-        })
-        try {
-            const apiRes = await fetch(
-                "api/CHANGE_THIS",
+                "api/get_user_by_id",
                 {
                     method: "POST",
                     headers: {
                         "Accept": "application/json",
                         "Content-Type": "application/json"
                     },
-                    body
+                    body: JSON.stringify({
+                        id: e
+                    })
                 }
             );
 
-            if (apiRes.status == 200) {
-                const data = await apiRes.json();
-                setRequestData(data)
-                console.log("requestData: ", requestData)
-            }
-            else {
-                alert("Couldn't fetch the request!");
+            if(apiRes.status == 200){
+                const user = await apiRes.json();
+                setUserData(user)
             }
         }
-        catch (error) {
+        catch (error){
+            console.log(error)
+        }
+    }
+
+    const acceptRequest = () => {
+        setShowCommentModal(true)
+        setUpdate("accept")
+    }
+    const rejectRequest = () => {
+        setShowCommentModal(true)
+        setUpdate("reject")
+    }
+
+    async function onSubmitComment() {
+        try {
+            const apiRes = await fetch(
+                '/api/update_data_request',
+                {
+                    method: "PUT",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        comments: comment,
+                        update: update
+                    })
+                }
+            );
+            if(apiRes.status == 200){
+                setVariant('success');
+                setAlertMessage('Request successfully '+update+"ed")
+                setShowAlert(true);
+                setShowCommentModal(false)
+            }
+            else{
+                console.error(err)
+                setVariant('error');
+                setAlertMessage('There was an error '+update+'ing the request');
+                setShowAlert(true);
+            }
+        }
+        catch(error){
             console.log(error);
         }
     }
 
-    const requestsData = useMemo(() => [...requestlist], [requestlist]);
+    const onSkipComment = async () => {
+        try {
+            const apiRes = await fetch(
+                '/api/update_data_request',
+                {
+                    method: "PUT",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        comments: "",
+                        update: update
+                    })
+                }
+            );
+            if(apiRes.status == 200){
+                setVariant('success');
+                setAlertMessage('Request successfully '+update+"ed")
+                setShowAlert(true);
+                setShowCommentModal(false)
+            }
+            else{
+                console.error(err)
+                setVariant('error');
+                setAlertMessage('There was an error '+update+'ing the request');
+                setShowAlert(true);
+            }
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    const requestsData = useMemo(() => [...requestList], [requestList]);
     const requestsColumns = useMemo(
         () => [
             {
                 Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">#ID</div></div>,
                 accessor: 'id',
                 Cell: ({ row }) => (
-                    <p tw="text-gray-600">{row.values.id}</p>
+                    <button tw="flex space-x-2 items-center" onClick={() => {
+                        setRequestData(row.original)
+                        getUser(row.original.request_owner);
+                        setShowRequestModal(true);
+                    }}>
+                        <p tw="text-gray-600">#{row.values.id}</p>
+                    </button>
                 ),
             },
             {
                 Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">Name</div></div>,
-                accessor: 'full_name',
-                Cell: ({ row }) => (
-                    <p tw="text-gray-600">{row.values.full_name}</p>
-                ),
+                accessor: 'name',
+                Cell: ({ row }) => (<p tw="text-gray-600">{row.values.name}</p>),
             },
             {
                 Header: () =>
@@ -282,10 +415,10 @@ export default function Pending() {
                         <FontAwesomeIcon icon={faCalendar} size="sm" />
                         <div tw="font-roboto capitalize">Request Date</div>
                     </div>,
-                accessor: 'created_at',
-                Cell: ({ cell: { value } }) => {
+                accessor: 'request_date',
+                Cell: ({row}) => {
                     {
-                        var d = moment(value).format('YYYY-MMM-DD HH:MM')
+                        var d = moment(row.values.request_date).format('YYYY-MMM-DD HH:MM')
                         return d;
                     }
                 }
@@ -293,26 +426,29 @@ export default function Pending() {
             {
                 Header: () =>
                     <div tw="flex font-normal space-x-2 items-center">
-                        <FontAwesomeIcon icon={faLink} size="sm" />
+                        <FontAwesomeIcon icon={faUser} size="sm" />
                         <div tw="font-roboto capitalize">Linked Datasets</div>
                     </div>,
-                accessor: 'datasets',
-                Cell: ({ row }) => {
-                    {
-                        <p tw="text-gray-600">{row.values.datasets}</p>
-                    }
-                }
+                accessor: 'linked_datasets',
+                Cell: ({ row }) =>{{
+                    var sets = row.values.linked_datasets
+                    var sets_array = sets.split(', ')
+                    const items = sets_array.map((set) =>
+                        <Tag variant="gray"><p tw="font-bold">{set}</p></Tag>
+                    );
+                    return(items)
+                }}
             },
             {
                 Header: () =>
                     <div tw="flex font-normal space-x-2 items-center">
                         <div tw="font-bold">∑</div>
-                        <div tw="font-roboto capitalize">Request Size</div>
+                        <div tw="font-roboto capitalize">Requested</div>
                     </div>,
-                accessor: 'size',
+                accessor: 'request_size',
                 Cell: ({ row }) => {
                     {
-                        <p tw="text-gray-600">{row.values.size}</p>
+                        return (<Tag variant={'primary'}><p tw="font-bold">{row.values.request_size} ε</p></Tag>)
                     }
                 }
             },
@@ -326,28 +462,14 @@ export default function Pending() {
             {
                 id: "action",
                 Header: 'Action',
-                Cell: ({ row }) => (
-                    <div>
-                        <Button tw="flex space-x-2 items-center" onClick={() => {
-                            getRequest(row.values.id);
-                            setShowRequestModal(true);
-                        }}>
-                        See Details</Button>
-                        <Button
-                            //onClick={
-                            // async () => {
-                            //     await acceptRequest(row.values.id);
-                            //     // setUserlist(requestlist.splice(row.id, 1))
-                            //     await fetchRequestlist();
-                            // }
-                        //}
-                        ><FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-gray-200" /></Button>
-                        <Button onClick={async () => {
-                            await denyRequest(row.values.email);
-                            // setUserlist(requestlist.splice(row.id, 1));
-                            await fetchRequestlist();
-                        }
-                        }><FontAwesomeIcon size="lg" icon={faTimesCircle} title="Decline" tw="text-gray-200" /></Button>
+                Cell: ({row}) => (
+                    <div tw="flex inline-flex">
+                        <button tw="mr-2" onClick={() => {setId(row.original.id); acceptRequest();}} >
+                            <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-gray-200 hover:text-success-500"/>
+                        </button>
+                        <button tw="mr-2"  onClick={() => {setId(row.original.id); rejectRequest();}}>
+                            <FontAwesomeIcon size="lg" icon={faTimesCircle} title="Decline" tw="text-gray-200 hover:text-error-500"/>
+                        </button>
                     </div>
                 )
             }
@@ -356,20 +478,20 @@ export default function Pending() {
     const tableInstance = useTable({ columns: requestsColumns, data: requestsData }, useGlobalFilter, tableHooks, useSortBy);
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, preGlobalFilteredRows, setGlobalFilter, state } = tableInstance;
 
-    useEffect(() => {
-        fetchRequestlist();
-    }, [])
-
     return (
         <div tw="flex-col justify-center">
+            <div tw="col-start-9 col-span-4">
+                <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={variant}>
+                    <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                    <p>{alertMessage}</p>
+                </Alert>
+            </div>
             <div tw="flex justify-between items-center">
                 <div tw="inline-flex space-x-4">
-                    <div tw="">
-                        <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} setGlobalFilter={setGlobalFilter} globalFilter={state.globalFilter} />
-                    </div>
+                    <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} setGlobalFilter={setGlobalFilter} globalFilter={state.globalFilter} />
                 </div>
             </div>
-            <RequestModal show={showRequestModal} onClose={() => setShowRequestModal(false)} data={requestData} />
+            <RequestModal show={showRequestModal} onClose={() => setShowRequestModal(false)} requestData={requestData} userData={userData} />
             {loading ?
                 <div tw="my-10 flex w-full justify-center">
                     <Spinner />
@@ -396,7 +518,7 @@ export default function Pending() {
                                 return (
                                     <TableRow {...row.getRowProps()} tw="text-sm text-gray-600">
                                         {row.cells.map((cell, idx) => (
-                                            <TableData {...cell.getCellProps()} css={[cell.column.isSorted && tw`bg-gray-50`]}>
+                                            <TableData {...cell.getCellProps()}>
                                                 {cell.render('Cell')}
                                             </TableData>
                                         ))}
@@ -406,6 +528,48 @@ export default function Pending() {
                     </Table>
                 </div>
             }
+
+
+            <Modal show={showCommentModal} onClose={() => setShowCommentModal(false)}>
+                <div tw="col-span-full text-center">
+                    <div tw="flex flex-col p-3 mt-3">
+                        <FontAwesomeIcon icon={faComment} size="2x" tw="text-black self-center m-6"/>
+                        <h1 tw="text-3xl font-bold font-rubik text-gray-800">
+                            Would you like to leave a comment?
+                        </h1>
+                    </div>
+                    <div tw="p-6 text-gray-600 font-roboto">
+                        <p>
+                            Lorem ipsum carrots, enhanced undergraduate developer, but they do occaecat time and vitality, such as labor and obesity. Over the years come, who nostrud exercise.
+                        </p>
+                    </div>
+                    <form tw="flex flex-col justify-start font-roboto mx-4">
+                        <label tw="text-left my-2 inline-flex"> <p tw="font-bold text-gray-500">Comment </p><p tw="pl-1 inline relative text-sm italic text-primary-600 ">(optional)</p></label>
+                        <input
+                            tw="text-left p-3 border border-gray-300 rounded-lg break-words resize-y focus:shadow-active hover:shadow-active active:ring-primary-500 active:text-gray-800"
+                            type="text"
+                            placeholder="You can leave a comment about your decision"
+                            value={comment} onChange={e => setComment(e.target.value)}
+                        />
+                        <div tw="flex justify-end p-6 mt-10">
+                            <button
+                                tw="text-primary-500 font-bold py-2 px-4 mr-6 rounded-lg"
+                                type="button"
+                                onClick={onSkipComment}
+                            >
+                                Skip
+                            </button>
+                            <button
+                                tw="bg-primary-500 rounded text-white font-bold py-2 px-4 mr-6"
+                                type="button"
+                                onClick={onSubmitComment}
+                            >
+                                Submit
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </Modal>
         </div>
     )
 }

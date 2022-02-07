@@ -27,7 +27,7 @@ import { GlobalFilter } from '../../../components/GlobalFilter';
 import { Router } from 'next/router';
 import { Tab } from "@headlessui/react"
 import { Fragment } from 'react'
-import {GlobalFilterStatus} from "../../../components/GlobalFilterStatus";
+import {GlobalFilterRequestStatus} from "../../../components/GlobalFilterRequestStatus";
 
 const Table = tw.table`
     min-w-full
@@ -76,7 +76,7 @@ function RequestModal({ show, onClose, requestData, userData }) {
 
     useEffect(() => {
         console.log("requestData: ", requestData)
-        setCurrentBudget(requestData.current_budget);
+        setCurrentBudget(requestData.initial_budget);
         setRequestedBudget(requestData.requested_budget);
         setReason(requestData.reason);
         setStatus(requestData.status);
@@ -107,23 +107,23 @@ function RequestModal({ show, onClose, requestData, userData }) {
     return (
         <Modal show={show} onClose={onClose}>
             <div tw="col-span-full">
-                <div tw="h-auto w-auto p-4 text-sm">
+                <div tw="p-4 text-sm">
                     <div tw="flex inline-flex">
                         <p tw="font-bold text-gray-600 mr-2">Request ID:</p>
                         <Tag variant={'gray'}><p tw="font-bold text-gray-800">{id}</p></Tag>
                     </div>
                     <div tw="flex items-center justify-between my-5">
                         <div tw="flex space-x-3 items-center">
-                            <h2 tw="font-bold font-rubik text-4xl text-gray-800">full_name</h2>
+                            <h2 tw="font-bold font-rubik text-4xl text-gray-800">{full_name}</h2>
                         </div>
                         <div>
                             <Tag variant={statusVariant}><p tw="font-bold">{status}</p></Tag>
                         </div>
                     </div>
 
-                    <div tw="divide-y divide-gray-200 w-auto">
-                        <div tw="flex inline-flex justify-start mb-10 w-full">
-                            <div tw="flex inline-flex whitespace-nowrap mr-8">
+                    <div tw="divide-y divide-gray-200">
+                        <div tw="flex inline-flex justify-center mb-10 w-full">
+                            <div tw="flex inline-flex whitespace-nowrap w-1/2">
                                 <div tw="bg-gray-50 border border-gray-100 p-4 rounded">
                                     <div tw="flex items-center justify-center">
                                         <div tw="pr-4">
@@ -152,7 +152,7 @@ function RequestModal({ show, onClose, requestData, userData }) {
                                     </div>
                                 </div>
                             </div>
-                            <div tw="">
+                            <div tw="w-1/2">
                                 <div tw="flex space-x-3">
                                     <p tw="font-bold text-gray-600">Reason:</p>
                                     <p>{reason}</p>
@@ -166,7 +166,7 @@ function RequestModal({ show, onClose, requestData, userData }) {
                                 <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
                                     <div tw="flex space-x-3">
                                         <p tw="font-bold text-gray-600">Role:</p>
-                                        <Tag variant={'primary-bg'}><p tw="font-bold text-white">{role}</p></Tag>
+                                        <Tag variant={'primary'}><p tw="font-bold">{role}</p></Tag>
                                     </div>
                                     <div tw="flex space-x-3">
                                         <p tw="font-bold text-gray-600">Email:</p>
@@ -199,11 +199,11 @@ function RequestModal({ show, onClose, requestData, userData }) {
                                     </div>
                                     <div tw="flex space-x-3">
                                         <p tw="font-bold text-gray-600">Updated On:</p>
-                                        <p tw="text-gray-600">{updatedOn}</p>
+                                        <p tw="text-gray-600">{moment(updatedOn).format('YYYY-MMM-DD HH:MM')}</p>
                                     </div>
                                     <div tw="flex space-x-3">
                                         <p tw="font-bold text-gray-600">Request Date:</p>
-                                        <p tw="text-gray-600">{requestDate}</p>
+                                        <p tw="text-gray-600">{moment(requestDate).format('YYYY-MMM-DD HH:MM')}</p>
                                     </div>
                                     <div tw="flex space-x-3">
                                         <p tw="font-bold text-gray-600">Reviewer Comment:</p>
@@ -233,7 +233,7 @@ export default function History(props) {
             "updated_on": "",
             "updated_by": "",
             "comments": "",
-            "current_budget": "",
+            "initial_budget": "",
             "requested_budget": "",
             "reason": "",
         }
@@ -291,15 +291,20 @@ export default function History(props) {
             {
                 Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">#ID</div></div>,
                 accessor: 'id',
-                Cell: ({ row }) => {{
-                    return(
-                        <p tw="text-gray-600">{row.values.id}</p>)
-                }}
+                Cell: ({ row }) => (
+                        <button tw="flex space-x-2 items-center" onClick={() => {
+                            setRequestData(row.original)
+                            getUser(row.original.request_owner);
+                            setShowRequestModal(true);
+                        }}>
+                            <p tw="text-gray-600">{row.values.id}</p>
+                        </button>
+                    ),
             },
             {
                 Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">Name</div></div>,
-                accessor: 'full_name',
-                Cell: ({ row }) => (<p tw="text-gray-600">{row.values.request_owner}</p>),
+                accessor: 'request_owner_name',
+                Cell: ({ row }) => (<p tw="text-gray-600">{row.values.request_owner_name}</p>),
             },
             {
                 Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">Status</div></div>,
@@ -371,8 +376,23 @@ export default function History(props) {
                         <div tw="font-bold">∑</div>
                         <div tw="font-roboto capitalize">New Budget</div>
                     </div>,
-                accessor: 'current_budget',
-                Cell: ({ row }) => (<p tw="text-gray-600">{row.values.requested_budget+row.values.current_budget}</p>)
+                accessor: 'initial_budget',
+                Cell: ({ row }) => {
+                    {
+                        var variant = '';
+                        const status = row.values.status
+                        if(status=="accepted"){
+                            variant = 'success-bg'
+                        } else if(status=="rejected") {
+                            variant = 'error-bg'
+                        } else {
+                            variant = 'gray-bg'
+                        }
+
+                        return (<Tag variant={'gray'}><p tw="font-bold">
+                                {row.values.requested_budget+row.values.initial_budget} ε</p></Tag>)
+                    }
+                }
             },
         ], []
     );
@@ -381,21 +401,6 @@ export default function History(props) {
         const router = useRouter()
         hooks.visibleColumns.push((columns) => [
             ...columns,
-            {
-                id: "action",
-                Header: 'Action',
-                Cell: ({row}) => (
-                    <div>
-                        <button tw="flex space-x-2 items-center" onClick={() => {
-                            setRequestData(row.original)
-                            getUser(row.original.request_owner);
-                            setShowRequestModal(true);
-                        }}>
-                            See Details
-                        </button>
-                    </div>
-                )
-            }
         ])
     }
     const tableInstance = useTable({ columns: requestsColumns, data: requestsData }, useGlobalFilter, tableHooks, useSortBy);
@@ -406,7 +411,7 @@ export default function History(props) {
             <div tw="flex justify-between items-center">
                 <div tw="inline-flex space-x-4">
                     <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} setGlobalFilter={setGlobalFilter} globalFilter={state.globalFilter} />
-                    <GlobalFilterStatus preGlobalFilteredRows={preGlobalFilteredRows} setGlobalFilter={setGlobalFilter} globalFilter={state.globalFilter} />
+                    <GlobalFilterRequestStatus preGlobalFilteredRows={preGlobalFilteredRows} setGlobalFilter={setGlobalFilter} globalFilter={state.globalFilter} />
                 </div>
             </div>
             <RequestModal show={showRequestModal} onClose={() => setShowRequestModal(false)} requestData={requestData} userData={userData} />
