@@ -28,6 +28,7 @@ import { Router } from 'next/router';
 import { Tab } from "@headlessui/react"
 import { Fragment } from 'react'
 import {GlobalFilterStatus} from "../../../components/GlobalFilterStatus";
+import axios from "axios";
 
 const Table = tw.table`
     min-w-full
@@ -102,16 +103,43 @@ function RequestModal({ show, onClose, requestData, userData }) {
         <Tag variant="primary"><p tw="font-bold">#{tag}</p></Tag>
     )
 
-    useEffect(() => {
+    useEffect(async () => {
         console.log("userData: ", userData)
         setFull_name(userData.full_name);
         setEmail(userData.email);
         setInstitution(userData.institution);
         setWebsite(userData.website);
-        setRole("Data Scientist");
         setBudget(userData.budget)
         setAllocatedBudget(userData.allocated_budget)
+        await getRole()
     }, [userData]);
+
+    async function getRole() {
+        try{
+            const apiRes = await axios(
+                {
+                    url: "api/role-of-user",
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    params: {
+                        email: userData.email
+                    }
+                }
+            );
+
+            if(apiRes.status == 200){
+                const userRole = await apiRes.data;
+                console.log("user role", userRole)
+                setRole(userRole)
+            }
+        }
+        catch (error){
+            console.log(error)
+        }
+    }
 
     useEffect(() => {
         if (budget<allocatedBudget){

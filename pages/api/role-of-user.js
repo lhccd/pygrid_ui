@@ -18,7 +18,38 @@ export default async (req, res) => {
             error: 'The domain does not exist or something wrong with the domain!'
         })
     }
-    if(req.method === "PUT") {
+
+    if(req.method == "GET"){
+        try{
+            const apiRes = await axios({
+                method: 'GET',
+                url: `${API_URL}/domain/role-by-user`,
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": `Bearer ${access}`
+                },
+                params:{
+                    user_email: req.query.email,
+                    domain_name: domain_name
+                }
+            })
+            const data = apiRes.data;
+
+            if (apiRes.status === 200){
+                return res.status(200).json(data.name);
+            }
+            else{
+                return res.status(apiRes.status).json({
+                    error: data.error
+                });
+            }
+        }
+        catch (error){
+            return res.status(500).json({
+                error: "Oops! Server Error!"
+            });
+        }
+    } else if(req.method === "PUT") {
         try {
             const apiRes = await axios(
                 {
