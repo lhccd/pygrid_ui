@@ -17,6 +17,7 @@ export default function UpgradeRequests() {
     const [toggleTab, setToggleTab] = useState("")
     const [showAlert, setShowAlert ] =useState(true)
     const [loading, setLoading] = useState(true);
+    const [refresh, setRefresh] = useState(false);
 
     const fetchPendingRequestList = async () => {
         try {
@@ -73,6 +74,11 @@ export default function UpgradeRequests() {
     useEffect(() => {
         fetchPendingRequestList()
         fetchHistoryRequestList()
+    }, [refresh])
+
+    useEffect(() => {
+        fetchPendingRequestList()
+        fetchHistoryRequestList()
     }, [])
 
     return(
@@ -113,14 +119,14 @@ export default function UpgradeRequests() {
                                 {loading ?
                                     <div tw="my-10 flex w-full justify-center">
                                         <Spinner />
-                                    </div> : <Pending list={pendingRequestList}/>
+                                    </div> : <Pending list={pendingRequestList} refresh={()=>setRefresh(!refresh)}/>
                                 }
                                 </Tab.Panel>
                             <Tab.Panel>
                                 {loading ?
                                         <div tw="my-10 flex w-full justify-center">
                                             <Spinner />
-                                        </div> : <History list={historyRequestList}/>
+                                        </div> : <History list={historyRequestList} refresh={()=>setRefresh(!refresh)}/>
                                 }</Tab.Panel>
                         </Tab.Panels>
                     </Tab.Group>
