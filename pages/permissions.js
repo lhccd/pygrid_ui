@@ -12,6 +12,7 @@ import Pending from './users/pending-users'
 import Denied from './users/denied-users'
 import AccordionRoles from '../components/AccordionRoles'
 import { GlobalFilterRoles } from '../components/GlobalFilterRoles'
+import axios from "axios";
 const SearchContainer = tw.div`
 mb-6
 mt-6
@@ -28,8 +29,8 @@ const roles = [
             UploadData: true, 
             ManagePrivacyBudgets: true, 
             UploadLegalDocuments: true, 
-            ManageUsers: true, 
-            EditDomainSettigs: true, 
+            ManageUsers: true,
+            EditDomainSettings: true,
             CreateUsers: true, 
             ManageInfrastructure: true
         }
@@ -45,8 +46,8 @@ const roles = [
             UploadData: true, 
             ManagePrivacyBudgets: true, 
             UploadLegalDocuments: true, 
-            ManageUsers: true, 
-            EditDomainSettigs: true, 
+            ManageUsers: true,
+            EditDomainSettings: true,
             CreateUsers: true,
             ManageInfrastructure: false
         }
@@ -62,8 +63,8 @@ const roles = [
             UploadData: false, 
             ManagePrivacyBudgets: true, 
             UploadLegalDocuments: false, 
-            ManageUsers: true, 
-            EditDomainSettigs: false, 
+            ManageUsers: true,
+            EditDomainSettings: false,
             CreateUsers: false, 
             ManageInfrastructure: false
         }
@@ -79,8 +80,8 @@ const roles = [
             UploadData: false, 
             ManagePrivacyBudgets: false, 
             UploadLegalDocuments: false, 
-            ManageUsers: false, 
-            EditDomainSettigs: false, 
+            ManageUsers: false,
+            EditDomainSettings: false,
             CreateUsers: false, 
             ManageInfrastructure: false
         }
@@ -88,7 +89,11 @@ const roles = [
 ]
 
 export default function Permissions() {
-    
+    useEffect (() => {
+        getRoles("Domain Owner");
+    }, [])
+
+
     const [selectedRole, setSelectedRole] = useState(roles[0])
 
     // FROM BERKE
@@ -96,6 +101,33 @@ export default function Permissions() {
     const RoleItems = roles.map((info) =>
         <AccordionRoles info={info}/>
     );
+
+
+    const getRoles = async (role_name) => {
+        try{
+            const apiRes = await axios(
+                {
+                    method: 'GET',
+                    url: `api/role-by-domain`,
+                    headers: {
+                        "Accept": "application/json",
+                    },
+                    params: {
+                        role_name: role_name
+                    }
+                });
+            if(apiRes.status === 200)
+            {
+                const data = await apiRes.data;
+                console.log(data)
+            }
+
+        }
+        catch (e) {
+            alert("Couldn't fetch the role");
+        }
+
+    };
   
     // END BERKE
     return(
