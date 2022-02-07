@@ -15,7 +15,7 @@ const TagBox = styled.div(({ variant, rounded, fullColor}) => [
     variant === 'error-bg' && tw`bg-error-500 text-white `,
     variant === 'success-bg' && tw`bg-success-500 text-white `,
     variant === 'warning-bg' && tw`bg-warning-500 text-white `,
-    variant === 'gray-bg' && tw`bg-gray-500 text-white`,
+    variant === 'gray-bg' && tw`bg-gray-400 text-white`,
 ])
 
 export default function Tag({children, variant, rounded, fullColor}){

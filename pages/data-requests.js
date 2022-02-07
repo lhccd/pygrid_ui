@@ -10,14 +10,17 @@ import Pending from './requests/data-requests/pending'
 import History from './requests/data-requests/history'
 
 export default function DataRequests() {
+    const [pendingRequestList, setPendingRequestsList] = useState([])
+    const [historyRequestList, setHistoryRequestsList] = useState([])
     const [pendingRequestsLength, setPendingRequestsLength] = useState("")
     const [toggleTab, setToggleTab] = useState("")
     const [showAlert, setShowAlert ] =useState(true)
 
-    const fetchRequestlist = async (list_type) => {
-        try{
+
+    const fetchPendingRequestList = async () => {
+        try {
             const apiRes = await fetch(
-                `/api/${list_type}`,
+                '/api/pending_d_request_list',
                 {
                     method: "GET",
                     headers: {
@@ -27,19 +30,43 @@ export default function DataRequests() {
                 }
             );
             const data = await apiRes.json();
-            const list_size = Object.keys(data).length
-            if(list_type === 'pending_requestlist'){
-                setPendingRequestsLength(list_size);}
+            setPendingRequestsLength(data.length);
+            setPendingRequestsList(data)
         }
-        catch(error) {
-            console.log("data fetching on user side failed", error);
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    const fetchHistoryRequestList = async () => {
+        try {
+            const apiRes = await fetch(
+                '/api/history_d_request_list',
+                {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
+            const data = await apiRes.json();
+            setHistoryRequestsList(data)
+        }
+        catch(error){
+            console.log(error);
         }
     }
 
     useEffect(() => {
-        fetchRequestlist('pending_requestlist')
-        console.log("LIST LENGTHS", pendingRequestsLength)
+        fetchPendingRequestList()
+        fetchHistoryRequestList()
     }, [toggleTab])
+
+    useEffect(() => {
+        fetchPendingRequestList()
+        fetchHistoryRequestList()
+    }, [])
 
     return(
         <Layout current={"data requests"}>
@@ -75,8 +102,8 @@ export default function DataRequests() {
                             </Tab>
                         </Tab.List>
                         <Tab.Panels>
-                        <Tab.Panel><Pending/></Tab.Panel>
-                        <Tab.Panel><History/></Tab.Panel>
+                            <Tab.Panel><Pending list={pendingRequestList}/></Tab.Panel>
+                            <Tab.Panel><History list={historyRequestList}/></Tab.Panel>
                         </Tab.Panels>
                     </Tab.Group>
                 </div>

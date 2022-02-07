@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import tw, { styled, css } from 'twin.macro';
 import Tag from '../../../components/Tag'
 import Modal from '../../../components/Modal';
@@ -16,7 +16,7 @@ import {
     faTimesCircle,
     faExclamationCircle,
     faExpandAlt,
-    faTrash, faLink, faUsers, faUserCircle,
+    faTrash, faLink, faUsers, faUserCircle, faChevronRight, faCaretUp,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useRouter } from 'next/router'
@@ -27,7 +27,7 @@ import { GlobalFilter } from '../../../components/GlobalFilter';
 import { Router } from 'next/router';
 import { Tab } from "@headlessui/react"
 import { Fragment } from 'react'
-import {GlobalFilterStatus} from "../../../components/GlobalFilterStatus";
+import {GlobalFilterRequestStatus} from "../../../components/GlobalFilterRequestStatus";
 
 const Table = tw.table`
     min-w-full
@@ -56,90 +56,219 @@ const TableData = tw.td`
     p-2 border border-gray-200
 `;
 
-function RequestModal({ show, onClose, data }) {
-    //Deal later!
+
+function RequestModal({ show, onClose, requestData, userData }) {
+    const [requestSize, setRequestSize] = useState(0)
+    const [dataSubjects, setDataSubjects] = useState(0)
+    const [linkedDatasets, setLinkedDatasets] = useState([])
+    const [tags, setTags] = useState([])
+    const [numVals, setNumVals] = useState(0)
+    const [reason, setReason] = useState("")
+    const [status, setStatus] = useState("")
+    const [id, setId] = useState("")
+    const [resultId, setResultId] = useState("")
+    const [requestDate, setRequestDate] = useState("")
     const [full_name, setFull_name] = useState("")
-    const [budget, setBudget] = useState("")
     const [email, setEmail] = useState("");
     const [institution, setInstitution] = useState("");
     const [website, setWebsite] = useState("");
-    const [added_by, setAdded_by] = useState("")
-    const [daa_pdf, setDaa_pdf] = useState("")
-    const [created_at, setCreated_at] = useState("")
+    const [role, setRole] = useState("")
+    const [budget, setBudget] = useState(0)
+    const [allocatedBudget, setAllocatedBudget] = useState(0)
+    const [updatedOn, setUpdatedOn] = useState("")
+    const [updatedBy, setUpdatedBy] = useState("")
+    const [comment, setComment] = useState("")
+    const [statusVariant, setStatusVariant] = useState('');
+    const [budgetVariant, setBudgetVariant] = useState("")
     const router = useRouter();
 
     useEffect(() => {
-        setFull_name(data.full_name);
-        setBudget(data.budget);
-        setEmail(data.email);
-        setInstitution(data.institution);
-        setWebsite(data.website);
-        setAdded_by(data.added_by);
-        setDaa_pdf(data.daa_pdf);
-        setCreated_at(data.created_at);
-    }, [data]);
+        console.log("requestData: ", requestData)
+        setRequestSize(requestData.request_size);
+        setDataSubjects(requestData.data_subjects);
+        let sets_array = requestData.linked_datasets?.split(', ')
+        setLinkedDatasets(sets_array)
+        setReason(requestData.reason);
+        setStatus(requestData.status);
+        setId(requestData.id);
+        setRequestDate(requestData.request_date);
+        let tags_array = requestData.tags?.split(', ')
+        setTags(tags_array)
+        setNumVals(requestData.num_of_values)
+        setResultId(requestData.result_id)
+        setUpdatedOn(requestData.updated_on);
+        setUpdatedBy(requestData.updated_by);
+        setComment(requestData.reviewer_comments);
+    }, [requestData]);
+
+    const sets = linkedDatasets?.map((set) =>
+        <Tag variant="gray"><p tw="font-bold">{set}</p></Tag>
+    )
+
+    const tags2 = tags?.map((tag) =>
+        <Tag variant="primary"><p tw="font-bold">#{tag}</p></Tag>
+    )
 
     useEffect(() => {
-    }, [budget]);
+        console.log("userData: ", userData)
+        setFull_name(userData.full_name);
+        setEmail(userData.email);
+        setInstitution(userData.institution);
+        setWebsite(userData.website);
+        setRole("Data Scientist");
+        setBudget(userData.budget)
+        setAllocatedBudget(userData.allocated_budget)
+    }, [userData]);
 
-    function handleBudgetInUserModal(value) {
-        setBudget(value)
-    };
+    useEffect(() => {
+        if(status=="accepted") {
+            setStatusVariant('success-bg')
+        } else if(status=="rejected") {
+            setStatusVariant('error-bg')
+        }
+    }, [status])
 
+    useEffect(() => {
+        if (budget<allocatedBudget){
+            setBudgetVariant('gray')
+        } else {
+            setBudgetVariant('error-bg')
+        }
+    }, [budget])
 
     return (
         <Modal show={show} onClose={onClose}>
             <div tw="col-span-full">
-                <div tw="w-full m-5"><button tw="items-center font-bold space-x-2" onClick={() => router.push(`/users/${email}`)}><FontAwesomeIcon size="sm" icon={faExpandAlt} />   Expand Page</button></div>
-                <div tw="h-auto px-20 py-10">
+                <div tw="h-auto w-auto p-4 text-sm">
+                    <div tw="flex inline-flex">
+                        <p tw="font-bold text-gray-600 mr-2">Request ID:</p>
+                        <Tag variant={'gray'}><p tw="font-bold text-gray-800">{id}</p></Tag>
+                    </div>
                     <div tw="flex items-center justify-between my-5">
                         <div tw="flex space-x-3 items-center">
                             <h2 tw="font-bold font-rubik text-4xl text-gray-800">{full_name}</h2>
-                            <Tag variant={'primary'}>Data Scientist</Tag>
                         </div>
-                        <div tw="inline-flex p-5 space-x-2">
-                            <button>
-                                <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-gray-200" />
-                            </button>
-                            <button onClick={async () => {
-                                await denyUserByID(email);
-                                console.log("DELETING ROW FROM PENDING TABLE ...", email)
-                                // setUserlist(userlist.splice(row.id, 1));
-                                onClose();
-                            }
-                            }><FontAwesomeIcon size="lg" icon={faTimesCircle} title="Decline" tw="text-gray-200" /></button>
+                        <div>
+                            <Tag variant={statusVariant}><p tw="font-bold">{status}</p></Tag>
                         </div>
-                        email={email} data={budget} handleBudgetInUserModal={handleBudgetInUserModal} />
                     </div>
 
-                    <h3 tw="font-bold mt-10 text-gray-600">Background</h3>
-                    <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Email:</p>
-                            <p>{email}</p>
+                    <div tw="divide-y divide-gray-200 w-auto">
+                        <div tw="flex inline-flex justify-start mb-10 w-full">
+                            <div tw="flex inline-flex whitespace-nowrap mr-8">
+                                <div tw="bg-gray-50 border border-gray-100 p-4 rounded">
+                                    <div tw="divide-y divide-gray-200">
+                                        <div tw="flex items-center justify-center divide-x divide-gray-200 mb-2">
+                                            <div tw="pr-4">
+                                                <div tw="flex inline-flex items-center">
+                                                    <p tw="text-gray-800 text-lg font-bold">{requestSize} ɛ</p>
+                                                </div>
+                                                <p tw="text-gray-600 text-sm">Request Size</p>
+                                            </div>
+                                            <div tw="px-4">
+                                                <div tw="flex inline-flex items-center">
+                                                    <p tw="text-gray-800 text-lg font-bold mr-2">{dataSubjects}</p>
+                                                </div>
+                                                <p tw="text-gray-600 text-sm">Data Subjects</p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div tw="flex space-x-3 mt-2">
+                                                <p tw="font-bold text-gray-600">Linked Datasets:</p>
+                                            </div>
+                                            <div tw="flex space-x-3 mt-2">
+                                                {sets}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
+                                    <div tw="flex space-x-3 items-center">
+                                        <p tw="font-bold text-gray-600">Role:</p>
+                                        <Tag variant={'primary'}><p tw="font-bold">{role}</p></Tag>
+                                    </div>
+                                    <div tw="flex space-x-3 items-center">
+                                        <p tw="font-bold text-gray-600">Privacy Budget:</p>
+                                        <Tag variant={budgetVariant}><p tw="font-bold">{budget} ɛ</p></Tag><p tw="text-xs text-gray-600"> used of </p><Tag variant={'gray'}><p tw="font-bold">{allocatedBudget} ɛ</p></Tag>
+                                    </div>
+                                    <div tw="flex space-x-3 items-center">
+                                        <p tw="font-bold text-gray-600">Email:</p>
+                                        <a tw="text-gray-600 underline" href={"emailto:"+email}>{email}</a>
+                                    </div>
+                                    <div tw="flex space-x-3 items-center">
+                                        <p tw="font-bold text-gray-600">Company/Institution:</p>
+                                        <p tw="text-gray-600">{institution}</p>
+                                    </div>
+                                    <div tw="flex space-x-3 items-center">
+                                        <p tw="font-bold text-gray-600">Website/profile:</p>
+                                        <a tw="text-gray-600 underline" href={website}>{website}</a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Company/Institution:</p>
-                            <p>{institution}</p>
-                        </div>
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Website/profile:</p>
-                            <p>{website}</p>
-                        </div>
-                    </div>
-                    <h3 tw="font-bold mt-10 text-gray-600">System</h3>
-                    <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Date Added:</p>
-                            <p>{added_by}</p>
-                        </div>
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Data Access Agreement:</p>
-                            <p>{daa_pdf}</p>
-                        </div>
-                        <div tw="flex space-x-3">
-                            <p tw="font-bold text-gray-600">Uploaded On:</p>
-                            <p>{created_at}</p>
+
+                        <div tw="">
+                            <div>
+                                <h3 tw="font-bold mt-6 text-gray-800 mb-2 text-lg">Request Details</h3>
+                                <div tw="border border-gray-100 divide-y divide-gray-200">
+                                    <div tw="flex-col rounded p-4 space-y-3">
+                                        <div tw="flex space-x-3">
+                                            <p tw="font-bold text-gray-600">Request ID:</p>
+                                            <Tag variant={'gray'}><p tw="font-bold text-gray-800">{id}</p></Tag>
+                                        </div>
+                                        <div tw="flex space-x-3">
+                                            <p tw="font-bold text-gray-600">Request Date:</p>
+                                            <p tw="text-gray-600">{moment(requestDate).format('YYYY-MMM-DD HH:MM')}</p>
+                                        </div>
+                                        <div tw="flex space-x-3">
+                                            <p tw="font-bold text-gray-600">Tags:</p>
+                                            {tags2}
+                                        </div>
+                                        <div tw="flex space-x-3">
+                                            <p tw="font-bold text-gray-600">Result ID:</p>
+                                            <Tag variant={'gray'}><p tw="font-bold text-gray-800">{resultId}</p></Tag>
+                                        </div>
+                                        <div tw="flex space-x-3">
+                                            <p tw="font-bold text-gray-600"># of Values:</p>
+                                            <p tw="text-gray-600">{numVals}</p>
+                                        </div>
+                                    </div>
+                                    <div tw="p-4">
+                                        <div tw="bg-gray-50 rounded p-2">
+                                            <p tw="font-bold text-gray-600">Reason:</p>
+                                            <p tw="text-gray-600">{reason}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 tw="font-bold mt-6 text-gray-800 mb-2 text-lg">System Details</h3>
+                                <div tw="flex-col border border-gray-100 rounded p-4 space-y-3">
+                                    <div tw="flex space-x-3">
+                                        <p tw="font-bold text-gray-600">Status:</p>
+                                        <Tag variant={statusVariant}><p tw="font-bold">{status}</p></Tag>
+                                    </div>
+                                    <div tw="flex space-x-3">
+                                        <p tw="font-bold text-gray-600">Updated By:</p>
+                                        <p tw="text-gray-600">{updatedBy}</p>
+                                    </div>
+                                    <div tw="flex space-x-3">
+                                        <p tw="font-bold text-gray-600">Updated On:</p>
+                                        <p tw="text-gray-600">{moment(updatedOn).format('YYYY-MMM-DD HH:MM')}</p>
+                                    </div>
+                                    <div tw="flex space-x-3">
+                                        <p tw="font-bold text-gray-600">Request Date:</p>
+                                        <p tw="text-gray-600">{moment(requestDate).format('YYYY-MMM-DD HH:MM')}</p>
+                                    </div>
+                                    <div tw="flex space-x-3">
+                                        <p tw="font-bold text-gray-600">Reviewer Comment:</p>
+                                        <p tw="text-gray-600">{comment}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -148,104 +277,110 @@ function RequestModal({ show, onClose, data }) {
     );
 }
 
-export default function History() {
-    const [requestlist, setRequestlist] = useState([]);
-    const [loading, setLoading] = useState(true);
+export default function History(props) {
+    const [requestList, setRequestList] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [showRequestModal, setShowRequestModal] = useState(false);
     const [showAlert, setShowAlert] = useState(true);
 
     const [requestData, setRequestData] = useState(
         {
-            "email": "",
-            "full_name": "",
             "status": "",
-            "id": 0,
-            "request_size": 0,
+            "id": "",
+            "request_date": "",
             "updated_on": "",
             "updated_by": "",
-            "datasets": ""
-        });
+            "comments": "",
+            "initial_budget": "",
+            "requested_budget": "",
+            "reason": "",
+        }
+    );
+    const [userData, setUserData] = useState(
+        {
+            "email": "",
+            "full_name": "",
+            "institution": "",
+            "website": "",
+            "role": "Data Scientist",
+        }
+    );
+
+    useEffect(async () => {
+        await setRequestList(props.list)
+    }, [])
+
+    useEffect(async () => {
+        await setRequestList(props.list)
+    }, [props.list])
 
     useEffect(() => {
-        fetchRequestlist()
     }, [showRequestModal])
 
-    const fetchRequestlist = async () => {
-        try {
-            setLoading(true);
+    async function getUser(e) {
+        try{
             const apiRes = await fetch(
-                '/api/CHANGE_THIS',
-                {
-                    method: "GET",
-                    headers: {
-                        "Accept": "application/json",
-                        "Content-Type": "application/json"
-                    }
-                }
-            );
-            const data = await apiRes.json();
-            console.log("request list: ", { data })
-            setRequestlist(data);
-        }
-        finally {
-            setLoading(false);
-        }
-    }
-
-    async function getRequest(id) {
-        const body = JSON.stringify({
-            id,
-        })
-        try {
-            const apiRes = await fetch(
-                "api/CHANGE_THIS",
+                "api/get_user_by_id",
                 {
                     method: "POST",
                     headers: {
                         "Accept": "application/json",
                         "Content-Type": "application/json"
                     },
-                    body
+                    body: JSON.stringify({
+                        id: e
+                    })
                 }
             );
 
-            if (apiRes.status == 200) {
-                const data = await apiRes.json();
-                setRequestData(data)
-                console.log("requestData: ", requestData)
-            }
-            else {
-                alert("Couldn't fetch the request!");
+            if(apiRes.status == 200){
+                const user = await apiRes.json();
+                setUserData(user)
             }
         }
-        catch (error) {
-            console.log(error);
+        catch (error){
+            console.log(error)
         }
     }
 
-    const requestsData = useMemo(() => [...requestlist], [requestlist]);
+    const requestsData = useMemo(() => [...requestList], [requestList]);
     const requestsColumns = useMemo(
         () => [
             {
                 Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">#ID</div></div>,
                 accessor: 'id',
                 Cell: ({ row }) => (
-                    <p tw="text-gray-600">{row.values.id}</p>
+                    <button tw="flex space-x-2 items-center" onClick={() => {
+                        setRequestData(row.original)
+                        getUser(row.original.request_owner);
+                        setShowRequestModal(true);
+                    }}>
+                        <p tw="text-gray-600">#{row.values.id}</p>
+                    </button>
                 ),
             },
             {
                 Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">Name</div></div>,
-                accessor: 'full_name',
-                Cell: ({ row }) => (
-                    <p tw="text-gray-600">{row.values.full_name}</p>
-                ),
+                accessor: 'name',
+                Cell: ({ row }) => (<p tw="text-gray-600">{row.values.name}</p>),
             },
             {
                 Header: () => <div tw="flex font-normal space-x-2"><div tw="font-roboto capitalize">Status</div></div>,
                 accessor: 'status',
-                Cell: ({ row }) => (
-                    <p tw="text-gray-600">{row.values.status}</p>
-                ),
+                Cell: ({ row }) => {{
+                    var variant = '';
+                    const status = row.values.status
+                    if(status=="accepted"){
+                        variant = 'success-bg'
+                    } else if(status=="rejected") {
+                        variant = 'error-bg'
+                    } else {
+                        variant = 'gray-bg'
+                    }
+
+                    return(
+                        <Tag variant={variant}><p tw="text-white font-bold">{row.values.status}</p></Tag>)
+                }}
             },
             {
                 Header: () =>
@@ -254,9 +389,9 @@ export default function History() {
                         <div tw="font-roboto capitalize">Updated On</div>
                     </div>,
                 accessor: 'updated_on',
-                Cell: ({ cell: { value } }) => {
+                Cell: ({row}) => {
                     {
-                        var d = moment(value).format('YYYY-MMM-DD HH:MM')
+                        var d = moment(row.values.updated_on).format('YYYY-MMM-DD HH:MM')
                         return d;
                     }
                 }
@@ -268,11 +403,7 @@ export default function History() {
                         <div tw="font-roboto capitalize">Updated By</div>
                     </div>,
                 accessor: 'updated_by',
-                Cell: ({ row }) => {
-                    {
-                        <p tw="text-gray-600">{row.values.updated_by}</p>
-                    }
-                }
+                Cell: ({ row }) =>( <p tw="text-gray-600">{row.values.updated_by}</p>)
             },
             {
                 Header: () =>
@@ -280,10 +411,20 @@ export default function History() {
                         <div tw="font-bold">∑</div>
                         <div tw="font-roboto capitalize">Request Size</div>
                     </div>,
-                accessor: 'size',
+                accessor: 'request_size',
                 Cell: ({ row }) => {
                     {
-                        <p tw="text-gray-600">{row.values.size}</p>
+                        var variant = '';
+                        const status = row.values.status
+                        if(status=="accepted"){
+                            variant = 'success-bg'
+                        } else if(status=="rejected") {
+                            variant = 'error-bg'
+                        } else {
+                            variant = 'gray-bg'
+                        }
+
+                        return (<Tag variant={variant}><p tw="text-white font-bold">{row.values.request_size} ε</p></Tag>)
                     }
                 }
             },
@@ -294,37 +435,20 @@ export default function History() {
         const router = useRouter()
         hooks.visibleColumns.push((columns) => [
             ...columns,
-            {
-                id: "action",
-                Header: 'Action',
-                Cell: ({ row }) => (
-                    <div>
-                        <Button tw="flex space-x-2 items-center" onClick={() => {
-                            getRequest(row.values.id);
-                            setShowRequestModal(true);
-                        }}>
-                            See Details</Button>
-                    </div>
-                )
-            }
         ])
     }
     const tableInstance = useTable({ columns: requestsColumns, data: requestsData }, useGlobalFilter, tableHooks, useSortBy);
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, preGlobalFilteredRows, setGlobalFilter, state } = tableInstance;
-
-    useEffect(() => {
-        fetchRequestlist();
-    }, [])
 
     return (
         <div tw="flex-col justify-center">
             <div tw="flex justify-between items-center">
                 <div tw="inline-flex space-x-4">
                     <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} setGlobalFilter={setGlobalFilter} globalFilter={state.globalFilter} />
-                    <GlobalFilterStatus preGlobalFilteredRows={preGlobalFilteredRows} setGlobalFilter={setGlobalFilter} globalFilter={state.globalFilter} />
+                    <GlobalFilterRequestStatus preGlobalFilteredRows={preGlobalFilteredRows} setGlobalFilter={setGlobalFilter} globalFilter={state.globalFilter} />
                 </div>
             </div>
-            <RequestModal show={showRequestModal} onClose={() => setShowRequestModal(false)} data={requestData} />
+            <RequestModal show={showRequestModal} onClose={() => setShowRequestModal(false)} requestData={requestData} userData={userData} />
             {loading ?
                 <div tw="my-10 flex w-full justify-center">
                     <Spinner />
@@ -351,7 +475,7 @@ export default function History() {
                                 return (
                                     <TableRow {...row.getRowProps()} tw="text-sm text-gray-600">
                                         {row.cells.map((cell, idx) => (
-                                            <TableData {...cell.getCellProps()} css={[cell.column.isSorted && tw`bg-gray-50`]}>
+                                            <TableData {...cell.getCellProps()}>
                                                 {cell.render('Cell')}
                                             </TableData>
                                         ))}
