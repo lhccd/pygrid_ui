@@ -16,9 +16,11 @@ import Tag from "./Tag";
 import {Disclosure} from "@headlessui/react"
 import Button from "./Button";
 import moment from "moment";
+import axios from "axios";
 
 export default function Accordion (props) {
     const [user, setUser] = useState([])
+    const [role, setRole] = useState("")
 
     useEffect(() => {
         getUser()
@@ -44,11 +46,37 @@ export default function Accordion (props) {
                 const user = await apiRes.json();
                 setUser(user)
             }
-        }
+    }
         catch (error){
             console.log(error)
         }
     }
+
+    useEffect(async() => {
+        try{
+            const roleRes = await axios(
+                {
+                    url: "api/role-of-user",
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    params: {
+                        email: user.email
+                    }
+                }
+            );
+
+            if(roleRes.status == 200){
+                const userRole = await roleRes.data;
+                setRole(userRole)
+            }
+        }
+        catch (error){
+            console.log(error)
+        }
+    }, [user])
 
     const acceptRequest = () => {
         props.openModal()
@@ -138,7 +166,7 @@ export default function Accordion (props) {
                                 <ul id="domain-info" tw="mb-2">
                                     <li tw="py-2" key={user.role?.key}>
                                         <a tw="font-bold text-gray-700">Role: </a>
-                                        <Tag variant={"primary"} tw="text-primary-600 text-xs"><div tw="font-bold">Data Scientist</div></Tag>
+                                        <Tag variant={"primary"} tw="text-primary-600 text-xs"><div tw="font-bold">{role}</div></Tag>
                                     </li>
                                     <li tw="py-2" key={user.email?.key}>
                                         <a tw="font-bold text-gray-700">Email: </a>
