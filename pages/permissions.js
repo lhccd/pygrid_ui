@@ -108,15 +108,15 @@ export default function Permissions() {
     const [COPermissions, setCOPermissions] = useState([]);
 
     useEffect (() => {
-        getRoles("Domain Owner");
-        getRoles("Administrator");
-        getRoles("Compliance Officer");
-        getRoles("Data Scientist");
+        getPermissions("Domain Owner");
+        getPermissions("Administrator");
+        getPermissions("Compliance Officer");
+        getPermissions("Data Scientist");
     },[])
 
     const [selectedRole, setSelectedRole] = useState(roles[0])
 
-    const getRoles = async (role_name) => {
+    const getPermissions = async (role_name) => {
         try{
             const apiRes = await axios(
                 {

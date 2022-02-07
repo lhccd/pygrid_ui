@@ -68,71 +68,26 @@ const TableData = tw.td`
 const roles = [
     {   
         id: 1, 
-        role: "Owner",
+        role: "Domain Owner",
         description: "There is only one Owner account assigned to any one domain node. The owner account is the highest level permission and is a requirement for deploying a domain node. If you should ever want to transfer ownership of your domain node to someone else you can do so by following these steps.",
-        permissions: {
-            MakeDataRequests: true, 
-            EditRoles: true, 
-            TriageDataRequests: true, 
-            UploadData: true, 
-            ManagePrivacyBudgets: true, 
-            UploadLegalDocuments: true, 
-            ManageUsers: true, 
-            EditDomainSettigs: true, 
-            CreateUsers: true, 
-            ManageInfrastructure: true
-        }
     },
     {   
         id: 2, 
-        role: "Admin", 
+        role: "Administrator", 
         description: "This role is for users who will help you manage your node. This should be users you trust. The main difference between this user and a Compliance Officer is that this user by default not only can manage requests but can also edit Domain Settings. This is the highest level permission outside of an Owner.",        MakeDataRequests: true,
-        permissions: {
-            MakeDataRequests: true, 
-            EditRoles: true, 
-            TriageDataRequests: true, 
-            UploadData: true, 
-            ManagePrivacyBudgets: true, 
-            UploadLegalDocuments: true, 
-            ManageUsers: true, 
-            EditDomainSettigs: true, 
-            CreateUsers: true,
-            ManageInfrastructure: false
-        }
+        
     },
     {   
         id: 3, 
         role: "Compliance Officer",
         description: "This role is for users who will help you manage requests made on your node. They should be users you trust. They are not able to change domain settings or edit roles but they are by default able to accept or deny user requests on behalf of the domain node.",
-        permissions: {
-            MakeDataRequests: false, 
-            EditRoles: false, 
-            TriageDataRequests: true, 
-            UploadData: false, 
-            ManagePrivacyBudgets: true, 
-            UploadLegalDocuments: false, 
-            ManageUsers: true, 
-            EditDomainSettigs: false, 
-            CreateUsers: false, 
-            ManageInfrastructure: false
-        }
+        
     },
     {   
         id: 4, 
         role: "Data Scientist",
         description: "This role is for users who will be performing computations on your datasets. They may be users you know directly or those who found your domain through search and discovery. By default this user can see a list of your datasets and can request to get results. This user will also be required to sign a Data Access Agreement if you have required one in the Domain Settings Configurations.",
-        permissions: {
-            MakeDataRequests: true, 
-            EditRoles: true, 
-            TriageDataRequests: false, 
-            UploadData: false, 
-            ManagePrivacyBudgets: false, 
-            UploadLegalDocuments: false, 
-            ManageUsers: false, 
-            EditDomainSettigs: false, 
-            CreateUsers: false, 
-            ManageInfrastructure: false
-        }
+       
     }
 ]
 
@@ -449,8 +404,7 @@ function UserModal({ show, onClose, data }) {
                     <Button tw="float-right" tw="space-x-3 text-gray-400" type="button" onClick={()=>{deleteUserByID(id); onClose()}}><FontAwesomeIcon size="sm" icon={faTrash} />  Delete User</Button>
                 </div>
                 <button tw="col-start-2 col-span-2 text-primary-500 underline text-left text-sm" onClick={()=>setShowChangeRoleModal(true)}>Change Role</button>
-                <ChangeRoleModal show={showChangeRoleModal} onClose={() => setShowChangeRoleModal(false)}
-                        email={email}/>
+                <ChangeRoleModal show={showChangeRoleModal} onClose={() => setShowChangeRoleModal(false)} email={email}/>
                 <h3 tw="col-start-2 col-span-10 font-bold mt-10 text-gray-600">Privacy Budget</h3>
                 <div tw="col-start-2 col-span-10 mt-2 flex bg-gray-50 items-center justify-between border border-gray-100 rounded p-4 space-x-3">
                     <div>
@@ -505,12 +459,158 @@ function UserModal({ show, onClose, data }) {
     );
 }
 
-function ChangeRoleModal({ show, onClose, email, data }) {
-    console.log("changemodal data", data)
-    
+function ChangeRoleModal({ show, onClose, email}) {
+    console.log("changeRolemodal data", email)
+    const [userEmail, setUserEmail] = useState("")
+    const [currPermissions, setCurrPermissions] = useState({});
     const [selectedRole, setSelectedRole] = useState(roles[0])
+    const [DOPermissions, setDOPermissions] = useState({
+        "MakeDataRequests": false,
+        "EditRoles": false,
+        "TriageDataRequests": false,
+        "UploadData": false,
+        "ManagePrivacyBudgets": false,
+        "UploadLegalDocuments": false,
+        "ManageUsers": false,
+        "EditDomainSettings": false,
+        "CreateUsers": false,
+        "ManageInfrastructure": false,
+    });
+    const [DSPermissions, setDSPermissions] = useState([]);
+    const [AdminPermissions, setAdminPermissions] = useState([]);
+    const [COPermissions, setCOPermissions] = useState([]);
+
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertVariant, setAlertVariant] = useState('primary')
+    const [alertMessage, setAlertMessage] = useState('')
+
+    const getPermissions = async (role_name) => {
+        try{
+            const apiRes = await axios(
+                {
+                    method: 'GET',
+                    url: `api/role-by-domain`,
+                    headers: {
+                        "Accept": "application/json",
+                    },
+                    params: {
+                        role_name: role_name
+                    }
+                });
+            if(apiRes.status === 200)
+            {
+                const data = await apiRes.data;
+                if (role_name === "Domain Owner"){
+                    setDOPermissions(data)
+                }
+                if (role_name === "Administrator"){
+                    setAdminPermissions(data)
+                }
+                if (role_name === "Data Scientist"){
+                    setDSPermissions(data)
+                }
+                if (role_name === "Compliance Officer"){
+                    setCOPermissions(data)
+                }
+            }
+
+        }
+        catch (e) {
+            console.log("Couldn't fetch the role");
+        }
+
+    };
+
+    useEffect (() => {
+        getPermissions("Domain Owner");
+        getPermissions("Administrator");
+        getPermissions("Compliance Officer");
+        getPermissions("Data Scientist");
+        setUserEmail(email);
+    },[])
+
+    const RolePermissions = () => {
+        if (selectedRole.role === "Domain Owner"){
+            setCurrPermissions(DOPermissions);
+        }else if(selectedRole.role === "Administrator"){
+            setCurrPermissions(AdminPermissions);
+        }else if(selectedRole.role === "Compliance Officer"){
+            setCurrPermissions(COPermissions);
+        }else if(selectedRole.role === "Data Scientist"){
+            setCurrPermissions(DSPermissions);
+        }else{
+            setCurrPermissions({
+                "MakeDataRequests": false,
+                "EditRoles": false,
+                "TriageDataRequests": false,
+                "UploadData": false,
+                "ManagePrivacyBudgets": false,
+                "UploadLegalDocuments": false,
+                "ManageUsers": false,
+                "EditDomainSettings": false,
+                "CreateUsers": false,
+                "ManageInfrastructure": false,
+            })
+        }
+        
+        return(
+            <div tw="col-span-full flex-col bg-gray-50 items-center border border-gray-100 rounded p-6 space-x-3 text-sm overflow-auto">
+                <div>
+                    <p tw="mb-3">{selectedRole.description}</p>
+                </div>
+                    {Object.keys(currPermissions).map((key, idx)=>(
+                        <div tw="flex py-2 space-x-10 items-center">
+                            { currPermissions[key] ? <FontAwesomeIcon size="xs" icon={faCheckCircle} tw="text-success-500" /> : <FontAwesomeIcon size="xs" icon={faTimesCircle} tw="text-error-500" />}
+                            <div tw="block">
+                                <p tw="font-bold text-black">{key}</p>
+                                {/* <p>Allows users to make data requests</p> */}
+                            </div>
+                        </div>
+                    ))}
+            </div>
+        )
+    }
+
+    async function changeRole(){
+        try{
+            const apiRes = await axios(
+                {
+                    method: 'PUT',
+                    url: `api/role-of-user`,
+                    headers: {
+                        "Accept": "application/json",
+                    },
+                    data : {
+                        role_name: selectedRole.role,
+                        user_email: userEmail, 
+                    }
+                });
+            console.log("response from changeRole Put method in changerolemodal", apiRes.status, apiRes.data)
+            if(apiRes.status == 200){
+                setVariant('success');
+                setAlertMessage('Role successfully changed')
+                setShowAlert(true);
+            }
+            else{
+                setVariant('error');
+                setAlertMessage("Couldn't change the role of the user")
+                setShowAlert(true);
+            }
+
+        }
+        catch (e) {
+            console.log("Couldn't fetch the role");
+        }
+
+    };
     return (
         <Modal show={show} onClose={onClose}>
+            <div tw="absolute right-0 w-1/2 z-50">
+                <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={alertVariant} autoDelete={true} autoDeleteTime={3000}>
+                    <FontAwesomeIcon icon={faExclamationCircle} size="2x" tw=""/>
+                    <p>{alertMessage}</p>
+                </Alert>
+            </div>
             <div tw="col-span-full">
             <div tw="grid grid-cols-12 text-left p-6 rounded-lg text-gray-600">
                 <div tw="col-span-full flex-col items-center">
@@ -551,20 +651,7 @@ function ChangeRoleModal({ show, onClose, email, data }) {
                         </Transition>
                     </Listbox>
                 </SearchContainer>
-                <div tw="col-span-full flex-col bg-gray-50 items-center border border-gray-100 rounded p-6 space-x-3 text-sm overflow-auto">
-                    <div>
-                        <p tw="mb-3">{selectedRole.description}</p>
-                    </div>
-                        {Object.keys(selectedRole.permissions).map((key, idx)=>(
-                            <div tw="flex py-2 space-x-10 items-center">
-                                { selectedRole.permissions[key] ? <FontAwesomeIcon size="xs" icon={faCheckCircle} tw="text-success-500" /> : <FontAwesomeIcon size="xs" icon={faTimesCircle} tw="text-error-500" />}
-                                <div tw="block">
-                                    <p tw="font-bold text-black">{key}</p>
-                                    {/* <p>Allows users to make data requests</p> */}
-                                </div>
-                            </div>
-                        ))}
-                </div>
+                <RolePermissions/>
                 <div tw="col-span-full my-5">
                     <Link href="/permissions">
                         <a tw="text-primary-600 font-medium font-bold cursor-pointer text-sm p-2">Edit Role Permissions</a>
@@ -572,7 +659,7 @@ function ChangeRoleModal({ show, onClose, email, data }) {
                 </div>
                 <div tw="col-span-full flex justify-between">
                     <Button variant={"primary"} isHollow onClick={onClose}>Cancel</Button>
-                    <Button variant={"primary"} onClick={onClose}>Change Role</Button>
+                    <Button variant={"primary"} onClick={()=>{changeRole(); onClose()}}>Change Role</Button>
                 </div>
             </div>
             </div>

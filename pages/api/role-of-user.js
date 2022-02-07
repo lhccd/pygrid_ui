@@ -4,6 +4,7 @@ import axios from "axios"
 const API_URL = "http://localhost/api/v1";
 
 export default async (req, res) => {
+    console.log("MIDDLEWARE API ROLE CHANGE", req.body)
     const cookies = cookie.parse(req.headers.cookie ?? '');
     const access = cookies.access ?? false;
 
