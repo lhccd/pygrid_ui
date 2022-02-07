@@ -24,7 +24,7 @@ import { Fragment, useState, useEffect } from 'react'
 import tw, { styled, css } from 'twin.macro'
 
 async function acceptUserByID(email) {
-    console.log("acceptUserByID Called", { email })
+    // console.log("acceptUserByID Called", { email })
     try {
         const body = JSON.stringify(email)
         console.log("requesting put", body)
@@ -46,7 +46,7 @@ async function acceptUserByID(email) {
 }
 
 async function adjustBudget(email, budget) {
-    console.log("adjustBudget Called", { email })
+    // console.log("adjustBudget Called", { email })
     try {
         const body = JSON.stringify({ "email": email, "budget": budget })
         console.log("requesting put", body)
@@ -75,7 +75,7 @@ export default function ConfirmationFlowModal({ show, onClose, data }) {
     const [alertVariant, setAlertVariant] = useState('primary')
     const [alertMessage, setAlertMessage] = useState('')
     const [email, setEmail] = useState('')
-    console.log("CONFIRMATION FLOW MODAL", data)
+    // console.log("CONFIRMATION FLOW MODAL", data)
     const toggleTab = (index) => {
         console.log(index);
         console.log(toggleState)

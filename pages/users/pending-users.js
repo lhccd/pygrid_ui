@@ -5,6 +5,7 @@ import Modal from '../../components/Modal';
 import Alert from '../../components/Alert';
 import Button from '../../components/Button';
 import Spinner from '../../components/Spinner';
+import axios from 'axios';
 import ConfirmationFlowModal from '../../components/ConfirmationFlowModal'
 import {
     faCalendar,
@@ -101,6 +102,7 @@ async function denyUserByID(email) {
 }
 
 async function downloadDAA(email){
+    console.log("DONLOAD DAA FROM PENDING")
     try{
         const apiRes = await axios({
             method: 'GET',
@@ -112,6 +114,7 @@ async function downloadDAA(email){
                 user_email: email
             }
         });
+        console.log("DONLOAD DAA FROM PENDING response", apiRes.status, apiRes.data)
         if(apiRes.status === 200){
             try {
                 const data = await apiRes.data.data;
