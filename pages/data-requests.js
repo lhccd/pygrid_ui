@@ -17,7 +17,7 @@ export default function DataRequests() {
     const [toggleTab, setToggleTab] = useState("")
     const [showAlert, setShowAlert ] =useState(true)
     const [loading, setLoading] = useState(true);
-
+    const [refresh, setRefresh] = useState(false);
 
     const fetchPendingRequestList = async () => {
         try {
@@ -74,6 +74,11 @@ export default function DataRequests() {
     useEffect(() => {
         fetchPendingRequestList()
         fetchHistoryRequestList()
+    }, [refresh])
+
+    useEffect(() => {
+        fetchPendingRequestList()
+        fetchHistoryRequestList()
     }, [])
 
     return(
@@ -114,11 +119,11 @@ export default function DataRequests() {
                             {loading ?
                                     <div tw="my-10 flex w-full justify-center">
                                         <Spinner />
-                                    </div> : <Pending list={pendingRequestList}/>}</Tab.Panel>
+                                    </div> : <Pending list={pendingRequestList} refresh={()=>setRefresh(!refresh)}/>}</Tab.Panel>
                             <Tab.Panel> {loading ?
                                     <div tw="my-10 flex w-full justify-center">
                                         <Spinner />
-                                    </div> : <History list={historyRequestList}/>}</Tab.Panel>
+                                    </div> : <History list={historyRequestList} refresh={()=>setRefresh(!refresh)}/>}</Tab.Panel>
                         </Tab.Panels>
                     </Tab.Group>
                 </div>

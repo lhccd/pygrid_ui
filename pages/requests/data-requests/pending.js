@@ -308,7 +308,6 @@ export default function Pending(props) {
     }, [props.list])
 
     useEffect(() => {
-        console.log("data request list", requestList)
     }, [showRequestModal])
 
     async function getUser(e) {
@@ -366,6 +365,7 @@ export default function Pending(props) {
             if(apiRes.status == 200){
                 setVariant('success');
                 setAlertMessage('Request successfully '+update+"ed")
+                props.refresh()
                 setShowAlert(true);
                 setShowCommentModal(false)
             }
@@ -401,6 +401,7 @@ export default function Pending(props) {
             if(apiRes.status == 200){
                 setVariant('success');
                 setAlertMessage('Request successfully '+update+"ed")
+                props.refresh()
                 setShowAlert(true);
                 setShowCommentModal(false)
             }
