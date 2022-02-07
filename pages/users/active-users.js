@@ -201,7 +201,31 @@ function CreateUserModal({ show, onClose }) {
     const [alertVariant, setAlertVariant] = useState('primary')
     const [alertMessage, setAlertMessage] = useState('')
     const [selectedRole, setSelectedRole] = useState(roles[0])
-
+    const [domainName, setDomainName] = useState('')
+    async function getMetaData(){
+        try{
+          const apiRes = await axios({
+            method: 'GET',
+            url: `api/utils/domain-metadata`,
+            headers: {
+              "Accept": "application/json"
+            }
+          });
+    
+          if(apiRes.status === 200){
+            const data = await apiRes.data;
+            console.log(data);
+            setDomainName(data.name);
+          }
+          else{
+            alert("Couldn't fetch the metadata!")
+          }
+    
+        }
+        catch (e) {
+          console.error(e);
+        }
+    }
     async function onSubmitForm(values) {
         const data = {
             "email": values.email,
@@ -211,6 +235,7 @@ function CreateUserModal({ show, onClose }) {
             "website": values.website,
             "allocated_budget": allocatedBudget,
             "role": selectedRole, 
+            "domain_name": domainName,
         }
 
         let config = {
@@ -220,6 +245,7 @@ function CreateUserModal({ show, onClose }) {
         }
         try {
             const response = await axios(config)
+            console.log(response)
             setAlertVariant('success');
             setAlertMessage('User successfully created!')
             setShowAlert(true);
@@ -244,6 +270,9 @@ function CreateUserModal({ show, onClose }) {
             setAllocatedBudget(0);
         }
     }
+    useEffect(()=>{
+        getMetaData();
+    },[])
     return (
         <>
         <Modal tw="p-20" show={show} onClose={onClose}>
@@ -422,8 +451,8 @@ function UserModal({ show, onClose, data }) {
                 <button tw="col-start-2 col-span-2 text-primary-500 underline text-left text-sm" onClick={()=>setShowChangeRoleModal(true)}>Change Role</button>
                 <ChangeRoleModal show={showChangeRoleModal} onClose={() => setShowChangeRoleModal(false)}
                         email={email}/>
-                <h3 tw="font-bold mt-10 text-gray-600">Privacy Budget</h3>
-                <div tw="flex bg-gray-50 items-center justify-between border border-gray-100 rounded p-4 space-x-3">
+                <h3 tw="col-start-2 col-span-10 font-bold mt-10 text-gray-600">Privacy Budget</h3>
+                <div tw="col-start-2 col-span-10 mt-2 flex bg-gray-50 items-center justify-between border border-gray-100 rounded p-4 space-x-3">
                     <div>
                         <p tw="text-error-400 font-bold">{budget} ɛ</p>
                         <p>Current Balance</p>
@@ -470,8 +499,8 @@ function UserModal({ show, onClose, data }) {
                         </div>
                     </div>
                 </div>
+                </div>
             </div>
-        </div>
         </Modal>
     );
 }
@@ -609,8 +638,19 @@ function AdjustBudgetModal({ show, onClose, email, budget, aBudget, handleBudget
                     <p tw="col-span-full text-justify my-6">Allocating Privacy Budget (PB) is an optional setting that allows you to maintain a set standard of privacy while offloading the work of manually approving every data request for a single user. You can think of privacy allocatedBudget as credits you give to a user to perform computations from. These credits of  Epsilon(ɛ) indicate the amount of visibility a user has into any one entity of your data. The more allocatedBudget the more visibility. By default all users start with 0ɛ and must have their data requests approved manually until upgraded. You can learn more about privacy allocatedBudgets and how to allocate them at Course.OpenMined.org</p>
 
                     <h3 tw="col-span-full font-bold mt-3 text-gray-600">Adjust Privacy Budget</h3>
-                    <div tw="col-span-full flex items-end rounded my-6 divide-x divide-gray-200">
-                        <div tw="pr-3">
+                    <div tw="col-span-8 items-end my-6 divide-x divide-gray-200">
+                        <div tw="grid grid-cols-4 grid-rows-2 pt-1 pb-3 text-sm text-gray-600">
+                            <p tw="col-start-1 col-span-2 row-start-1 px-4 py-2 text-error-400 font-bold inline-block leading-10 text-center align-middle border-r-2">{budget} ɛ</p>
+                            <p tw="col-start-1 col-span-2 row-start-2 px-4 py-2 inline-block leading-6 text-center align-middle border-r-2">Current Balance</p>
+                           
+                            <div tw="col-start-3 col-span-2 row-start-1 flex justify-center px-4 py-2">
+                                <button tw='px-2 py-1 font-bold text-lg rounded-l-lg border-2 border-gray-200 bg-gray-50' onClick={decrementBudget}>-</button>
+                                <p tw="px-3 py-1 border-t-2 border-b-2 border-gray-200 text-lg">{allocatedBudget}</p>
+                                <button tw='px-2 py-1 font-bold text-lg rounded-r-lg border-2 border-gray-200 bg-gray-50' onClick={incrementBudget}>+</button>
+                            </div>
+                            <p tw="col-start-3 col-span-2 row-start-2 px-4 py-2 inline-block leading-6 text-center align-middle">Allocated Budget</p>
+                        </div>
+                        {/* <div tw="pr-3">
                             <p tw="text-error-400 font-bold text-lg mb-4">{balance} ɛ</p>
                             <p tw="text-sm text-gray-600 mt-1">Current Balance</p>
                         </div>
@@ -622,7 +662,7 @@ function AdjustBudgetModal({ show, onClose, email, budget, aBudget, handleBudget
                             <button tw='px-6 py-4 font-bold text-lg rounded-l-lg border-2 border-gray-200 bg-gray-50' onClick={decrementBudget}>-</button>
                             <p tw="px-8 py-4 border-t-2 border-b-2 border-gray-200 text-lg">{allocatedBudget}</p>
                             <button tw='px-6 py-4 font-bold text-lg rounded-r-lg border-2 border-gray-200 bg-gray-50' onClick={incrementBudget}>+</button>
-                        </div>
+                        </div> */}
                     </div>
                     <div tw="col-span-full flex justify-between">
                         <Button variant={"primary"} isHollow onClick={onClose}>Cancel</Button>

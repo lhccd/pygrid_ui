@@ -101,6 +101,7 @@ async function denyUserByID(email) {
 }
 
 function PendingUserModal({ show, onClose, data }) {
+    console.log("userData: ", data)
     const [showConfirmationFlowModal, setShowConfirmationFlowModal] = useState(false)
     const [full_name, setFull_name] = useState("")
     const [budget, setBudget] = useState("")
@@ -339,7 +340,7 @@ export default function Pending() {
         })
         try {
             const apiRes = await fetch(
-                "api/get_user_by_id",
+                "api/get_user_by_email",
                 {
                     method: "POST",
                     headers: {
@@ -353,7 +354,6 @@ export default function Pending() {
             if (apiRes.status == 200) {
                 const data = await apiRes.json();
                 setUserData(data)
-                // console.log("userData: ", userData)
             }
             else {
                 alert("Couldn't fetch the user!");
@@ -374,9 +374,10 @@ export default function Pending() {
                     <button tw="flex space-x-2 items-center" onClick={() => {
                         getUser(row.values.email);
                         setShowUserModal(true);
+                        // console.log("row", row)
                     }}>
                         <p tw="text-gray-600">{row.values.full_name}</p>
-                        <Tag variant={'primary'}>{row.values.email}</Tag>
+                        <Tag><p tw="text-xs text-primary-600 font-medium">{row.original.role}</p></Tag>
                     </button>
                 ),
             },

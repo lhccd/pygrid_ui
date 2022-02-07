@@ -253,7 +253,7 @@ export default function Denied(){
         })
         try {
             const apiRes = await fetch(
-                "api/get_user_by_id",
+                "api/get_user_by_email",
                 {
                     method: "POST",
                     headers: {
@@ -290,7 +290,7 @@ export default function Denied(){
                         setShowUserModal(true);
                     }}>
                         <p tw="text-gray-600">{row.values.full_name}</p>
-                        <Tag variant={'primary'}>{row.values.email}</Tag>
+                        <Tag><p tw="text-xs text-primary-600 font-medium">{row.original.role}</p></Tag>
                     </button>
                 ),
             },

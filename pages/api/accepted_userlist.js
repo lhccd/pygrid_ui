@@ -54,7 +54,7 @@ export default async (req, res) => {
                     }
                 })
                 const roleData = roleRes.data;
-                console.log(roleData);
+                // console.log(roleData);
                 result.push({email: row.email,
                     full_name: row.full_name,
                     id: row.id,

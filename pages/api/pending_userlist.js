@@ -34,9 +34,37 @@ export default async (req, res) => {
                     }
                 });
             const data = apiRes.data;
+            let result = []
+            for(let i = 0; i<data.length;i++)
+            {
+                const row = data[i];
+                const roleRes = await axios({
+                    method: 'GET',
+                    url: `${API_URL}/domain/role-by-user`,
+                    headers: {
+                        "Accept": "application/json",
+                        "Authorization": `Bearer ${access}`
+                    },
+                    params:{
+                        user_email: row.email,
+                        domain_name: domain_name
+                    }
+                })
+                const roleData = roleRes.data;
+                // console.log(roleData);
+                result.push({email: row.email,
+                    full_name: row.full_name,
+                    id: row.id,
+                    budget: row.budget,
+                    role: roleData.name,
+                    allocated_budget: row.allocated_budget,
+                    created_at: row.created_at,
+                    added_by: row.added_by
+                })
+            }
 
             if (apiRes.status === 200){
-                return res.status(200).json(data);
+                return res.status(200).json(result);
             }
             else{
                 return res.status(apiRes.status).json({
