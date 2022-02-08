@@ -340,7 +340,7 @@ export default function Denied(){
                 Cell: ({ row }) => (
                     <div tw="flex items-center justify-center space-x-1">
                         <button onClick={async () => { await getUser(row.values.email); setShowConfirmationFlowModal(true)}}>
-                            <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-gray-200" />
+                            <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-gray-200 hover:text-success-500" />
                         </button>
                         {/* <button onClick={ async () => 
                             {

@@ -17,7 +17,7 @@ export default function Pending(props) {
     const [comment, setComment] = useState("")
     const [update, setUpdate] = useState("")
     const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("");
+    const [alertMessage, setAlertMessage] = useState("");
     const [variant, setVariant] = useState('primary');
 
     useEffect(() => {

@@ -468,7 +468,7 @@ export default function Pending() {
                 Cell: ({ row }) => (
                     <div tw="flex items-center justify-center space-x-1">
                         <button onClick={async () => { await getUser(row.values.email); setShowConfirmationFlowModal(true)}}>
-                            <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-gray-200" />
+                            <FontAwesomeIcon size="lg" icon={faCheckCircle} title="Accept" tw="text-gray-200 hover:text-success-500" />
                         </button>
                         <button onClick={async () => {
                             await denyUserByID(row.values.email);
@@ -476,7 +476,7 @@ export default function Pending() {
                             // setUserlist(userlist.splice(row.id, 1));
                             await fetchUserlist();
                         }}>
-                            <FontAwesomeIcon size="lg" icon={faTimesCircle} title="Decline" tw="text-gray-200" />
+                            <FontAwesomeIcon size="lg" icon={faTimesCircle} title="Decline" tw="text-gray-200 hover:text-error-500" />
                         </button>
                     </div>
                 )
